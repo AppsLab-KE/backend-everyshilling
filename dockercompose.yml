@@ -13,7 +13,7 @@ services:
       - '8080:4010'
 
 
-# #backend application
+# #backend services for both python and go
 #   backend_go:
 #     build: ./backend_go
 #     ports:
