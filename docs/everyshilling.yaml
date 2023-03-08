@@ -1,0 +1,59 @@
+openapi: 3.0.0
+info:
+  title: Login API Endpoint
+  version: 2023-03-08
+  description: API to generate OTP and validate login using YAML.
+contact:
+    name: Every-Shilling 
+    email: developers@appslab.co.ke
+    url: http://appslab.co.ke/
+
+
+servers:
+
+- url:
+  description: 'Mock Server'
+
+- url:
+  description: 'Staging'
+
+- url:
+  description: 'Production'
+
+
+paths:
+  /login:
+    post:
+      summary: Generate OTP and send it to email and phone number
+      description: Endpoint to generate OTP and send it to user's email and phone number. The user needs to enter the OTP to complete the login process.
+      requestBody:
+        description: User's login credentials
+        content:
+          application:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: User's email address
+                phone:
+                  type: string
+                  description: User's phone number
+              required:
+                - email
+                - phone
+      responses:
+        '200':
+          description: OTP generated and sent successfully
+        '400':
+          description: Bad request: missing email or phone number
+        '500':
+          description: Internal server error
+  components:
+    schemas:
+      OTP:
+        type: object
+        properties:
+          otp:
+            type: string
+            description: Generated OTP
