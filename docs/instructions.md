@@ -7,3 +7,5 @@
 
 - In a new terminal using the local host returned test out your endpoint. Example
 ```curl http://127.0.0.1:4010/currencies ```
+
+Note : Docker compose might generate errors...still trying to figure out the correct path
