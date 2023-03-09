@@ -88,10 +88,6 @@ paths:
                     type: string
                   error:
                     type: string
-tags:
-
-  - name: Register
-    description: signin description
 
 
 
@@ -100,3 +96,19 @@ tags:
 
 # forget password
 # reset password
+
+
+
+
+
+
+
+
+
+
+
+
+tags:
+
+  - name: Register
+    description: signin description
