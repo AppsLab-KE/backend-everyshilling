@@ -18,6 +18,7 @@ servers:
   - url: ''
     description: 'Production'
 
+
 paths:
   /login:
     post:
