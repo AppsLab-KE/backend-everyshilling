@@ -1,1 +1,29 @@
-#the openapi.yaml file to be included here
+openapi: 3.0.0
+info:
+  title: Login API Endpoint
+  version: 2023-03-08
+  description: API to generate OTP and validate login using YAML.
+contact:
+    name: Every-Shilling 
+    email: developers@appslab.co.ke
+    url: http://appslab.co.ke/
+
+
+servers:
+
+- url:
+  description: 'Mock Server'
+
+- url:
+  description: 'Staging'
+
+- url:
+  description: 'Production'
+
+
+paths:
+
+# login endpoint 
+# Registration endpoint 
+# forget password
+# reset password
