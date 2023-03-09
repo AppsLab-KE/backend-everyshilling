@@ -18,11 +18,11 @@ servers:
   - url: ''
     description: 'Production'
 paths:
-docs/openapi-dennis-login
   /login:
     post:
       summary: Generate OTP and send it to email and phone number
       description: Endpoint to generate OTP and send it to user's email and phone number. The user needs to enter the OTP to complete the login process.
+      tags: [Login]
       requestBody:
         description: User's login credentials
         content:
@@ -43,17 +43,10 @@ docs/openapi-dennis-login
         '200':
           description: OTP generated and sent successfully
         '400':
-          description: Bad request: missing email or phone number
+          description: 'Bad request: missing email or phone number'
         '500':
           description: Internal server error
-  components:
-    schemas:
-      OTP:
-        type: object
-        properties:
-          otp:
-            type: string
-            description: Generated OTP
+
 # Registration endpoint   
   /register:
     summary: Register new users to the system
@@ -120,6 +113,58 @@ docs/openapi-dennis-login
                     type: string
                   error:
                     type: string
+    # forget password
+  /reset:
+    summary: Allow users to send forget password requests
+    post:
+      tags: [ Password Reset ]
+      summary: "Send password reset OTP"
+      description: Collect user email an send reset OTP
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: valid email
+                  example: john.doe@example.com
+
+      responses:
+        '200':
+          description: A tokenized password reset login to be send to the user email address
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'OTP sent to provided email'
+                  code:
+                    type: string
+                    example: "RESET_OTP_SENT"
+                  data:
+                    type: object
+                    properties:
+                      request_id:
+                        type: string
+                        example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+
+        '404':
+          description: 'Email address not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Email entered not found or incorrect'
+                  code:
+                    type: string
+                    example: "RESET_INVALID_EMAIL"
   /reset/{request-id}/verify:
     post:
       tags: [ Password Reset ]
@@ -156,6 +201,7 @@ docs/openapi-dennis-login
                   code:
                     type: string
                     example: "OTP_SUCCESS"
+
         401:
           description: "Verification failed"
           content:
@@ -261,55 +307,6 @@ docs/openapi-dennis-login
                     type: string
                     example: "RESET_INVALID_REQUEST"
 
-
-
-
-# forget password
-  /forgetPassword:
-    summary: Allow users to send forget password requests
-    post:
-      description:  auth email and request to change password
-      parameters: 
-        - in: header
-          name: Authorization
-          description: Basic Token (Basic REFTSEJ2QVJEOnhHbiQ3R3hSanlqNTl4Y19MVyVO)
-          schema:
-            type: string
-          required: true
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: valid email
-                  example: john.doe@example.com
-
-      responses:
-        '200':
-          description: A tokenized password reset login to be send to the user email address 
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message: 
-                    type:string 
-                    example: 'success'  
-
-        '404':
-          description: A tokenized password reset login to be send to the user email address 
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message: 
-                    type:string 
-                    example: 'Email entered not found or incorrect'                     
-
 tags:
   - name: Register
     description: Registration description
@@ -317,12 +314,15 @@ tags:
   - name: Login
     description: Login description
     
-  - name: Forgot password
-    description: Help the user gain access to acccount after forgetting password
-    
-  - name: Reset password
+  - name: Password Reset
     description: Help the user gain access and reset password
   
 
-
-
+components:
+  schemas:
+    OTP:
+      type: object
+      properties:
+        otp:
+          type: string
+          description: Generated OTP
