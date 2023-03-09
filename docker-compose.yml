@@ -10,7 +10,6 @@ services:
     volumes:
       - ./test-api.yaml:/usr/src/prism/packages/cli/test-api.yaml
     ports:
-      # Serve the mocked API locally as available on port 8080
       - '4010:4010'
 
 
