@@ -1,30 +1,103 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  title: Login API Endpoint
-  version: 2023-03-08
-  description: API to generate OTP and validate login using YAML.
-contact:
-    name: Every-Shilling 
-    email: developers@appslab.co.ke
-    url: http://appslab.co.ke/
-
-
+  title: Every shillings Auth OpenAPI endpoint
+  description: Every Shilling
+  version: 2022-04-01
+  termsOfService: https://everyshilling.ke/terms
+  contact:
+    name: Everyshilling
+    email: everyshilling@co.ke
+    url: https://everyshilling.ke
 servers:
-
-- url:
-  description: 'Mock Server'
-
-- url:
-  description: 'Staging'
-
-- url:
-  description: 'Production'
+  - url: 'http://127.0.0.1:4010'
+    description: 'Mock server'
+  - url: 'http://localhost:8080/v1'
+    description: 'Local'
+  - url: ''
+    description: 'Staging'
+  - url: ''
+    description: 'Production'
 
 
 paths:
 
 # login endpoint 
-# Registration endpoint 
+# Registration endpoint   
+  /register:
+    summary: Register new users to the system
+    description:  User account registration
+    post:
+      summary: A POST request to registering new users
+      security: []
+      operationId: register
+      tags:
+        - Register
+      description: register post
+      requestBody:
+        description: registrationrequest object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: name
+                  type: string
+                  example: john doe
+                email:
+                  type: string
+                  description: valid email
+                  example: john.doe@example.com
+                phone number :
+                  type: string
+                  description: valid phone number 
+                  example: "+2541234567"
+                password:
+                  type: string
+                  description: strong password
+                  example: secureP@ssword
+                  minLength: 6
+                  maxLength: 16
+               
+              required:
+                - name
+                - email
+                - phone number
+                - password
+      responses:
+        '200':
+          description: succesfully registered
+          content:
+            application/json:
+              schema:
+                properties:
+                  name:
+                    type: string
+                    example: Joe doe
+                  email:
+                    type: string
+                    example: john.doe@example.com
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
+tags:
+
+  - name: Register
+    description: signin description
+
+
+
+
+
+
 # forget password
 # reset password
    /reset/{request-id}/verify:
