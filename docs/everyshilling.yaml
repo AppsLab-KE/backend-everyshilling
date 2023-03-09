@@ -17,8 +17,6 @@ servers:
     description: 'Staging'
   - url: ''
     description: 'Production'
-
-
 paths:
 docs/openapi-dennis-login
   /login:
@@ -56,9 +54,6 @@ docs/openapi-dennis-login
           otp:
             type: string
             description: Generated OTP
-=======
-
-# login endpoint 
 # Registration endpoint   
   /register:
     summary: Register new users to the system
@@ -125,9 +120,6 @@ docs/openapi-dennis-login
                     type: string
                   error:
                     type: string
-
-# forget password
-# reset password
   /reset/{request-id}/verify:
     post:
       tags: [ Password Reset ]
@@ -276,4 +268,4 @@ tags:
     description: signin description
   - name: Password Reset
     description: Help the user gain access to acccount after forgetting password
- develop
+
