@@ -1,16 +1,24 @@
-# To test the mock api server try out these commands:
+# Docker Service for Spotlight Prism
 
-# N/B: Possible errors Docker compose might generate errors...if the everyshillingyml file is not placed under the root folder.
+### To test the mock api server Run
+
+ N/B: Docker compose might generate errors...if the everyshilling.yml file is not placed under the root folder.
 
 - Under the **root directory** on your terminal run:
 
-``` docker-compose up ```
+``` 
+docker-compose up
+``` 
 
-```prism mock everyshilling.yml``` -
+```
+prism mock everyshilling.yml
+```
 
-- In either a new terminal or your browser test out your endpoint.
+- In either a new terminal or your browser test out your endpoint using curl command.
+Replace currencies with your endpoint
+```
+curl http://127.0.0.1:4010/currencies
+```
 
-```curl http://127.0.0.1:4010/currencies ```
 
-
-# test-api.yaml file to be deleted once all the endpoints are included in the everyshilling,yml
+## Side note : test-api.yaml files to be deleted once all the endpoints are included in the everyshilling,yml
