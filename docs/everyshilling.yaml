@@ -59,7 +59,7 @@ paths:
         - Register
       description: register post
       requestBody:
-        description: registrationrequest object
+        description: registration request object
         required: true
         content:
           application/json:
