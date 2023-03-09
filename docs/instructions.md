@@ -1,14 +1,15 @@
 # To test the mock api server try out these commands:
 
-- From your terminal run:
+- Under the **root directory** on your terminal run:
 
-``` docker compose up ``` - This starts the prism container
+``` docker-compose up ```
 
-```prism mock openapi.yml``` -
+```prism mock everyshilling.yml``` -
 
-- In a new terminal using the local host returned test out your endpoint. Example
+- In either a new terminal or your browser test out your endpoint.
 
 ```curl http://127.0.0.1:4010/currencies ```
 
-Note : Docker compose might generate errors...still trying to figure out the correct path
+# N/B: Possible errors Docker compose might generate errors...if the everyshillingyml file is not placed under the root folder.
 
+# test-api.yaml file to be deleted once all the endpoints are included in the everyshilling,yml
