@@ -24,6 +24,81 @@ servers:
 paths:
 
 # login endpoint 
-# Registration endpoint 
+# Registration endpoint   
+  /register:
+    summary: Register new users to the system
+    description:  User account registration
+    post:
+      summary: A POST request to registering new users
+      security: []
+      operationId: register
+      tags:
+        - Register
+      description: register post
+      requestBody:
+        description: registrationrequest object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: name
+                  type: string
+                  example: john doe
+                email:
+                  type: string
+                  description: valid email
+                  example: john.doe@example.com
+                phone number :
+                  type: string
+                  description: valid phone number 
+                  example: "+2541234567"
+                password:
+                  type: string
+                  description: strong password
+                  example: secureP@ssword
+                  minLength: 6
+                  maxLength: 16
+               
+              required:
+                - name
+                - email
+                - phone number
+                - password
+      responses:
+        '200':
+          description: succesfully registered
+          content:
+            application/json:
+              schema:
+                properties:
+                  name:
+                    type: string
+                    example: Joe doe
+                  email:
+                    type: string
+                    example: john.doe@example.com
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
+tags:
+
+  - name: Register
+    description: signin description
+
+
+
+
+
+
 # forget password
 # reset password
