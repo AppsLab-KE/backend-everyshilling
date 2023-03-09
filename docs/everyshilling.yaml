@@ -190,7 +190,7 @@ paths:
 
       responses:
         200:
-          description: "Verificatopn successful"
+          description: "Verification successful"
           content:
             application/json:
               schema:
