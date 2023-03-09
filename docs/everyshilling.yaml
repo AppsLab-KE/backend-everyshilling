@@ -1,0 +1,328 @@
+openapi: 3.0.3
+info:
+  title: Every shillings Auth OpenAPI endpoint
+  description: Every Shilling
+  version: 2022-04-01
+  termsOfService: https://everyshilling.ke/terms
+  contact:
+    name: Everyshilling
+    email: everyshilling@co.ke
+    url: https://everyshilling.ke
+servers:
+  - url: 'http://127.0.0.1:4010'
+    description: 'Mock server'
+  - url: 'http://localhost:8080/v1'
+    description: 'Local'
+  - url: ''
+    description: 'Staging'
+  - url: ''
+    description: 'Production'
+paths:
+  /login:
+    post:
+      summary: Generate OTP and send it to email and phone number
+      description: Endpoint to generate OTP and send it to user's email and phone number. The user needs to enter the OTP to complete the login process.
+      tags: [Login]
+      requestBody:
+        description: User's login credentials
+        content:
+          application:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: User's email address
+                phone:
+                  type: string
+                  description: User's phone number
+              required:
+                - email
+                - phone
+      responses:
+        '200':
+          description: OTP generated and sent successfully
+        '400':
+          description: 'Bad request: missing email or phone number'
+        '500':
+          description: Internal server error
+
+# Registration endpoint   
+  /register:
+    summary: Register new users to the system
+    description:  User account registration
+    post:
+      summary: A POST request to registering new users
+      security: []
+      operationId: register
+      tags:
+        - Register
+      description: register post
+      requestBody:
+        description: registrationrequest object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  description: name
+                  type: string
+                  example: john doe
+                email:
+                  type: string
+                  description: valid email
+                  example: john.doe@example.com
+                phone number :
+                  type: string
+                  description: valid phone number 
+                  example: "+2541234567"
+                password:
+                  type: string
+                  description: strong password
+                  example: secureP@ssword
+                  minLength: 6
+                  maxLength: 16
+               
+              required:
+                - name
+                - email
+                - phone number
+                - password
+      responses:
+        '200':
+          description: succesfully registered
+          content:
+            application/json:
+              schema:
+                properties:
+                  name:
+                    type: string
+                    example: Joe doe
+                  email:
+                    type: string
+                    example: john.doe@example.com
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
+    # forget password
+  /reset:
+    summary: Allow users to send forget password requests
+    post:
+      tags: [ Password Reset ]
+      summary: "Send password reset OTP"
+      description: Collect user email an send reset OTP
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: valid email
+                  example: john.doe@example.com
+
+      responses:
+        '200':
+          description: A tokenized password reset login to be send to the user email address
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'OTP sent to provided email'
+                  code:
+                    type: string
+                    example: "RESET_OTP_SENT"
+                  data:
+                    type: object
+                    properties:
+                      request_id:
+                        type: string
+                        example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+
+        '404':
+          description: 'Email address not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Email entered not found or incorrect'
+                  code:
+                    type: string
+                    example: "RESET_INVALID_EMAIL"
+  /reset/{request-id}/verify:
+    post:
+      tags: [ Password Reset ]
+      summary: "Verify OTP"
+      description: "Once a user has sent their email, they receive an OTP code for verifying if indeed they are the owners of the account"
+      parameters:
+        - name: request-id
+          description: "Password reset request UUID"
+          required: true
+          in: path
+          schema:
+            type: string
+            example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+      requestBody:
+        description: "The 6 Digit OTP code sent to the user's email"
+        content:
+          application/json:
+            schema:
+              properties:
+                otp_code:
+                  type: string
+                  example: "123456"
+
+      responses:
+        200:
+          description: "Verificatopn successful"
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "OTP verification Success"
+                  code:
+                    type: string
+                    example: "OTP_SUCCESS"
+
+        401:
+          description: "Verification failed"
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "OTP verification failed, invalid OTP"
+                  code:
+                    type: string
+                    example: "OTP_INVALID_CODE"
+
+        404:
+          description: "Request ID not found/valid"
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid request ID"
+                  code:
+                    type: string
+                    example: "OTP_INVALID_REQUEST"
+
+  /reset/{request-id}/change:
+    post:
+      tags: [ Password Reset ]
+      summary: "Change Password"
+      description: "On successful OTP verification, user sends a new password"
+      parameters:
+        - name: request-id
+          description: "Password reset request UUID"
+          required: true
+          in: path
+          schema:
+            type: string
+            example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+      requestBody:
+        description: "The user's new passwords"
+        content:
+          application/json:
+            schema:
+              properties:
+                password:
+                  type: string
+                  example: "BlackApple78"
+                confirm_password:
+                  type: string
+                  example: "BlackApple78"
+
+
+      responses:
+        200:
+          description: "Reset successful"
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "Password Reset Success"
+                  code:
+                    type: string
+                    example: "RESET_SUCCESS"
+        400:
+          description: "Password mismatch"
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "Passwords do not match"
+                  code:
+                    type: string
+                    example: "RESET_PASSWORD_MISMATCH"
+
+        401:
+          description: "Verification failed"
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "OTP verification pending"
+                  code:
+                    type: string
+                    example: "RESET_PENDING_OTP"
+
+        404:
+          description: "Request ID not found/valid"
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid request ID"
+                  code:
+                    type: string
+                    example: "RESET_INVALID_REQUEST"
+
+tags:
+  - name: Register
+    description: Registration description
+    
+  - name: Login
+    description: Login description
+    
+  - name: Password Reset
+    description: Help the user gain access and reset password
+  
+
+components:
+  schemas:
+    OTP:
+      type: object
+      properties:
+        otp:
+          type: string
+          description: Generated OTP
