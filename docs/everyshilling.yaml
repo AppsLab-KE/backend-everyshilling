@@ -1,30 +1,23 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  title: Login API Endpoint
-  version: 2023-03-08
-  description: API to generate OTP and validate login using YAML.
-contact:
-    name: Every-Shilling 
-    email: developers@appslab.co.ke
-    url: http://appslab.co.ke/
-
-
+  title: Every shillings Auth OpenAPI endpoint
+  description: Every Shilling
+  version: 2022-04-01
+  termsOfService: https://everyshilling.ke/terms
+  contact:
+    name: Everyshilling
+    email: everyshilling@co.ke
+    url: https://everyshilling.ke
 servers:
-
-- url:
-  description: 'Mock Server'
-
-- url:
-  description: 'Staging'
-
-- url:
-  description: 'Production'
-
-
-paths:
-
-# login endpoint 
-# Registration endpoint   
+  - url: 'http://127.0.0.1:4010'
+    description: 'Mock server'
+  - url: 'http://localhost:8080/v1'
+    description: 'Local'
+  - url: ''
+    description: 'Staging'
+  - url: ''
+    description: 'Production'
+paths:        
   /register:
     summary: Register new users to the system
     description:  User account registration
@@ -94,11 +87,3 @@ tags:
 
   - name: Register
     description: signin description
-
-
-
-
-
-
-# forget password
-# reset password
