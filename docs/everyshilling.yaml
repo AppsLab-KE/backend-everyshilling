@@ -88,21 +88,12 @@ paths:
                     type: string
                   error:
                     type: string
-tags:
-
-  - name: Register
-    description: signin description
-
-
-
-
-
 
 # forget password
 # reset password
-   /reset/{request-id}/verify:
+  /reset/{request-id}/verify:
     post:
-      tags: [Password Reset]
+      tags: [ Password Reset ]
       summary: "Verify OTP"
       description: "Once a user has sent their email, they receive an OTP code for verifying if indeed they are the owners of the account"
       parameters:
@@ -162,9 +153,9 @@ tags:
                     type: string
                     example: "OTP_INVALID_REQUEST"
 
-   /reset/{request-id}/change:
+  /reset/{request-id}/change:
     post:
-      tags: [Password Reset]
+      tags: [ Password Reset ]
       summary: "Change Password"
       description: "On successful OTP verification, user sends a new password"
       parameters:
@@ -242,3 +233,9 @@ tags:
                     example: "RESET_INVALID_REQUEST"
 
 
+tags:
+
+  - name: Register
+    description: signin description
+  - name: Password Reset
+    description: Help the user gain access to acccount after forgetting password
