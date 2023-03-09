@@ -99,4 +99,48 @@ tags:
 
 
 # forget password
+  /forgetPassword:
+    summary: Allow users to send forget password requests
+    post:
+      description:  auth email and request to change password
+      parameters: 
+        - in: header
+          name: Authorization
+          description: Basic Token (Basic REFTSEJ2QVJEOnhHbiQ3R3hSanlqNTl4Y19MVyVO)
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: valid email
+                  example: john.doe@example.com
+
+      responses:
+        '200':
+          description: A tokenized password reset login to be send to the user email address 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type:string 
+                    example: 'success'  
+
+        '404':
+          description: A tokenized password reset login to be send to the user email address 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type:string 
+                    example: 'Email entered not found or incorrect'                     
 # reset password
