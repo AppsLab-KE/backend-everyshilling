@@ -7,9 +7,11 @@ services:
     # command: 'mock -h 0.0.0.0 /usr/src/prism/'
 
     command: mock -p 4010 --host 0.0.0.0 everyshilling_openapi.yaml
+    ports:
+      - "4010:4010"
 
     volumes:
-      - ./everyshilling.yaml:/usr/src/prism/packages/cli/everyshilling_openapi.yaml
+      - ./docs/everyshilling_openapi.yaml:/usr/src/prism/packages/cli/everyshilling_openapi.yaml
 
    
 
