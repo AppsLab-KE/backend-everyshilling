@@ -5,13 +5,13 @@ services:
   prism:
     image: stoplight/prism:4
     # command: 'mock -h 0.0.0.0 /usr/src/prism/'
-    command: mock -p 4010 --host 0.0.0.0 test-api.yaml
+
+    command: mock -p 4010 --host 0.0.0.0 everyshilling_openapi.yaml
 
     volumes:
-      - ./test-api.yaml:/usr/src/prism/packages/cli/test-api.yaml
-    ports:
-      - '4010:4010'
+      - ./everyshilling.yaml:/usr/src/prism/packages/cli/everyshilling_openapi.yaml
 
+   
 
 # #backend services for both python and go
 #   backend_go:
