@@ -9,7 +9,7 @@ info:
     email: everyshilling@co.ke
     url: "https://everyshilling.ke"
 servers:
-  - url: http://127.0.0.1:4010
+  - url: http://127.0.0.1:"401"0
     description: Mock server
   - url: "http://localhost:8080/v1"
     description: Local
