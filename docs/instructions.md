@@ -6,9 +6,13 @@
 
 - Under the **root directory** on your terminal run:
 
+
 ```
 docker-compose up
 ```
+
+ 
+
 
 ```
 prism mock everyshilling.yml
