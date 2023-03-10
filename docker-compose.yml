@@ -11,7 +11,7 @@ services:
       - "4010:4010"
 
     volumes:
-      - ./everyshilling_openapi.yaml:/usr/src/prism/packages/cli/everyshilling_openapi.yaml
+      - ./docs/everyshilling_openapi.yaml:/usr/src/prism/packages/cli/everyshilling_openapi.yaml
 
    
 
