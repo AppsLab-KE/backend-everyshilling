@@ -16,11 +16,15 @@ jobs:
       with:
         go-version: 1.17
 
-    - name: Build Go microservice
-      run: go build -o go-microservice ./services/app-exchange
+    - name: Initiaziling
+    run: go mod init
 
     - name: Install Go dependencies
       run: go mod download
+
+    - name: Build Go microservice
+      run: go build -o go-microservice ./services/app-exchange
+
 
     - name: Test Go microservice
       run: go test ./services/app-exchange
