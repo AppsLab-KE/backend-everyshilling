@@ -1,1 +1,15 @@
 sequenceDiagram
+    Client/User ->>+OTP Generator System:Send OTP request
+    OTP Generator System->>+OTP Controller System:Check status(Attempt Count)
+    alt Have not exceeded
+    OTP Controller System-->>OTP Generator System:Enable
+    else Have exceeded
+    OTP Controller System-->>-OTP Generator System:Disable
+    end
+    OTP Generator System-->>-Client/User:Send OTP(Email)/Response
+    Client/User->>+OTP Validator System:Validate OTP
+    alt is not Valid
+    OTP Validator System-->>Client/User:Failure to validate
+    else is Valid
+    OTP Validator System-->>-Client/User: Validation Success
+    end
