@@ -10,18 +10,22 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
+#setting up build and test for GO
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
         go-version: 1.17
 
     - name: Build Go microservice
-      run: go build -o go-microservice ./go
+      run: go build -o go-microservice ./services/app-exchange
+
+    - name: Install Go dependencies
+      run: go mod download
 
     - name: Test Go microservice
-      run: go test ./go/...
+      run: go test ./services/app-exchange
 
+#setting up build and test for python
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
