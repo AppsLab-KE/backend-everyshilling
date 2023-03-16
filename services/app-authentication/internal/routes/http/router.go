@@ -12,10 +12,14 @@ func (c *Controller) SetupRouter() *gin.Engine {
 	// Define routes
 
 	r.POST("/users", c.createUser)
-
+	r.POST("/login", c.loginUser)
 	return r
 }
 
 func (c *Controller) createUser(context *gin.Context) {
+
+}
+
+func (c *Controller) loginUser(context *gin.Context) {
 
 }
