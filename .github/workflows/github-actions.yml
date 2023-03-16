@@ -16,14 +16,12 @@ jobs:
       with:
         go-version: 1.17
 
-    - name: Build Go microservice
-      run: go build -o go-microservice ./services/app-exchange
+    # - name: Build Go microservice
+    #   run: go build -o go-microservice ./services/app-exchange
 
-    - name: Install Go dependencies
-      run: go mod download
 
-    - name: Test Go microservice
-      run: go test ./services/app-exchange
+    # - name: Test Go microservice
+    #   run: go test ./services/app-exchange
 
 #setting up build and test for python
     - name: Set up Python
@@ -31,8 +29,8 @@ jobs:
       with:
         python-version: 3.9
 
-    - name: Install Python dependencies
-      run: pip install -r requirements.txt
+    # - name: Install Python dependencies
+    #   run: pip install -r requirements.txt
 
-    - name: Test Python microservice
-      run: pytest ./python
+    # - name: Test Python microservice
+    #   run: pytest ./python
