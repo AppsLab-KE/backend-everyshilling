@@ -12,7 +12,7 @@ func (c *Controller) SetupRouter() *gin.Engine {
 	// Define routes
 
 	r.POST("/users", c.createUser)
-	r.GET("/login", c.loginUser)
+	r.POST("/login", c.loginUser)
 	return r
 }
 
