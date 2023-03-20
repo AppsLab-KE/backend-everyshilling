@@ -28,17 +28,7 @@ paths:
         content:
           application:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: User's email address
-                phone:
-                  type: string
-                  description: User's phone number
-              required:
-                - email
-                - phone
+              $ref: "#/components/schemas/LoginCredentials"
       responses:
         '200':
           description: OTP generated and sent successfully
@@ -64,55 +54,21 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  description: name
-                  type: string
-                  example: john doe
-                email:
-                  type: string
-                  description: valid email
-                  example: john.doe@example.com
-                phone number :
-                  type: string
-                  description: valid phone number
-                  example: "+2541234567"
-                password:
-                  type: string
-                  description: strong password
-                  example: secureP@ssword
-                  minLength: 6
-                  maxLength: 16
+              $ref: "#/components/schemas/User"
 
-              required:
-                - name
-                - email
-                - phone number
-                - password
       responses:
         '200':
           description: succesfully registered
           content:
             application/json:
               schema:
-                properties:
-                  name:
-                    type: string
-                    example: Joe doe
-                  email:
-                    type: string
-                    example: john.doe@example.com
+                $ref: "#/components/schemas/RegistrationResponse"
         default:
           description: error
           content:
             application/json:
               schema:
-                properties:
-                  message:
-                    type: string
-                  error:
-                    type: string
+
     # forget password
   /reset:
     summary: Allow users to send forget password requests
@@ -124,12 +80,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: valid email
-                  example: john.doe@example.com
+               $ref: "#/components/schemas/Email"
 
       responses:
         '200':
@@ -137,34 +88,14 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: 'OTP sent to provided email'
-                  code:
-                    type: string
-                    example: "RESET_OTP_SENT"
-                  data:
-                    type: object
-                    properties:
-                      request_id:
-                        type: string
-                        example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+                $ref: "#/components/schemas/Success"
 
         '404':
           description: 'Email address not found'
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: 'Email entered not found or incorrect'
-                  code:
-                    type: string
-                    example: "RESET_INVALID_EMAIL"
+                 $ref: "#/components/schemas/Error"
   /reset/{request-id}/verify:
     post:
       tags: [ Password Reset ]
@@ -183,10 +114,7 @@ paths:
         content:
           application/json:
             schema:
-              properties:
-                otp_code:
-                  type: string
-                  example: "123456"
+                $ref: "#/components/schemas/OTP"
 
       responses:
         200:
@@ -194,39 +122,20 @@ paths:
           content:
             application/json:
               schema:
-                properties:
-                  message:
-                    type: string
-                    example: "OTP verification Success"
-                  code:
-                    type: string
-                    example: "OTP_SUCCESS"
+                $ref: "#/components/schemas/Success"
 
         401:
           description: "Verification failed"
           content:
             application/json:
               schema:
-                properties:
-                  message:
-                    type: string
-                    example: "OTP verification failed, invalid OTP"
-                  code:
-                    type: string
-                    example: "OTP_INVALID_CODE"
-
+                $ref: "#/components/schemas/Error"
         404:
           description: "Request ID not found/valid"
           content:
             application/json:
               schema:
-                properties:
-                  message:
-                    type: string
-                    example: "Invalid request ID"
-                  code:
-                    type: string
-                    example: "OTP_INVALID_REQUEST"
+                $ref: "#/components/schemas/Error"
 
   /reset/{request-id}/change:
     post:
@@ -246,67 +155,35 @@ paths:
         content:
           application/json:
             schema:
-              properties:
-                password:
-                  type: string
-                  example: "BlackApple78"
-                confirm_password:
-                  type: string
-                  example: "BlackApple78"
-
-
+              $ref: "#/components/schemas/ResetCredentials"
       responses:
         200:
           description: "Reset successful"
           content:
             application/json:
               schema:
-                properties:
-                  message:
-                    type: string
-                    example: "Password Reset Success"
-                  code:
-                    type: string
-                    example: "RESET_SUCCESS"
+                $ref: "#/components/schemas/Success"
+
         400:
           description: "Password mismatch"
           content:
             application/json:
               schema:
-                properties:
-                  message:
-                    type: string
-                    example: "Passwords do not match"
-                  code:
-                    type: string
-                    example: "RESET_PASSWORD_MISMATCH"
+                $ref: "#/components/schemas/Error"
 
         401:
           description: "Verification failed"
           content:
             application/json:
               schema:
-                properties:
-                  message:
-                    type: string
-                    example: "OTP verification pending"
-                  code:
-                    type: string
-                    example: "RESET_PENDING_OTP"
+                $ref: "#/components/schemas/Error"
 
         404:
           description: "Request ID not found/valid"
           content:
             application/json:
               schema:
-                properties:
-                  message:
-                    type: string
-                    example: "Invalid request ID"
-                  code:
-                    type: string
-                    example: "RESET_INVALID_REQUEST"
-
+                $ref: "#/components/schemas/Error"
 tags:
   - name: Register
     description: Registration description
@@ -323,6 +200,87 @@ components:
     OTP:
       type: object
       properties:
-        otp:
+        otp_code:
           type: string
           description: Generated OTP
+    User:
+      type: object
+      properties:
+        name:
+          description: name
+          type: string
+          example: john doe
+        email:
+          type: string
+          description: valid email
+          example: john.doe@example.com
+        phone number:
+          type: string
+          description: valid phone number
+          example: "+2541234567"
+        password:
+          type: string
+          description: strong password
+          example: secureP@ssword
+          minLength: 6
+          maxLength: 16
+
+      required:
+        - name
+        - email
+        - phone number
+        - password
+    RegistrationResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Joe doe
+        email:
+          type: string
+          example: john.doe@example.com
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: string
+
+    Success:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Password Reset Success"
+        code:
+          type: string
+          example: "RESET_SUCCESS"
+    ResetCredentials:
+      type: object
+      properties:
+        password:
+          type: string
+          example: "BlackApple78"
+        confirm_password:
+          type: string
+          example: "BlackApple78"
+    LoginCredentials:
+      type: object
+      properties:
+        email:
+          type: string
+          description: User's email address
+        phone:
+          type: string
+          description: User's phone number
+      required:
+        - email
+        - phone
+    Email:
+      type: object
+      properties:
+        email:
+          type: string
+          description: valid email
+          example: john.doe@example.com
