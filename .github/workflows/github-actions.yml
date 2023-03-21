@@ -8,7 +8,7 @@ on:
 jobs:
 #First we will see the application build or not , then we will deploy in EC2
   build:
-    runs-on: Amazon Linux
+    runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
 
   Deploy:
     needs: build
-    runs-on: Amazon Linux
+    runs-on: ubuntu-latest
     
     steps:
       - uses: actions/checkout@v2 
