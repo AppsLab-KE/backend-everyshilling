@@ -25,9 +25,9 @@ services:
       - .env
     restart: always
     environment:
-      - PORT=${PORT}
+      - PORT=${AUTH_GRPC_PORT}
     healthcheck:
-      test: ping -c3 app-auth:${PORT}
+      test: ping -c3 app-auth:${AUTH_GRPC_PORT}
       interval: 10s
       retries: 10
 
