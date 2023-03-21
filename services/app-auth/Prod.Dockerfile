@@ -1,7 +1,7 @@
 # Initial stage: download modules
 FROM golang:1.18-alpine as golang-builder
 
-RUN apk --update build-base add git ca-certificates
+RUN apk add  --update build-base git ca-certificates
 RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64;
 
 
