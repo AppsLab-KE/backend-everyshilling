@@ -16,15 +16,22 @@ services:
 
 
 #backend services for both python and go
-  backend_go:
-    build: ./services/app_db
-    ports:
-     - "8081:8081"
+  app-auth:
+    container_name: app-auth
+    build:
+      context: services/auth
+      dockerfile: ${ENVIRONMENT}.Dockerfile
+    env_file:
+      - .env
+    restart: always
+    environment:
+      - PORT=${PORT}
+    healthcheck:
+      test: ping -c3 app-auth:${PORT}
+      interval: 10s
+      retries: 10
 
-  backend_python:
-    build: ./services/app_otp
-    ports:
-      - "8080:8080"
+
 
 # #postgres database
 #   db:
