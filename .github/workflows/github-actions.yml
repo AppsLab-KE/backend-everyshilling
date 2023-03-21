@@ -8,7 +8,7 @@ on:
 jobs:
 #First we will see the application build or not , then we will deploy in EC2
   build:
-    runs-on: linux-latest
+    runs-on: Amazon Linux
     
     steps:
     - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
 
   Deploy:
     needs: build
-    runs-on: linux-latest
+    runs-on: Amazon Linux
     
     steps:
       - uses: actions/checkout@v2 
@@ -36,7 +36,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
           
             #Now we have got the access of EC2 and we will start the deploy .
-            cd /home/everyshilling &&
+            cd /home/ec2-user/everyshilling &&
             git checkout develop &&
             git fetch --all &&
             git reset --hard origin/develop &&
