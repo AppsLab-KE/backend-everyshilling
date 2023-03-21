@@ -1,20 +1,66 @@
-name: Microservices CI
+name: CI/CD FOR Everyshilling
 
 on:
   push:
     branches: [develop]
 
+# jobs:
+#   Build:
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v2
+# #setting up build for GO and python
+#     - name: Set up Go
+#       uses: actions/setup-go@v2
+#       with:
+#         go-version: 1.17
+
+#     - name: Set up Python
+#       uses: actions/setup-python@v2
+#       with:
+#         python-version: 3.9
+
+
 jobs:
-  build-and-test:
+#First we will see the application build or not, then deploy in EC2
+  build:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-#setting up build and test for GO
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.17
+    - uses: actions/checkout@v2
+
+    - name: Build the docker_compose
+      run: docker-compose up -d --build
+
+    - name: Buid the application
+      run: docker-compose exec -T everyshilling run build
+
+  Deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy in EC2
+        env:
+            PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
+            HOSTNAME : ${{ secrets.HOSTNAME  }}
+            USER_NAME : ${{ secrets.USER_NAME  }}
+
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+
+            #Now we have got the access of EC2 and we will start the deploy .
+            cd /home/ubuntu/CounterApp &&
+            git checkout develop &&
+            git fetch --all &&
+            git reset --hard origin/develop &&
+            git pull origin develop &&
+            docker-compose -f docker-compose.yml up -d --build
+          '
+
 
     # - name: Build Go microservice
     #   run: go build -o go-microservice ./services/app-exchange
@@ -22,12 +68,6 @@ jobs:
 
     # - name: Test Go microservice
     #   run: go test ./services/app-exchange
-
-#setting up build and test for python
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
 
     # - name: Install Python dependencies
     #   run: pip install -r requirements.txt
