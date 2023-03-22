@@ -6,7 +6,3 @@ type User struct {
 	Phone    string
 	Password string
 }
-
-func (u *User) GetEmail() {
-
-}

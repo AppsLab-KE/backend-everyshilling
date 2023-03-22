@@ -2,7 +2,7 @@ package ports
 
 import (
 	"context"
-	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/models"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/models"
 )
 
 type Storage interface {
