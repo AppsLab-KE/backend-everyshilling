@@ -1,1 +1,1 @@
-package repositories
+package repository
