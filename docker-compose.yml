@@ -13,18 +13,18 @@ services:
     volumes:
       - ./docs/everyshilling_openapi.yaml:/usr/src/prism/packages/cli/everyshilling_openapi.yaml
 
-   
 
-# #backend services for both python and go
-#   backend_go:
-#     build: ./backend_go
-#     ports:
-#      - "8081:8081"
 
-#   backend_python:
-#     build: ./docker/backend_python
-#     ports:
-#       - "8080:8080"
+#backend services for both python and go
+  backend_go:
+    build: ./services/app_db
+    ports:
+     - "8081:8081"
+
+  backend_python:
+    build: ./services/app_otp
+    ports:
+      - "8080:8080"
 
 # #postgres database
 #   db:
