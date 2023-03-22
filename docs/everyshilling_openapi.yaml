@@ -68,7 +68,7 @@ paths:
           content:
             application/json:
               schema:
-
+                $ref: "#/components/schemas/Error"
     # forget password
   /reset:
     summary: Allow users to send forget password requests

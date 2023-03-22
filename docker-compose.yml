@@ -17,7 +17,7 @@ services:
 
 #backend services for both python and go
   backend_go:
-    build: ./services/app_db
+    build: ./services/grpc
     ports:
      - "8081:8081"
 

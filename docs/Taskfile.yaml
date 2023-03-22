@@ -3,5 +3,5 @@ version: 3
 tasks:
   gen-oapi:
     cmds:
-      - oapi-codegen --package=docs  --generate types,gin everyshilling_openapi.yaml> gen/generated1server.go
+      - oapi-codegen --package=docs  --generate types,gin everyshilling_openapi.yaml> gen/openapi.gen.go
     silent: true
