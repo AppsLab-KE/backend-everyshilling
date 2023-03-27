@@ -5,3 +5,8 @@ type User struct {
 	Email       string
 	PhoneNumber string
 }
+
+type Otp struct {
+	PhoneNumber string
+	Code        string
+}
