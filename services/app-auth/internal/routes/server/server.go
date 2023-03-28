@@ -9,7 +9,7 @@ import (
 const BaseUrl = "/api"
 
 type ServerConfig struct {
-	AuthUsecase usecase.AuthUseCase
+	AuthUsecase *usecase.AuthUseCase
 }
 
 func NewServer(cfg ServerConfig) *gin.Engine {

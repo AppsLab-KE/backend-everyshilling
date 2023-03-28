@@ -7,5 +7,4 @@ type DefaultAuthAppDbRepo struct {
 }
 
 func NewDefaultAuthAppDbRepo(db storage.Db) DefaultAuthAppDbRepo {
-
 }

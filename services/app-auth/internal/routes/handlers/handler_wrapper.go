@@ -34,6 +34,6 @@ func (h Handler) PostResetRequestIdVerify(c *gin.Context, requestId string) {
 	panic("implement me")
 }
 
-func NewHandler(authUC usecase.AuthUseCase) ServerInterface {
+func NewHandler(authUC *usecase.AuthUseCase) ServerInterface {
 	return &Handler{}
 }
