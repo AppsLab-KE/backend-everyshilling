@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/usecase"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/routes/server"
-	"log"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,7 +12,13 @@ import (
 	"time"
 )
 
+const (
+	ServiceName = "app-auth"
+)
+
 func main() {
+	// Initialise Logger
+	log := logrus.New()
 	// Dependency initialisation
 
 	// TODO Connect to infrastructure
@@ -25,6 +31,7 @@ func main() {
 	// server config
 	serverConfig := server.ServerConfig{
 		AuthUsecase: authUC,
+		Logger:      log,
 	}
 	handler := server.NewServer(serverConfig)
 
