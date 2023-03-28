@@ -9,12 +9,12 @@ import (
 
 const BaseUrl = "/api"
 
-type ServerConfig struct {
+type Config struct {
 	AuthUsecase *usecase.AuthUseCase
 	Logger      *logrus.Logger
 }
 
-func NewServer(cfg ServerConfig) *gin.Engine {
+func NewServer(cfg Config) *gin.Engine {
 	r := gin.Default()
 	options := handlers.GinServerOptions{
 		BaseURL: BaseUrl,

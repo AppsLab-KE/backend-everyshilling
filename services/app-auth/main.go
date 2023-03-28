@@ -29,7 +29,7 @@ func main() {
 	authUC := usecase.NewAuthUsecase(nil, nil)
 
 	// server config
-	serverConfig := server.ServerConfig{
+	serverConfig := server.Config{
 		AuthUsecase: authUC,
 		Logger:      log,
 	}
