@@ -1,5 +1,5 @@
 package storage
 
 type Db interface {
-	CreateOtp(data *db.Dknsankns) err
+	CreateOtp(data any) error
 }
