@@ -18,7 +18,7 @@ servers:
   - url: ''
     description: 'Production'
 paths:
-  /login:
+  /login/:
     post:
       summary: Generate OTP and send it to email and phone number
       description: Endpoint to generate OTP and send it to user's email and phone number. The user needs to enter the OTP to complete the login process.
@@ -28,14 +28,66 @@ paths:
         content:
           application:
             schema:
-              $ref: "#/components/schemas/LoginCredentials"
+              $ref: "#/components/schemas/RequestLogin"
       responses:
         '200':
           description: OTP generated and sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
         '400':
-          description: 'Bad request: missing email or phone number'
+          description: 'Bad request: eg invalid phone number'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
         '500':
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+  /login/{tracking-uuid}/verify:
+    post:
+      summary: Verify the OTP
+      description: Send the OTP to the server for verification.
+      tags: [ Login ]
+      parameters:
+        - name: tracking-uuid
+          description: "Login request UUID"
+          required: true
+          in: path
+          schema:
+            type: string
+            example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+
+      requestBody:
+        description: OTP received via SMS
+        content:
+          application:
+            schema:
+              $ref: "#/components/schemas/RequestOTP"
+      responses:
+        '200':
+          description: OTP generated and sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+        '400':
+          description: 'Bad request: missing email or phone number'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
 
 # Registration endpoint
   /register:
@@ -54,7 +106,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: "#/components/schemas/RegisterRequest"
 
       responses:
         '200':
@@ -62,13 +114,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RegistrationResponse"
+                $ref: "#/components/schemas/Response"
         default:
           description: error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ResponseError"
     # forget password
   /reset:
     summary: Allow users to send forget password requests
@@ -88,21 +140,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Success"
+                $ref: "#/components/schemas/ResponseSuccess"
 
         '404':
           description: 'Email address not found'
           content:
             application/json:
               schema:
-                 $ref: "#/components/schemas/Error"
-  /reset/{request-id}/verify:
+                 $ref: "#/components/schemas/ResponseError"
+  /reset/{tracking-uuid}/verify:
     post:
       tags: [ Password Reset ]
       summary: "Verify OTP"
       description: "Once a user has sent their email, they receive an OTP code for verifying if indeed they are the owners of the account"
       parameters:
-        - name: request-id
+        - name: tracking-uuid
           description: "Password reset request UUID"
           required: true
           in: path
@@ -114,7 +166,7 @@ paths:
         content:
           application/json:
             schema:
-                $ref: "#/components/schemas/OTP"
+              $ref: "#/components/schemas/RequestOTP"
 
       responses:
         200:
@@ -122,28 +174,28 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Success"
+                $ref: "#/components/schemas/ResponseSuccess"
 
         401:
           description: "Verification failed"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ResponseError"
         404:
           description: "Request ID not found/valid"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ResponseError"
 
-  /reset/{request-id}/change:
+  /reset/{tracking-uuid}/change:
     post:
       tags: [ Password Reset ]
       summary: "Change Password"
       description: "On successful OTP verification, user sends a new password"
       parameters:
-        - name: request-id
+        - name: tracking-uuid
           description: "Password reset request UUID"
           required: true
           in: path
@@ -155,35 +207,35 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ResetCredentials"
+              $ref: "#/components/schemas/RequestResetCredentials"
       responses:
         200:
           description: "Reset successful"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Success"
+                $ref: "#/components/schemas/ResponseSuccess"
 
         400:
           description: "Password mismatch"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ResponseError"
 
         401:
           description: "Verification failed"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ResponseError"
 
         404:
           description: "Request ID not found/valid"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ResponseError"
 tags:
   - name: Register
     description: Registration description
@@ -197,13 +249,14 @@ tags:
 
 components:
   schemas:
-    OTP:
+    RequestOTP:
       type: object
       properties:
         otp_code:
           type: string
           description: Generated OTP
-    User:
+
+    RegisterRequest:
       type: object
       properties:
         name:
@@ -230,24 +283,18 @@ components:
         - email
         - phone number
         - password
-    RegistrationResponse:
-      type: object
-      properties:
-        name:
-          type: string
-          example: Joe doe
-        email:
-          type: string
-          example: john.doe@example.com
-    Error:
+
+    ResponseError:
       type: object
       properties:
         message:
           type: string
         code:
           type: string
+        error:
+          type: string
 
-    Success:
+    ResponseSuccess:
       type: object
       properties:
         message:
@@ -256,7 +303,10 @@ components:
         code:
           type: string
           example: "RESET_SUCCESS"
-    ResetCredentials:
+        error:
+          type: string
+
+    RequestResetCredentials:
       type: object
       properties:
         password:
@@ -265,18 +315,28 @@ components:
         confirm_password:
           type: string
           example: "BlackApple78"
-    LoginCredentials:
+
+    RequestLogin:
       type: object
       properties:
-        email:
-          type: string
-          description: User's email address
         phone:
           type: string
           description: User's phone number
       required:
-        - email
         - phone
+
+    Response:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+        code:
+          type: number
+        data:
+          type: object
+
     Email:
       type: object
       properties:

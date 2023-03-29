@@ -14,8 +14,11 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Generate OTP and send it to email and phone number
-	// (POST /login)
+	// (POST /login/)
 	PostLogin(c *gin.Context)
+	// Verify the OTP
+	// (POST /login/{tracking-uuid}/verify)
+	PostLoginTrackingUuidVerify(c *gin.Context, trackingUuid string)
 	// A POST request to registering new users
 	// (POST /register)
 	Register(c *gin.Context)
@@ -23,11 +26,11 @@ type ServerInterface interface {
 	// (POST /reset)
 	PostReset(c *gin.Context)
 	// Change Password
-	// (POST /reset/{request-id}/change)
-	PostResetRequestIdChange(c *gin.Context, requestId string)
+	// (POST /reset/{tracking-uuid}/change)
+	PostResetTrackingUuidChange(c *gin.Context, trackingUuid string)
 	// Verify OTP
-	// (POST /reset/{request-id}/verify)
-	PostResetRequestIdVerify(c *gin.Context, requestId string)
+	// (POST /reset/{tracking-uuid}/verify)
+	PostResetTrackingUuidVerify(c *gin.Context, trackingUuid string)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -47,6 +50,27 @@ func (siw *ServerInterfaceWrapper) PostLogin(c *gin.Context) {
 	}
 
 	siw.Handler.PostLogin(c)
+}
+
+// PostLoginTrackingUuidVerify operation middleware
+func (siw *ServerInterfaceWrapper) PostLoginTrackingUuidVerify(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "tracking-uuid" -------------
+	var trackingUuid string
+
+	err = runtime.BindStyledParameter("simple", false, "tracking-uuid", c.Param("tracking-uuid"), &trackingUuid)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter tracking-uuid: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+	}
+
+	siw.Handler.PostLoginTrackingUuidVerify(c, trackingUuid)
 }
 
 // Register operation middleware
@@ -69,17 +93,17 @@ func (siw *ServerInterfaceWrapper) PostReset(c *gin.Context) {
 	siw.Handler.PostReset(c)
 }
 
-// PostResetRequestIdChange operation middleware
-func (siw *ServerInterfaceWrapper) PostResetRequestIdChange(c *gin.Context) {
+// PostResetTrackingUuidChange operation middleware
+func (siw *ServerInterfaceWrapper) PostResetTrackingUuidChange(c *gin.Context) {
 
 	var err error
 
-	// ------------- Path parameter "request-id" -------------
-	var requestId string
+	// ------------- Path parameter "tracking-uuid" -------------
+	var trackingUuid string
 
-	err = runtime.BindStyledParameter("simple", false, "request-id", c.Param("request-id"), &requestId)
+	err = runtime.BindStyledParameter("simple", false, "tracking-uuid", c.Param("tracking-uuid"), &trackingUuid)
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter request-id: %s", err), http.StatusBadRequest)
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter tracking-uuid: %s", err), http.StatusBadRequest)
 		return
 	}
 
@@ -87,20 +111,20 @@ func (siw *ServerInterfaceWrapper) PostResetRequestIdChange(c *gin.Context) {
 		middleware(c)
 	}
 
-	siw.Handler.PostResetRequestIdChange(c, requestId)
+	siw.Handler.PostResetTrackingUuidChange(c, trackingUuid)
 }
 
-// PostResetRequestIdVerify operation middleware
-func (siw *ServerInterfaceWrapper) PostResetRequestIdVerify(c *gin.Context) {
+// PostResetTrackingUuidVerify operation middleware
+func (siw *ServerInterfaceWrapper) PostResetTrackingUuidVerify(c *gin.Context) {
 
 	var err error
 
-	// ------------- Path parameter "request-id" -------------
-	var requestId string
+	// ------------- Path parameter "tracking-uuid" -------------
+	var trackingUuid string
 
-	err = runtime.BindStyledParameter("simple", false, "request-id", c.Param("request-id"), &requestId)
+	err = runtime.BindStyledParameter("simple", false, "tracking-uuid", c.Param("tracking-uuid"), &trackingUuid)
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter request-id: %s", err), http.StatusBadRequest)
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter tracking-uuid: %s", err), http.StatusBadRequest)
 		return
 	}
 
@@ -108,7 +132,7 @@ func (siw *ServerInterfaceWrapper) PostResetRequestIdVerify(c *gin.Context) {
 		middleware(c)
 	}
 
-	siw.Handler.PostResetRequestIdVerify(c, requestId)
+	siw.Handler.PostResetTrackingUuidVerify(c, trackingUuid)
 }
 
 // GinServerOptions provides options for the Gin server.
@@ -140,15 +164,17 @@ func RegisterHandlersWithOptions(router *gin.Engine, si ServerInterface, options
 		ErrorHandler:       errorHandler,
 	}
 
-	router.POST(options.BaseURL+"/login", wrapper.PostLogin)
+	router.POST(options.BaseURL+"/login/", wrapper.PostLogin)
+
+	router.POST(options.BaseURL+"/login/:tracking-uuid/verify", wrapper.PostLoginTrackingUuidVerify)
 
 	router.POST(options.BaseURL+"/register", wrapper.Register)
 
 	router.POST(options.BaseURL+"/reset", wrapper.PostReset)
 
-	router.POST(options.BaseURL+"/reset/:request-id/change", wrapper.PostResetRequestIdChange)
+	router.POST(options.BaseURL+"/reset/:tracking-uuid/change", wrapper.PostResetTrackingUuidChange)
 
-	router.POST(options.BaseURL+"/reset/:request-id/verify", wrapper.PostResetRequestIdVerify)
+	router.POST(options.BaseURL+"/reset/:tracking-uuid/verify", wrapper.PostResetTrackingUuidVerify)
 
 	return router
 }

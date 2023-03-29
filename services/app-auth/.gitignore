@@ -2,3 +2,5 @@
 /.env
 /build
 build
+.vscode
+/.vscode
