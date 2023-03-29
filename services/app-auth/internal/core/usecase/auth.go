@@ -13,10 +13,10 @@ type AuthUseCase struct {
 	sessionService adapters.SessionService
 }
 
-func (a *AuthUseCase) RegisterUser(ctx context.Context, user *dto.RegisterJSONRequestBody) (*entity.User, error) {
+func (a *AuthUseCase) RegisterUser(ctx context.Context, user *dto.RegisterRequest) (*entity.User, error) {
 	// check if user exists
 	// if exists, return error
-	
+
 	return &entity.User{}, nil
 }
 
