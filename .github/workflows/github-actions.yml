@@ -54,7 +54,7 @@ jobs:
       id: python
 
     - name: Install Python dependencies
-      run: pip install -r requirements.txt
+      run: pip install -r backend-everyshilling/services/app-otp/requirements.txt
 
 
     - name: Test Python microservice
