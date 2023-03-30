@@ -14,20 +14,23 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Generate OTP and send it to email and phone number
-	// (POST /login)
-	PostLogin(c *gin.Context)
+	// (POST /login/)
+	Login(c *gin.Context)
+	// Verify the OTP
+	// (POST /login/{tracking-uuid}/verify)
+	VerifyLoginOTP(c *gin.Context, trackingUuid string)
 	// A POST request to registering new users
 	// (POST /register)
 	Register(c *gin.Context)
 	// Send password reset OTP
 	// (POST /reset)
-	PostReset(c *gin.Context)
+	Reset(c *gin.Context)
 	// Change Password
-	// (POST /reset/{request-id}/change)
-	PostResetRequestIdChange(c *gin.Context, requestId string)
+	// (POST /reset/{tracking-uuid}/change)
+	ChangePassword(c *gin.Context, trackingUuid string)
 	// Verify OTP
-	// (POST /reset/{request-id}/verify)
-	PostResetRequestIdVerify(c *gin.Context, requestId string)
+	// (POST /reset/{tracking-uuid}/verify)
+	VerifyResetOTP(c *gin.Context, trackingUuid string)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -39,14 +42,35 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(c *gin.Context)
 
-// PostLogin operation middleware
-func (siw *ServerInterfaceWrapper) PostLogin(c *gin.Context) {
+// Login operation middleware
+func (siw *ServerInterfaceWrapper) Login(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 	}
 
-	siw.Handler.PostLogin(c)
+	siw.Handler.Login(c)
+}
+
+// VerifyLoginOTP operation middleware
+func (siw *ServerInterfaceWrapper) VerifyLoginOTP(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "tracking-uuid" -------------
+	var trackingUuid string
+
+	err = runtime.BindStyledParameter("simple", false, "tracking-uuid", c.Param("tracking-uuid"), &trackingUuid)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter tracking-uuid: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+	}
+
+	siw.Handler.VerifyLoginOTP(c, trackingUuid)
 }
 
 // Register operation middleware
@@ -59,27 +83,27 @@ func (siw *ServerInterfaceWrapper) Register(c *gin.Context) {
 	siw.Handler.Register(c)
 }
 
-// PostReset operation middleware
-func (siw *ServerInterfaceWrapper) PostReset(c *gin.Context) {
+// Reset operation middleware
+func (siw *ServerInterfaceWrapper) Reset(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 	}
 
-	siw.Handler.PostReset(c)
+	siw.Handler.Reset(c)
 }
 
-// PostResetRequestIdChange operation middleware
-func (siw *ServerInterfaceWrapper) PostResetRequestIdChange(c *gin.Context) {
+// ChangePassword operation middleware
+func (siw *ServerInterfaceWrapper) ChangePassword(c *gin.Context) {
 
 	var err error
 
-	// ------------- Path parameter "request-id" -------------
-	var requestId string
+	// ------------- Path parameter "tracking-uuid" -------------
+	var trackingUuid string
 
-	err = runtime.BindStyledParameter("simple", false, "request-id", c.Param("request-id"), &requestId)
+	err = runtime.BindStyledParameter("simple", false, "tracking-uuid", c.Param("tracking-uuid"), &trackingUuid)
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter request-id: %s", err), http.StatusBadRequest)
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter tracking-uuid: %s", err), http.StatusBadRequest)
 		return
 	}
 
@@ -87,20 +111,20 @@ func (siw *ServerInterfaceWrapper) PostResetRequestIdChange(c *gin.Context) {
 		middleware(c)
 	}
 
-	siw.Handler.PostResetRequestIdChange(c, requestId)
+	siw.Handler.ChangePassword(c, trackingUuid)
 }
 
-// PostResetRequestIdVerify operation middleware
-func (siw *ServerInterfaceWrapper) PostResetRequestIdVerify(c *gin.Context) {
+// VerifyResetOTP operation middleware
+func (siw *ServerInterfaceWrapper) VerifyResetOTP(c *gin.Context) {
 
 	var err error
 
-	// ------------- Path parameter "request-id" -------------
-	var requestId string
+	// ------------- Path parameter "tracking-uuid" -------------
+	var trackingUuid string
 
-	err = runtime.BindStyledParameter("simple", false, "request-id", c.Param("request-id"), &requestId)
+	err = runtime.BindStyledParameter("simple", false, "tracking-uuid", c.Param("tracking-uuid"), &trackingUuid)
 	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter request-id: %s", err), http.StatusBadRequest)
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter tracking-uuid: %s", err), http.StatusBadRequest)
 		return
 	}
 
@@ -108,7 +132,7 @@ func (siw *ServerInterfaceWrapper) PostResetRequestIdVerify(c *gin.Context) {
 		middleware(c)
 	}
 
-	siw.Handler.PostResetRequestIdVerify(c, requestId)
+	siw.Handler.VerifyResetOTP(c, trackingUuid)
 }
 
 // GinServerOptions provides options for the Gin server.
@@ -140,15 +164,17 @@ func RegisterHandlersWithOptions(router *gin.Engine, si ServerInterface, options
 		ErrorHandler:       errorHandler,
 	}
 
-	router.POST(options.BaseURL+"/login", wrapper.PostLogin)
+	router.POST(options.BaseURL+"/login/", wrapper.Login)
+
+	router.POST(options.BaseURL+"/login/:tracking-uuid/verify", wrapper.VerifyLoginOTP)
 
 	router.POST(options.BaseURL+"/register", wrapper.Register)
 
-	router.POST(options.BaseURL+"/reset", wrapper.PostReset)
+	router.POST(options.BaseURL+"/reset", wrapper.Reset)
 
-	router.POST(options.BaseURL+"/reset/:request-id/change", wrapper.PostResetRequestIdChange)
+	router.POST(options.BaseURL+"/reset/:tracking-uuid/change", wrapper.ChangePassword)
 
-	router.POST(options.BaseURL+"/reset/:request-id/verify", wrapper.PostResetRequestIdVerify)
+	router.POST(options.BaseURL+"/reset/:tracking-uuid/verify", wrapper.VerifyResetOTP)
 
 	return router
 }

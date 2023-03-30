@@ -9,47 +9,8 @@ type Email struct {
 	Email *string `json:"email,omitempty"`
 }
 
-// Error defines model for Error.
-type Error struct {
-	Code    *string `json:"code,omitempty"`
-	Message *string `json:"message,omitempty"`
-}
-
-// LoginCredentials defines model for LoginCredentials.
-type LoginCredentials struct {
-	// Email User's email address
-	Email string `json:"email"`
-
-	// Phone User's phone number
-	Phone string `json:"phone"`
-}
-
-// OTP defines model for OTP.
-type OTP struct {
-	// OtpCode Generated OTP
-	OtpCode *string `json:"otp_code,omitempty"`
-}
-
-// RegistrationResponse defines model for RegistrationResponse.
-type RegistrationResponse struct {
-	Email *string `json:"email,omitempty"`
-	Name  *string `json:"name,omitempty"`
-}
-
-// ResetCredentials defines model for ResetCredentials.
-type ResetCredentials struct {
-	ConfirmPassword *string `json:"confirm_password,omitempty"`
-	Password        *string `json:"password,omitempty"`
-}
-
-// Success defines model for Success.
-type Success struct {
-	Code    *string `json:"code,omitempty"`
-	Message *string `json:"message,omitempty"`
-}
-
-// User defines model for User.
-type User struct {
+// RegisterRequest defines model for RegisterRequest.
+type RegisterRequest struct {
 	// Email valid email
 	Email string `json:"email"`
 
@@ -63,14 +24,54 @@ type User struct {
 	PhoneNumber string `json:"phone number"`
 }
 
+// RequestLogin defines model for RequestLogin.
+type RequestLogin struct {
+	// Phone User's phone number
+	Phone string `json:"phone"`
+}
+
+// RequestOTP defines model for RequestOTP.
+type RequestOTP struct {
+	// OtpCode Generated OTP
+	OtpCode *string `json:"otp_code,omitempty"`
+}
+
+// RequestResetCredentials defines model for RequestResetCredentials.
+type RequestResetCredentials struct {
+	ConfirmPassword *string `json:"confirm_password,omitempty"`
+	Password        *string `json:"password,omitempty"`
+}
+
+// Response defines model for Response.
+type Response struct {
+	Code    *float32                `json:"code,omitempty"`
+	Data    *map[string]interface{} `json:"data,omitempty"`
+	Error   *string                 `json:"error,omitempty"`
+	Message *string                 `json:"message,omitempty"`
+}
+
+// ResponseError defines model for ResponseError.
+type ResponseError struct {
+	Code    *string `json:"code,omitempty"`
+	Error   *string `json:"error,omitempty"`
+	Message *string `json:"message,omitempty"`
+}
+
+// ResponseSuccess defines model for ResponseSuccess.
+type ResponseSuccess struct {
+	Code    *string `json:"code,omitempty"`
+	Error   *string `json:"error,omitempty"`
+	Message *string `json:"message,omitempty"`
+}
+
 // RegisterJSONRequestBody defines body for Register for application/json ContentType.
-type RegisterJSONRequestBody = User
+type RegisterJSONRequestBody = RegisterRequest
 
-// PostResetJSONRequestBody defines body for PostReset for application/json ContentType.
-type PostResetJSONRequestBody = Email
+// ResetJSONRequestBody defines body for Reset for application/json ContentType.
+type ResetJSONRequestBody = Email
 
-// PostResetRequestIdChangeJSONRequestBody defines body for PostResetRequestIdChange for application/json ContentType.
-type PostResetRequestIdChangeJSONRequestBody = ResetCredentials
+// ChangePasswordJSONRequestBody defines body for ChangePassword for application/json ContentType.
+type ChangePasswordJSONRequestBody = RequestResetCredentials
 
-// PostResetRequestIdVerifyJSONRequestBody defines body for PostResetRequestIdVerify for application/json ContentType.
-type PostResetRequestIdVerifyJSONRequestBody = OTP
+// VerifyResetOTPJSONRequestBody defines body for VerifyResetOTP for application/json ContentType.
+type VerifyResetOTPJSONRequestBody = RequestOTP
