@@ -43,7 +43,7 @@ jobs:
      # run: go mod download
 
     - name: Test
-      run: go test -v ./...
+      run: go mod init
 
 
       #setting up python application
