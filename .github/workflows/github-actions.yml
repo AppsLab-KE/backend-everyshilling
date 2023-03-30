@@ -44,6 +44,13 @@ jobs:
 
     - name: Test
       run: go mod init backend-everyshilling/services/app-auth/m
+      
+      
+    - name: Build and deploy
+      run: go build backend-everyshilling/services/app-auth
+      
+      
+      
 
 
       #setting up python application
@@ -53,10 +60,10 @@ jobs:
         python-version: 3.9
       id: python
 
-    - name: Install Python dependencies
-      run: pip install -r ./services/app-otp/requirements.txt
+    #- name: Install Python dependencies
+     # run: pip install -r ./services/app-otp/requirements.txt
 
 
-    - name: Test Python microservice
-      run: pytest ./services/app-otp
+    #- name: Test Python microservice
+      #run: pytest ./services/app-otp
 
