@@ -31,7 +31,7 @@ This will start a PostgreSQL container with the name my-postgres, set the passwo
 Once the container is running after doing docker compose up, you can connect to it using the psql command-line tool:
 
 ```
-docker exec -it (your container name) psql -U postgres
+docker exec -it (your container name) psql -U root
 ```
 To know what your contaner name you can run:
 ```docker ps ```
