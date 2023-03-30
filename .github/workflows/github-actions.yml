@@ -58,5 +58,5 @@ jobs:
 
 
     - name: Test Python microservice
-      run: pytest ./python
+      run: pytest ./services/app-otp/requirements.txt
 
