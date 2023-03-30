@@ -67,11 +67,11 @@ type ResponseSuccess struct {
 // RegisterJSONRequestBody defines body for Register for application/json ContentType.
 type RegisterJSONRequestBody = RegisterRequest
 
-// PostResetJSONRequestBody defines body for PostReset for application/json ContentType.
-type PostResetJSONRequestBody = Email
+// ResetJSONRequestBody defines body for Reset for application/json ContentType.
+type ResetJSONRequestBody = Email
 
-// PostResetTrackingUuidChangeJSONRequestBody defines body for PostResetTrackingUuidChange for application/json ContentType.
-type PostResetTrackingUuidChangeJSONRequestBody = RequestResetCredentials
+// ChangePasswordJSONRequestBody defines body for ChangePassword for application/json ContentType.
+type ChangePasswordJSONRequestBody = RequestResetCredentials
 
-// PostResetTrackingUuidVerifyJSONRequestBody defines body for PostResetTrackingUuidVerify for application/json ContentType.
-type PostResetTrackingUuidVerifyJSONRequestBody = RequestOTP
+// VerifyResetOTPJSONRequestBody defines body for VerifyResetOTP for application/json ContentType.
+type VerifyResetOTPJSONRequestBody = RequestOTP
