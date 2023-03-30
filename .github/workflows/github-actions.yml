@@ -43,7 +43,7 @@ jobs:
      # run: go mod download
 
     - name: Test
-      run: go mod init
+      run: go mod init backend-everyshilling/m
 
 
       #setting up python application
