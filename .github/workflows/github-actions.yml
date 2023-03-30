@@ -39,8 +39,8 @@ jobs:
     - name: checkout code into Go module directory
       uses: actions/checkout@v2
 
-    - name: install dependencies
-      run: go mod download
+    #- name: install dependencies
+     # run: go mod download
 
     - name: Test
       run: go test -v ./...
