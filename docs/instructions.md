@@ -37,3 +37,8 @@ To know what your contaner name you can run:
 ```docker ps ```
 
 This command starts an interactive session with PostgreSQL databse running inside the container. Once connected to the databse, you can run SQL commands as usual.
+
+Command to run multiple docker compose files
+```
+docker-compose -f docker-compose.yml docker-compose.dev.yml up
+```
