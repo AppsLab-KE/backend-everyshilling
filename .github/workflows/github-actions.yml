@@ -46,9 +46,8 @@ jobs:
       run: go mod init backend-everyshilling/services/app-auth/m
       
       
-    - name: Build and deploy
-      run: go build backend-everyshilling/services/app-auth
-      
+    #- name: Build and deploy
+     # run: go build backend-everyshilling/services/app-auth
       
       
 
