@@ -43,14 +43,13 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
 
-  # app-otp:
-  #   build:
-  #     context: services/app-otp
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "50051:50051"
-  #   # depends_on:
-  #   #   - go_service
+  app-otp:
+    build:
+      context: services/app-otp
+      dockerfile: Dockerfile
+    ports:
+      - "50051:50051"
+
   #   networks:
   #     - grpc_network
 
