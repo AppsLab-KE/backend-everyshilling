@@ -54,12 +54,12 @@ services:
   #   networks:
   #     - grpc_network
 
-  app-auth:
-    build:
-      context: services/app-auth
-      dockerfile: Dev.Dockerfile
-    ports:
-      - "50052:50052"
+  # app-auth:
+  #   build:
+  #     context: services/app-auth
+  #     dockerfile: Dev.Dockerfile
+  #   ports:
+  #     - "50052:50052"
 
 # networks:
 #   grpc_network:
