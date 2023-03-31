@@ -18,3 +18,6 @@ type UserLoginRes struct {
 	entity.User
 	Token string
 }
+
+type ResetRes struct {
+}

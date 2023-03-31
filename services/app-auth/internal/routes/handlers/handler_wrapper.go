@@ -15,8 +15,36 @@ type Handler struct {
 }
 
 func (h Handler) Login(c *gin.Context) {
-	//TODO implement me
-	panic("implement me")
+	var requestBody dto.RequestLogin
+	var responseBody dto.DefaultRes[*dto.UserLoginRes]
+
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		responseBody.Message = "Bad request: missing email or phone number"
+		responseBody.Code = 400
+		responseBody.Data = nil
+		responseBody.Error = "Missing or incomplete credentials"
+		c.JSON(400, responseBody)
+		return
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	usr, err := h.AuthUC.LoginUser(ctx, requestBody)
+	if err != nil {
+		responseBody.Message = "Login Process failed"
+		responseBody.Code = 400
+		responseBody.Data = nil
+		responseBody.Error = err.Error()
+		c.JSON(400, responseBody)
+		return
+	}
+
+	responseBody.Message = "Login Process successful"
+	responseBody.Code = 200
+	responseBody.Data = usr
+	responseBody.Error = ""
+	c.JSON(200, responseBody)
 }
 
 func (h Handler) VerifyLoginOTP(c *gin.Context, trackingUuid string) {
@@ -27,7 +55,7 @@ func (h Handler) VerifyLoginOTP(c *gin.Context, trackingUuid string) {
 func (h Handler) Reset(c *gin.Context) {
 	//get the request body
 	var requestBody dto.RequestResetCredentials
-	var responseBody dto.DefaultRes[*dto.UserLoginRes]
+	var responseBody dto.DefaultRes[*dto.ResetRes]
 
 	//parse the request body
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
@@ -42,7 +70,7 @@ func (h Handler) Reset(c *gin.Context) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	// check if the user exists and generate a reset request ID
-	err, _ := h.AuthUC.ResetPassword(ctx, &requestBody)
+	err, _ := h.AuthUC.ResetPassword(ctx, requestBody)
 	if err != nil {
 		responseBody.Message = "Password reset failed"
 		responseBody.Code = 400
@@ -66,40 +94,6 @@ func (h Handler) ChangePassword(c *gin.Context, trackingUuid string) {
 func (h Handler) VerifyResetOTP(c *gin.Context, trackingUuid string) {
 	//TODO implement me
 	panic("implement me")
-}
-
-func (h Handler) PostLogin(c *gin.Context) {
-
-	var requestBody dto.RequestLogin
-	var responseBody dto.DefaultRes
-
-	if err := c.ShouldBindJSON(&requestBody); err != nil {
-		responseBody.Message = "Bad request: missing email or phone number"
-		responseBody.Code = 400
-		responseBody.Data = nil
-		responseBody.Error = "Missing or incomplete credentials"
-		c.JSON(400, responseBody)
-		return
-	}
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	usr, err := h.AuthUC.LoginUser(ctx, &requestBody)
-	if err != nil {
-		responseBody.Message = "Login Process failed"
-		responseBody.Code = 400
-		responseBody.Data = nil
-		responseBody.Error = err.Error()
-		c.JSON(400, responseBody)
-		return
-	}
-
-	responseBody.Message = "Login Process successful"
-	responseBody.Code = 200
-	responseBody.Data = usr
-	responseBody.Error = ""
-	c.JSON(200, responseBody)
 }
 
 func (h Handler) Register(c *gin.Context) {
