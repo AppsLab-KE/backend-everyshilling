@@ -3,4 +3,5 @@
 /build
 build
 .vscode
+.idea
 /.vscode
