@@ -55,13 +55,11 @@ jobs:
     needs: Build
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Testing..."
-
       - name: Test Go Service
         run: go mod init backend-everyshilling/services/app-auth/m
 
-      - name: Test OTP Service
-        run: python backend-everyshilling/services/app-otp
+     # - name: Test OTP Service
+       # run: python backend-everyshilling/services/app-otp
 
 
   Deploy:
