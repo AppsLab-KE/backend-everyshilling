@@ -13,3 +13,8 @@ type UserRegistrationRes struct {
 	entity.User
 	Token string
 }
+
+type UserLoginRes struct {
+	entity.User
+	Token string
+}
