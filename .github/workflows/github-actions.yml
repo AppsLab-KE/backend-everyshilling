@@ -5,7 +5,7 @@ on:
     branches: [develop]
 
 jobs:
-  Test:
+  Build:
     runs-on: ubuntu-latest
 
     services:
@@ -40,13 +40,6 @@ jobs:
     #- name: install dependencies
      # run: go mod download
 
-    - name: Test
-      run: go mod init backend-everyshilling/services/app-auth/m
-      
-      
-    #- name: Build and deploy
-     # run: go build backend-everyshilling/services/app-auth
-
       #setting up python application
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -57,9 +50,19 @@ jobs:
     #- name: Install Python dependencies
      # run: pip install -r ./services/app-otp/requirements.txt
 
+  
+  Test:
+    needs: Build
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Testing..."
 
-    #- name: Test Python microservice
-      #run: pytest ./services/app-otp
+      - name: Test
+        run: go mod init backend-everyshilling/services/app-auth/m
+
+      - name: Test OTP Service
+        run: pytest ./services/app-otp
+
 
   Deploy:
     needs: Test
