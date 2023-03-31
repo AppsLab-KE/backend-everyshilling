@@ -15,22 +15,22 @@ import (
 type ServerInterface interface {
 	// Generate OTP and send it to email and phone number
 	// (POST /login/)
-	PostLogin(c *gin.Context)
+	Login(c *gin.Context)
 	// Verify the OTP
 	// (POST /login/{tracking-uuid}/verify)
-	PostLoginTrackingUuidVerify(c *gin.Context, trackingUuid string)
+	VerifyLoginOTP(c *gin.Context, trackingUuid string)
 	// A POST request to registering new users
 	// (POST /register)
 	Register(c *gin.Context)
 	// Send password reset OTP
 	// (POST /reset)
-	PostReset(c *gin.Context)
+	Reset(c *gin.Context)
 	// Change Password
 	// (POST /reset/{tracking-uuid}/change)
-	PostResetTrackingUuidChange(c *gin.Context, trackingUuid string)
+	ChangePassword(c *gin.Context, trackingUuid string)
 	// Verify OTP
 	// (POST /reset/{tracking-uuid}/verify)
-	PostResetTrackingUuidVerify(c *gin.Context, trackingUuid string)
+	VerifyResetOTP(c *gin.Context, trackingUuid string)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -42,18 +42,18 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(c *gin.Context)
 
-// PostLogin operation middleware
-func (siw *ServerInterfaceWrapper) PostLogin(c *gin.Context) {
+// Login operation middleware
+func (siw *ServerInterfaceWrapper) Login(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 	}
 
-	siw.Handler.PostLogin(c)
+	siw.Handler.Login(c)
 }
 
-// PostLoginTrackingUuidVerify operation middleware
-func (siw *ServerInterfaceWrapper) PostLoginTrackingUuidVerify(c *gin.Context) {
+// VerifyLoginOTP operation middleware
+func (siw *ServerInterfaceWrapper) VerifyLoginOTP(c *gin.Context) {
 
 	var err error
 
@@ -70,7 +70,7 @@ func (siw *ServerInterfaceWrapper) PostLoginTrackingUuidVerify(c *gin.Context) {
 		middleware(c)
 	}
 
-	siw.Handler.PostLoginTrackingUuidVerify(c, trackingUuid)
+	siw.Handler.VerifyLoginOTP(c, trackingUuid)
 }
 
 // Register operation middleware
@@ -83,18 +83,18 @@ func (siw *ServerInterfaceWrapper) Register(c *gin.Context) {
 	siw.Handler.Register(c)
 }
 
-// PostReset operation middleware
-func (siw *ServerInterfaceWrapper) PostReset(c *gin.Context) {
+// Reset operation middleware
+func (siw *ServerInterfaceWrapper) Reset(c *gin.Context) {
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 	}
 
-	siw.Handler.PostReset(c)
+	siw.Handler.Reset(c)
 }
 
-// PostResetTrackingUuidChange operation middleware
-func (siw *ServerInterfaceWrapper) PostResetTrackingUuidChange(c *gin.Context) {
+// ChangePassword operation middleware
+func (siw *ServerInterfaceWrapper) ChangePassword(c *gin.Context) {
 
 	var err error
 
@@ -111,11 +111,11 @@ func (siw *ServerInterfaceWrapper) PostResetTrackingUuidChange(c *gin.Context) {
 		middleware(c)
 	}
 
-	siw.Handler.PostResetTrackingUuidChange(c, trackingUuid)
+	siw.Handler.ChangePassword(c, trackingUuid)
 }
 
-// PostResetTrackingUuidVerify operation middleware
-func (siw *ServerInterfaceWrapper) PostResetTrackingUuidVerify(c *gin.Context) {
+// VerifyResetOTP operation middleware
+func (siw *ServerInterfaceWrapper) VerifyResetOTP(c *gin.Context) {
 
 	var err error
 
@@ -132,7 +132,7 @@ func (siw *ServerInterfaceWrapper) PostResetTrackingUuidVerify(c *gin.Context) {
 		middleware(c)
 	}
 
-	siw.Handler.PostResetTrackingUuidVerify(c, trackingUuid)
+	siw.Handler.VerifyResetOTP(c, trackingUuid)
 }
 
 // GinServerOptions provides options for the Gin server.
@@ -164,17 +164,17 @@ func RegisterHandlersWithOptions(router *gin.Engine, si ServerInterface, options
 		ErrorHandler:       errorHandler,
 	}
 
-	router.POST(options.BaseURL+"/login/", wrapper.PostLogin)
+	router.POST(options.BaseURL+"/login/", wrapper.Login)
 
-	router.POST(options.BaseURL+"/login/:tracking-uuid/verify", wrapper.PostLoginTrackingUuidVerify)
+	router.POST(options.BaseURL+"/login/:tracking-uuid/verify", wrapper.VerifyLoginOTP)
 
 	router.POST(options.BaseURL+"/register", wrapper.Register)
 
-	router.POST(options.BaseURL+"/reset", wrapper.PostReset)
+	router.POST(options.BaseURL+"/reset", wrapper.Reset)
 
-	router.POST(options.BaseURL+"/reset/:tracking-uuid/change", wrapper.PostResetTrackingUuidChange)
+	router.POST(options.BaseURL+"/reset/:tracking-uuid/change", wrapper.ChangePassword)
 
-	router.POST(options.BaseURL+"/reset/:tracking-uuid/verify", wrapper.PostResetTrackingUuidVerify)
+	router.POST(options.BaseURL+"/reset/:tracking-uuid/verify", wrapper.VerifyResetOTP)
 
 	return router
 }

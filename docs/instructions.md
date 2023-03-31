@@ -31,9 +31,14 @@ This will start a PostgreSQL container with the name my-postgres, set the passwo
 Once the container is running after doing docker compose up, you can connect to it using the psql command-line tool:
 
 ```
-docker exec -it (your container name) psql -U postgres
+docker exec -it (your container name) psql -U root
 ```
 To know what your contaner name you can run:
 ```docker ps ```
 
 This command starts an interactive session with PostgreSQL databse running inside the container. Once connected to the databse, you can run SQL commands as usual.
+
+Command to run multiple docker compose files
+```
+docker-compose -f docker-compose.yml docker-compose.dev.yml up
+```

@@ -20,6 +20,7 @@ servers:
 paths:
   /login/:
     post:
+      operationId: "Login"
       summary: Generate OTP and send it to email and phone number
       description: Endpoint to generate OTP and send it to user's email and phone number. The user needs to enter the OTP to complete the login process.
       tags: [Login]
@@ -43,7 +44,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response"
         '500':
-          description: Internal server error
+          description: Internal server errors
           content:
             application/json:
               schema:
@@ -51,6 +52,7 @@ paths:
 
   /login/{tracking-uuid}/verify:
     post:
+      operationId: "VerifyLoginOTP"
       summary: Verify the OTP
       description: Send the OTP to the server for verification.
       tags: [ Login ]
@@ -83,7 +85,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response"
         '500':
-          description: Internal server error
+          description: Internal server errors
           content:
             application/json:
               schema:
@@ -116,7 +118,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response"
         default:
-          description: error
+          description: errors
           content:
             application/json:
               schema:
@@ -125,6 +127,7 @@ paths:
   /reset:
     summary: Allow users to send forget password requests
     post:
+      operationId: "Reset"
       tags: [ Password Reset ]
       summary: "Send password reset OTP"
       description: Collect user email an send reset OTP
@@ -150,6 +153,7 @@ paths:
                  $ref: "#/components/schemas/ResponseError"
   /reset/{tracking-uuid}/verify:
     post:
+      operationId: "VerifyResetOTP"
       tags: [ Password Reset ]
       summary: "Verify OTP"
       description: "Once a user has sent their email, they receive an OTP code for verifying if indeed they are the owners of the account"
@@ -191,6 +195,7 @@ paths:
 
   /reset/{tracking-uuid}/change:
     post:
+      operationId: "ChangePassword"
       tags: [ Password Reset ]
       summary: "Change Password"
       description: "On successful OTP verification, user sends a new password"

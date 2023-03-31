@@ -1,4 +1,4 @@
-name: CI/CD FOR Everyshilling
+name: CI-Builds
 
 on:
   push:
@@ -7,65 +7,63 @@ on:
 jobs:
   Build:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14-alpine
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: everyshilling
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
+
     - name: Checkout code
       uses: actions/checkout@v2
 
-#setting up build for GO and python
+#setting up build for GO
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
         go-version: 1.17
+      id: go
 
+    - name: checkout code into Go module directory
+      uses: actions/checkout@v2
+
+    #- name: install dependencies
+     # run: go mod download
+
+      #setting up python application
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
+      id: python
+
+    #- name: Install Python dependencies
+     # run: pip install -r ./services/app-otp/requirements.txt
+
+  
+  Test:
+    needs: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Go Service
+        run: go mod init backend-everyshilling/services/app-auth/m
+
+     # - name: Test OTP Service
+       # run: python backend-everyshilling/services/app-otp
 
 
-    #- name: Build the docker_compose
-      #run: docker-compose up -d --build
-      
-    #- name: Buid the application
-      #run: docker-compose exec -T everyshilling run build
-
-
-
-#   Deploy:
-#     needs: Build
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - uses: actions/checkout@v2
-#       - name: Deploy in EC2
-#         env:
-#             PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
-#             HOSTNAME : ${{ secrets.HOSTNAME  }}
-#             USER_NAME : ${{ secrets.USER_NAME  }}
-
-#         run: |
-#           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-#           ssh -i private_key ${USER_NAME}@${HOSTNAME} '
-
-#             #Now we have got the access of EC2 and we will start the deploy .
-#             cd  backend-everyshilling &&
-#             git checkout develop &&
-#             git fetch --all &&
-#             git reset --hard origin/develop &&
-#             git pull origin develop &&
-#             docker-compose -f docker-compose.yml up -d --build
-#           '
-
-
-    # - name: Build Go microservice
-    #   run: go build -o go-microservice ./services/app-exchange
-
-
-    # - name: Test Go microservice
-    #   run: go test ./services/app-exchange
-
-    # - name: Install Python dependencies
-    #   run: pip install -r requirements.txt
-
-    # - name: Test Python microservice
-    #   run: pytest ./python
+  Deploy:
+    needs: Test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Deploying..."
