@@ -61,7 +61,7 @@ jobs:
         run: go mod init backend-everyshilling/services/app-auth/m
 
       - name: Test OTP Service
-        run: python ./services/app-otp
+        run: python /services/app-otp
 
 
   Deploy:
