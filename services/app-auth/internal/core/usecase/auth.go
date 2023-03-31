@@ -31,6 +31,14 @@ func (a *AuthUseCase) ResetPassword(ctx context.Context, user *dto.RequestResetC
 	return &entity.User{}, nil
 }
 
+func (a *AuthUseCase) LoginUser(ctx context.Context, user *dto.RegisterRequest) (*entity.User, error) {
+	//add specified login credentials
+	//apply the verified
+	//implement jwt
+
+	return &entity.User{}, nil
+}
+
 func NewAuthUsecase(as adapters.AuthService, ss adapters.SessionService) *AuthUseCase {
 	return &AuthUseCase{
 		authService:    as,

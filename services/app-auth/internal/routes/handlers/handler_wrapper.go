@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/usecase"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/errors"
@@ -68,8 +69,37 @@ func (h Handler) VerifyResetOTP(c *gin.Context, trackingUuid string) {
 }
 
 func (h Handler) PostLogin(c *gin.Context) {
-	//TODO implement me
-	panic("implement me")
+
+	var requestBody dto.RequestLogin
+	var responseBody dto.DefaultRes
+
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		responseBody.Message = "Bad request: missing email or phone number"
+		responseBody.Code = 400
+		responseBody.Data = nil
+		responseBody.Error = "Missing or incomplete credentials"
+		c.JSON(400, responseBody)
+		return
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	usr, err := h.AuthUC.LoginUser(ctx, &requestBody)
+	if err != nil {
+		responseBody.Message = "Login Process failed"
+		responseBody.Code = 400
+		responseBody.Data = nil
+		responseBody.Error = err.Error()
+		c.JSON(400, responseBody)
+		return
+	}
+
+	responseBody.Message = "Login Process successful"
+	responseBody.Code = 200
+	responseBody.Data = usr
+	responseBody.Error = ""
+	c.JSON(200, responseBody)
 }
 
 func (h Handler) Register(c *gin.Context) {
