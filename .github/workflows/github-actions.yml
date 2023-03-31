@@ -57,11 +57,11 @@ jobs:
     steps:
       - run: echo "Testing..."
 
-      - name: Test
+      - name: Test Go Service
         run: go mod init backend-everyshilling/services/app-auth/m
 
       - name: Test OTP Service
-        run: pytest ./services/app-otp
+        run: python ./services/app-otp
 
 
   Deploy:
