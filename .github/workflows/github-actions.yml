@@ -2,8 +2,8 @@
 name: CI-Builds
 on:
   push:
-    branches:
-      - develop
+    branches: [develop]
+      
 jobs:
   Test:
     runs-on: ubuntu-latest
