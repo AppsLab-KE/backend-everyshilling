@@ -1,8 +1,15 @@
 package dto
 
-type DefaultRes struct {
-	Message string      `json:"message"`
-	Error   string      `json:"error"`
-	Code    int         `json:"code"`
-	Data    interface{} `json:"data"`
+import "github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/entity"
+
+type DefaultRes[T interface{}] struct {
+	Message string `json:"message"`
+	Error   string `json:"errors"`
+	Code    int    `json:"code"`
+	Data    T      `json:"data"`
+}
+
+type UserRegistrationRes struct {
+	entity.User
+	Token string
 }

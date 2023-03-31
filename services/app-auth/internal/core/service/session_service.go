@@ -9,7 +9,7 @@ type DefaultSessionService struct {
 	repo adapters.AuthRepo
 }
 
-func (d DefaultSessionService) Invalidate() dto.DefaultRes {
+func (d DefaultSessionService) Invalidate() dto.DefaultRes[interface{}] {
 	//TODO implement me
 	panic("implement me")
 }
