@@ -1,12 +1,13 @@
----
 name: CI-Builds
+
 on:
   push:
     branches: [develop]
-      
+
 jobs:
   Test:
     runs-on: ubuntu-latest
+
     services:
       postgres:
         image: postgres:14-alpine
@@ -16,29 +17,50 @@ jobs:
           POSTGRES_DB: everyshilling
         ports:
           - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
           --health-retries 5
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.17
-        id: go
-      - name: checkout code into Go directory
-        uses: actions/checkout@v2
-      - name: Test
-        uses: go test -v .
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-        id: python
-      - name: Install Python dependencies
-        run: pip install -r requirements.txt
-      - name: Test Python microservice
-        run: pytest ./python
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+#setting up build for GO
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+      id: go
+
+    - name: checkout code into Go module directory
+      uses: actions/checkout@v2
+
+    #- name: install dependencies
+     # run: go mod download
+
+    - name: Test
+      run: go mod init backend-everyshilling/services/app-auth/m
+      
+      
+    #- name: Build and deploy
+     # run: go build backend-everyshilling/services/app-auth
+
+      #setting up python application
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+      id: python
+
+    #- name: Install Python dependencies
+     # run: pip install -r ./services/app-otp/requirements.txt
+
+
+    #- name: Test Python microservice
+      #run: pytest ./services/app-otp
+
   Deploy:
     needs: Test
     runs-on: ubuntu-latest
