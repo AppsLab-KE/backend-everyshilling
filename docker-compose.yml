@@ -1,4 +1,3 @@
-
 version: '3'
 services:
 
@@ -14,8 +13,6 @@ services:
     volumes:
       - ./docs/everyshilling_openapi.yaml:/usr/src/prism/packages/cli/everyshilling_openapi.yaml
 
-
-
   # #backend services for both python and go
   # app-auth:
   #   container_name: app-auth
@@ -29,8 +26,6 @@ services:
   #     test: sh -c "ping -c3 app-auth:$AUTH_GRPC_PORT"
   #     interval: 10s
   #     retries: 10
-
-
 
   postgres:
     image: postgres:13-alpine
@@ -49,10 +44,6 @@ services:
   #     dockerfile: Dockerfile
   #   ports:
   #     - "50051:50051"
-  #   # depends_on:
-  #   #   - go_service
-  #   networks:
-  #     - grpc_network
 
   app-auth:
     build:
@@ -61,14 +52,18 @@ services:
     ports:
       - "50052:50052"
 
-# networks:
-#   grpc_network:
-#     driver: bridge
+    # networks:
+    #   - grpc_network
+
 
 #to be changed once grpc is set
 networks:
   internal_network:
     driver: bridge
+
+# # networks:
+# #   grpc_network:
+# #     driver: bridge
 
 
 volumes:
