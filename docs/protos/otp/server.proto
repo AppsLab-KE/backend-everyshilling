@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+import "otp/otp.proto";
+package otp;
+option go_package = "github.com/appslab/twala/otp";
+
+service OtpService {
+    rpc HealthCheck(DefaultRequest) returns (HealthResponse);
+
+    rpc CreateAndSendOtp(GetContactRequest) returns (Contact);
+    rpc ValidateOtp(GetContactRequest) returns (Contact);
+    rpc InvalidateOtp(GetContactRequest) returns (Contact);
+}
+
+message DefaultRequest {}
+
+message HealthResponse {
+    string message = 1;
+}
