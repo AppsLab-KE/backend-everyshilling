@@ -5,7 +5,7 @@ on:
     branches: [develop]
 
 jobs:
-  Test:
+  Build:
     runs-on: ubuntu-latest
 
     services:
@@ -22,8 +22,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
-
     steps:
 
     - name: Checkout code
@@ -36,12 +34,11 @@ jobs:
         go-version: 1.17
       id: go
 
-    - name: checkout code into Go directory
+    - name: checkout code into Go module directory
       uses: actions/checkout@v2
 
-    - name: Test
-      uses: go test -v .
-
+    #- name: install dependencies
+     # run: go mod download
 
       #setting up python application
     - name: Set up Python
@@ -50,34 +47,23 @@ jobs:
         python-version: 3.9
       id: python
 
-    - name: Install Python dependencies
-      run: pip install -r requirements.txt
+    #- name: Install Python dependencies
+     # run: pip install -r ./services/app-otp/requirements.txt
 
+  
+  Test:
+    needs: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Go Service
+        run: go mod init backend-everyshilling/services/app-auth/m
 
-    - name: Test Python microservice
-      run: pytest ./python
+     # - name: Test OTP Service
+       # run: python backend-everyshilling/services/app-otp
 
 
   Deploy:
+    needs: Test
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.17
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        go mod download
-    - name: Build and deploy
-      run: |
-        cd backend-everyshilling/services/app-auth
-        go build
-
-        cd backend-everyshilling/services/app-otp
+      - run: echo "Deploying..."

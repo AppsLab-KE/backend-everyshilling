@@ -45,7 +45,7 @@ paths:
         '400':
           description: 'Bad request: missing email or phone number'
         '500':
-          description: Internal server error
+          description: Internal server errors
 
 # Registration endpoint
   /register:
@@ -104,7 +104,7 @@ paths:
                     type: string
                     example: john.doe@example.com
         default:
-          description: error
+          description: errors
           content:
             application/json:
               schema:
