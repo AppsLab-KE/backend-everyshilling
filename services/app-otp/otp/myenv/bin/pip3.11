@@ -1,4 +1,4 @@
-#!/Users/mandelah/Projects/Appslab/backend-everyshilling/services/app-otp/myenv/bin/python3.11
+#!/Users/mandelah/Projects/Appslab/backend-everyshilling/services/app-otp/otp/myenv/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys
