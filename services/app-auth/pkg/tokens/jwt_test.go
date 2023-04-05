@@ -1,4 +1,4 @@
-package util
+package tokens
 
 import (
 	"github.com/google/uuid"
