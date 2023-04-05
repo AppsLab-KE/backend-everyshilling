@@ -5,7 +5,7 @@ import (
 )
 import log "github.com/sirupsen/logrus"
 
-func (m *Manager) Log(ctx gin.Context) {
+func (m *Manager) Log(ctx *gin.Context) {
 	if ctx.IsAborted() {
 		return
 	}

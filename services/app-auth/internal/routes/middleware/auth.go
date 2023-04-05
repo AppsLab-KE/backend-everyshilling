@@ -23,7 +23,7 @@ func unauthorisedError() dto.DefaultRes[any] {
 	}
 }
 
-func (m *Manager) Auth(ctx gin.Context) {
+func (m *Manager) Auth(ctx *gin.Context) {
 	if ctx.IsAborted() {
 		return
 	}
