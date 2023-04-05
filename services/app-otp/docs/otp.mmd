@@ -1,15 +1,19 @@
 sequenceDiagram
-    Client/User ->>+OTP Generator System:Send OTP request
-    OTP Generator System->>+OTP Controller System:Check status(Attempt Count)
-    alt Have not exceeded
-    OTP Controller System-->>OTP Generator System:Enable
-    else Have exceeded
-    OTP Controller System-->>-OTP Generator System:Disable
-    end
-    OTP Generator System-->>-Client/User:Send OTP(Email)/Response
-    Client/User->>+OTP Validator System:Validate OTP
-    alt is not Valid
-    OTP Validator System-->>Client/User:Failure to validate
-    else is Valid
-    OTP Validator System-->>-Client/User: Validation Success
-    end
+    actor User
+    App UI ->>+ User: Prompt for Phone No.
+    User->>+App UI:Enters Phone No.
+    App UI->>-OTP Server:Sends phone no for OTP 
+    participant OTP Server
+    Note right of OTP Server: Generates otp valid for 120s
+    OTP Server->>+SMS Client: Sends 6 digit code and phone no.
+    SMS Client-->>-User: SMS with 6 digits code
+    User->>+App UI: Enter code
+    App UI->>-OTP Server:Otp code verification
+    alt otp is Valid
+        OTP Server-->>+App UI: Success
+        App UI ->>+ User: Verified.
+    else otp is Invalid
+        OTP Server-->>+App UI: Failure
+        App UI ->>- User: Incorrect OTP
+    end    
+ 
