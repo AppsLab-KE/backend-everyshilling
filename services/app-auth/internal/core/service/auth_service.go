@@ -5,7 +5,8 @@ import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/adapters"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/errors"
-	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/pkg/util"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/pkg/hash"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/pkg/tokens"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -27,7 +28,7 @@ func (d AuthService) CreateUser(registerRequest dto.RegisterRequest) (*dto.UserR
 	}
 
 	// create password hash
-	hashedPassword, err := util.GenerateHash(registerRequest.Password)
+	hashedPassword, err := hash.GenerateHash(registerRequest.Password)
 	if err != nil {
 		log.Errorf("password hashing error: %s", err)
 		return nil, errors.ErrUserCreation
@@ -43,7 +44,7 @@ func (d AuthService) CreateUser(registerRequest dto.RegisterRequest) (*dto.UserR
 	}
 
 	// generate jwt
-	jwtToken, err := util.GenerateToken(createdUser.UserId, d.config.Jwt.Secret, d.config.Jwt.ExpiryMinutes)
+	jwtToken, err := tokens.GenerateToken(createdUser.UserId, d.config.Jwt.Secret, d.config.Jwt.ExpiryMinutes)
 	if err != nil {
 		log.Errorf("jwt generation error: %s", err)
 		return nil, errors.ErrUserCreation
