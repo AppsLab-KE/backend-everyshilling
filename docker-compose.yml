@@ -30,8 +30,6 @@ services:
   #     interval: 10s
   #     retries: 10
 
-
-
   postgres:
     image: postgres:13-alpine
     restart: always
@@ -59,7 +57,7 @@ services:
       context: services/app-auth
       dockerfile: Dev.Dockerfile
     ports:
-      - "50052:50052"
+      - "8080:8080"
 
 # networks:
 #   grpc_network:

@@ -14,7 +14,6 @@ services:
     volumes:
       - ./docs/everyshilling_openapi.yaml:/usr/src/prism/packages/cli/everyshilling_openapi.yaml
 
-
   app-auth:
     container_name: app-auth
     env_file: services/app-auth/.env.example
@@ -27,8 +26,6 @@ services:
       test: sh -c "ping -c3 app-auth:$AUTH_GRPC_PORT"
       interval: 10s
       retries: 10
-
-
 
   postgres:
     image: postgres:13-alpine
