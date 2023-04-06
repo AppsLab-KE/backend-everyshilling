@@ -22,7 +22,7 @@ func TestGenerateToken(t *testing.T) {
 			args: args{
 				userId:        uuid.New().String(),
 				secretKey:     "SUPER_SECRET_KEY",
-				expiryMinutes: 7000,
+				expiryMinutes: 60 * 24 * 30 * 12 * 10,
 			},
 		},
 	}
@@ -41,8 +41,8 @@ func TestGenerateToken(t *testing.T) {
 }
 
 func TestVerifyToken(t *testing.T) {
-	jwtToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODA2NTg1NTQyNzcyNTUxODYsInV1aWQiOiIzZjc0NzQ5NS04NDk1LTQ3MTgtOGVjYy03NDczNDRlNWYzOWUifQ.aBj8Cv5ncXgpKHaRovvil0gLTwd652eyEV99enob1_A"
-	userId := "3f747495-8495-4718-8ecc-747344e5f39e"
+	jwtToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE5OTE4Mjc4NDY4MjQ3NzEzNjgsInV1aWQiOiJlYTM2NDljMy04Y2VjLTQ2NjktYTliNy04NGEzMzUyZTg4ZjQifQ.l1f8c4ZS4ykFLVSMmXO5aEzYgGnoTbhAOPwNZK2S_tE"
+	userId := "ea3649c3-8cec-4669-a9b7-84a3352e88f4"
 
 	expiredToken := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODAyMzkzOTczNTgzMjA2OTUsInV1aWQiOiI1Y2NmN2ExOC0yMjE4LTQxNTItOWRiYS04ODExZDZhNDU1ZTMifQ.BLIgdkZrZg2h7jnmyl3c--ff0PT24ndwVZMJx5-dikU"
 
