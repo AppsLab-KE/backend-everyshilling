@@ -1,10 +1,10 @@
 FROM python:3.9.7-alpine
 
-WORKDIR /app
+WORKDIR /app-otp
 
-COPY requirements.txt /app/
+COPY requirements.txt /app-otp/
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /app/
+COPY . /app-otp/
 
-CMD ["python" , "app.py"]
+CMD ["python" , "apps.py"]

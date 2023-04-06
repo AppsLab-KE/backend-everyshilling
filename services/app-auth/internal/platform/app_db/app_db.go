@@ -1,21 +1,17 @@
 package appdb
 
-import (
-	"context"
-	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/models"
-	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/ports"
-)
+import "github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/storage"
 
 type Client struct {
-	client *string
 }
 
-func (c Client) Create(ctx context.Context, data models.User) error {
-	return nil
+func (c *Client) CreateOtp(data *interface{}) interface{} {
+	//TODO implement me
+	panic("implement me")
 }
 
-var _ ports.Storage = (*Client)(nil)
+var _ storage.Db = (*Client)(nil)
 
-func NewClient() *Client {
-	return &Client{}
+func NewClient(cfg) Client {
+
 }
