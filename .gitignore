@@ -9,7 +9,8 @@ gen
 /.idea
 # C extensions
 *.so
-
+.idea
+*/.idea
 # Distribution / packaging
 .Python
 build/
