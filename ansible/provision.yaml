@@ -43,7 +43,7 @@
     shell: docker ps
 
   - name: run docker image
-    shell: docker run -dit --name appslab -p 3000:3000 elsiedev/appslab:latest
+    shell: docker run -dit --name appslab -p 3000:3000 elsiedev/appslab:mockapi
 
   - name: show running images
     shell: docker images
