@@ -2,13 +2,13 @@ syntax = "proto3";
 
 import "db/user.proto";
 package db;
-option go_package = "github.com/appslab/twala/db";
+option go_package = "github.com/AppsLab-KE/backend-everyshillings/db";
 
 service DbService {
     rpc HealthCheck(DefaultRequest) returns (HealthResponse);
 
-    rpc CreateUser(GetContactRequest) returns (Contact);
-    rpc GetUserByField(CreateContactRequest) returns (Contact);
+    rpc CreateUser(CreateUserReq) returns (User);
+    rpc GetUserByField(KeyValueRequest) returns (User);
 }
 
 message DefaultRequest {}
