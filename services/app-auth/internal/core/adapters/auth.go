@@ -1,6 +1,7 @@
 package adapters
 
 import (
+	"context"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/entity"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 )
@@ -15,9 +16,9 @@ type SessionService interface {
 }
 
 type AuthRepo interface {
-	CreateOtpCode(data entity.Otp) error
-	CreateUser(registerRequest dto.RegisterRequest) (*entity.User, error)
-	GetUserByPhone(phone string) (*entity.User, error)
-	GetUserByEmail(email string) (*entity.User, error)
-	UpdateUser(user entity.User) (*entity.User, error)
+	CreateOtpCode(ctx context.Context, data entity.Otp) error
+	CreateUser(ctx context.Context, registerRequest dto.RegisterRequest) (*entity.User, error)
+	GetUserByPhone(ctx context.Context, phone string) (*entity.User, error)
+	GetUserByEmail(ctx context.Context, email string) (*entity.User, error)
+	UpdateUser(ctx context.Context, user entity.User) (*entity.User, error)
 }
