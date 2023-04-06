@@ -14,4 +14,4 @@ FROM gcr.io/distroless/base-debian10
 #path to the file to be copied
 COPY --from=builder /usr/src/app .
 # ENTRYPOINT ["/usr/src/app/build/dev/auth-app"]
-ENTRYPOINT ["/auth-app"]
+ENTRYPOINT ["/app-auth"]

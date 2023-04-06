@@ -28,6 +28,7 @@ RUN go mod download
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app-auth .
 RUN go build -o dev/auth-app
 
+
 # Stage 2: Run the application
 FROM gcr.io/distroless/base-debian10
 
