@@ -1,0 +1,22 @@
+version: '3'
+
+tasks:
+  build-dev:
+    cmds:
+      - docker-compose -f docker-compose-dev.yml -p backend-everyshilling build
+    silent: true
+
+  build-prod:
+    cmds:
+      - docker-compose -f docker-compose.yml -p backend-everyshilling build
+    silent: true
+
+  run-prod:
+    cmds:
+      - docker-compose -f docker-compose.yml -p backend-everyshilling up
+    silent: true
+
+  run-dev:
+    cmds:
+      - docker-compose -f docker-compose-dev.yml -p backend-everyshilling up
+    silent: true
