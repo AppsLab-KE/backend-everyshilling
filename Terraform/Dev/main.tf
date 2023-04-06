@@ -21,7 +21,7 @@ resource "aws_subnet" "my_subnet" {
   }
 }
 
-resource "aws_network_interface" "mockserver" {
+resource "aws_network_interface" "example" {
   subnet_id   = aws_subnet.my_subnet.id
   private_ips = ["172.16.10.100"]
 
@@ -30,16 +30,43 @@ resource "aws_network_interface" "mockserver" {
   }
 }
 
-resource "aws_instance" "foo" {
-  ami           = "ami-007855ac798b5175e" # us-east-1
+resource "aws_instance" "mockServer" {
+  ami= "ami-004811053d831c2c2"
   instance_type = "t3.medium"
+  key_name="popo"
 
   network_interface {
-    network_interface_id = aws_network_interface.mockserver.id
+    network_interface_id = aws_network_interface.example.id
     device_index         = 0
   }
 
   credit_specification {
     cpu_credits = "unlimited"
   }
+
+  security_groups = [aws_security_group.example.name]
+
+}
+
+resource "aws_security_group" "example"{
+  name= "Mockserver security-group"
+  description="testing to see if my mockserver works"
+
+  ingress {
+    description = "Allow SSH"
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+    cidr_blocks= ["0.0.0.0/0"]
+
+    description = "Allow Mockserver API"
+    from_port = 4010
+    to_port =4010
+    protocol = "tcp"
+    cidr_blocks= ["0.0.0.0/0"]
+  }
+}
+
+output "instance_public_ip" {
+  value = aws_instance.mockServer.public_ip
 }
