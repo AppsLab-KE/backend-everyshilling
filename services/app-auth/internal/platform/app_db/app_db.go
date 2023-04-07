@@ -1,17 +1,18 @@
 package appdb
 
-import "github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/storage"
+import (
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/config"
+	"github.com/AppsLab-KE/be-go-gen-grpc/db"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+)
 
-type Client struct {
-}
+func NewGRPClient(config config.Database) (*db.DbServiceClient, error) {
+	conn, err := grpc.Dial(config.Host+":"+config.Port, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
 
-func (c *Client) CreateOtp(data *interface{}) interface{} {
-	//TODO implement me
-	panic("implement me")
-}
-
-var _ storage.Db = (*Client)(nil)
-
-func NewClient(cfg) Client {
-
+	client := db.NewDbServiceClient(conn)
+	return &client, nil
 }

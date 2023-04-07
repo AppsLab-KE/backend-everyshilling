@@ -1,6 +1,12 @@
 version: '3'
 
 tasks:
-  run:
+  gin-types:
     cmds:
-      - go run main.go
+      - oapi-codegen --package=dto  --generate types ../../docs/everyshilling_openapi.yaml> internal/dto/http.gen.go
+    silent: false
+
+  gin-handlers:
+    cmds:
+      - oapi-codegen --package=handlers --generate gin ../../docs/everyshilling_openapi.yaml> internal/routes/handlers/handler.gen.go
+    silent: false

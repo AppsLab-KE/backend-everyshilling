@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+package db;
+option go_package = "github.com/AppsLab-KE/backend-everyshillings/db";
+
+message CreateUserReq {
+    string name = 1;
+    string email = 2;
+    string phone_number = 3;
+}
+
+message User {
+    string name = 1;
+    string email = 2;
+    string phone_number = 3;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
+}

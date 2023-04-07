@@ -2,14 +2,13 @@
 __pycache__/
 *.py[cod]
 *$py.class
-gen
-*.gen.go
 ./
 ./.idea
 /.idea
 # C extensions
 *.so
-
+.idea
+*/.idea
 # Distribution / packaging
 .Python
 build/

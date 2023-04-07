@@ -46,21 +46,21 @@ type RequestResetCredentials struct {
 type Response struct {
 	Code    *float32                `json:"code,omitempty"`
 	Data    *map[string]interface{} `json:"data,omitempty"`
-	Error   *string                 `json:"errors,omitempty"`
+	Error   *string                 `json:"error,omitempty"`
 	Message *string                 `json:"message,omitempty"`
 }
 
 // ResponseError defines model for ResponseError.
 type ResponseError struct {
 	Code    *string `json:"code,omitempty"`
-	Error   *string `json:"errors,omitempty"`
+	Error   *string `json:"error,omitempty"`
 	Message *string `json:"message,omitempty"`
 }
 
 // ResponseSuccess defines model for ResponseSuccess.
 type ResponseSuccess struct {
 	Code    *string `json:"code,omitempty"`
-	Error   *string `json:"errors,omitempty"`
+	Error   *string `json:"error,omitempty"`
 	Message *string `json:"message,omitempty"`
 }
 
