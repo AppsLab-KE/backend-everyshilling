@@ -35,6 +35,14 @@ func (a *AuthUseCase) LoginUser(ctx context.Context, user dto.RequestLogin) (*dt
 	return &dto.UserLoginRes{}, nil
 }
 
+func (a *AuthUseCase) VerifyLoginOTP(ctx context.Context, req dto.OtpVerificationReq) (*dto.OtpVerificationRes, error) {
+	//add specified login credentials
+	//apply the verified
+	//implement jwt
+
+	return &dto.OtpVerificationRes{}, nil
+}
+
 func NewAuthUsecase(as adapters.AuthService, ss adapters.SessionService) *AuthUseCase {
 	return &AuthUseCase{
 		authService:    as,

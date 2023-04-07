@@ -1,7 +1,9 @@
 package dto
 
-type OtpReq struct {
+type OtpVerificationReq struct {
+	TrackingUID string
+	OtpCode     string
 }
 
-type OtpRes struct {
+type OtpVerificationRes struct {
 }

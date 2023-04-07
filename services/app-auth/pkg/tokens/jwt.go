@@ -42,7 +42,16 @@ func VerifyToken(jwtToken string, secretKey string) (userId string, err error) {
 	userId, ok := mapClaims["uuid"].(string)
 
 	if !ok {
-		return "", errors.New("invalid parsedToken")
+		return "", errors.New("invalid token")
+	}
+
+	expiryTime, ok := mapClaims["exp"].(float64)
+	if !ok {
+		return "", errors.New("invalid/expired token")
+	}
+
+	if int64(expiryTime) <= time.Now().UnixNano() {
+		return "", errors.New("expired token")
 	}
 
 	return userId, nil
