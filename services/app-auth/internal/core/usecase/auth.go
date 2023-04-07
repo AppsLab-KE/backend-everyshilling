@@ -43,6 +43,14 @@ func (a *AuthUseCase) VerifyLoginOTP(ctx context.Context, req dto.OtpVerificatio
 	return &dto.OtpVerificationRes{}, nil
 }
 
+func (a *AuthUseCase) VerifyResetOTP(ctx context.Context, uuid string, body dto.VerifyResetOTPJSONRequestBody) (interface{}, interface{}) {
+	return &dto.VerifyResetOTPJSONRequestBody{}, nil
+}
+
+func (a *AuthUseCase) ChangePassword(ctx context.Context, uuid string, body dto.ChangePasswordJSONRequestBody) (interface{}, interface{}) {
+	return dto.ChangePasswordJSONRequestBody{}, nil
+}
+
 func NewAuthUsecase(as adapters.AuthService, ss adapters.SessionService) *AuthUseCase {
 	return &AuthUseCase{
 		authService:    as,
