@@ -58,14 +58,13 @@ services:
     ports:
       - "8080:8080"
 
-  tf:
-    image: hashicorp/terraform:latest
-    volumes:
-      - .:/infra
-    working_dir: /infra
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      # - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+  # tf:
+  #   image: hashicorp/terraform:latest
+  #   volumes:
+  #     - .:/infra
+  #   working_dir: /infra
+  #     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+  #     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 
 
 # networks:
