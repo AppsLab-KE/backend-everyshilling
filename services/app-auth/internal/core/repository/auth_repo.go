@@ -25,6 +25,7 @@ func (a authRepo) CreateUser(ctx context.Context, registerRequest dto.RegisterRe
 		return nil, err
 	}
 
+	_ = userRes
 	user := entity.User{}
 	return &user, nil
 }
@@ -36,6 +37,7 @@ func (a authRepo) GetUserByPhone(ctx context.Context, phone string) (*entity.Use
 		return nil, err
 	}
 
+	_ = userRes
 	user := &entity.User{}
 
 	return user, err
@@ -47,7 +49,7 @@ func (a authRepo) GetUserByEmail(ctx context.Context, email string) (*entity.Use
 	if err != nil {
 		return nil, err
 	}
-
+	_ = userRes
 	user := &entity.User{}
 
 	return user, err
