@@ -2,16 +2,16 @@ version: '3'
 services:
 
   #mocking API using prism http server
-  prism:
-    image: stoplight/prism:4
-    # command: 'mock -h 0.0.0.0 /usr/src/prism/'
+  # prism:
+  #   image: stoplight/prism:4
+  #   # command: 'mock -h 0.0.0.0 /usr/src/prism/'
 
-    command: mock -p 4010 --host 0.0.0.0 everyshilling_openapi.yaml
-    ports:
-      - "4010:4010"
+  #   command: mock -p 4010 --host 0.0.0.0 everyshilling_openapi.yaml
+  #   ports:
+  #     - "4010:4010"
 
-    volumes:
-      - ./docs/everyshilling_openapi.yaml:/usr/src/prism/packages/cli/everyshilling_openapi.yaml
+  #   volumes:
+  #     - ./docs/everyshilling_openapi.yaml:/usr/src/prism/packages/cli/everyshilling_openapi.yaml
 
 
 
@@ -29,18 +29,18 @@ services:
   #     interval: 10s
   #     retries: 10
 
-  postgres:
-    image: postgres:13-alpine
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-    ports:
-      - '5432:5432'
-    volumes:
-      - db:/var/lib/postgresql/data
+  # postgres:
+  #   image: postgres:13-alpine
+  #   restart: always
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=password
+  #   ports:
+  #     - '5432:5432'
+  #   volumes:
+  #     - db:/var/lib/postgresql/data
 
-  # app-otp:
+  # # app-otp:
   #   build:
   #     context: services/app-otp
   #     dockerfile: Dockerfile
@@ -57,17 +57,6 @@ services:
       dockerfile: Dev.Dockerfile
     ports:
       - "8080:8080"
-
-
-# switching to cloud environment
-  # tf:
-  #   image: hashicorp/terraform:latest
-  #   volumes:
-  #     - .:/infra
-  #   working_dir: /infra
-  #     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-  #     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-
 
 # networks:
 #   grpc_network:
