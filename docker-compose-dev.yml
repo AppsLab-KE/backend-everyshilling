@@ -45,7 +45,7 @@ services:
   #     context: services/app-otp
   #     dockerfile: Dockerfile
   #   ports:
-  #     - "50051:50051"
+  #     - "3000:3000"
   #   # depends_on:
   #   #   - go_service
   #   networks:
