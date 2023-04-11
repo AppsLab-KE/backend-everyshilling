@@ -32,3 +32,15 @@ otp_int = struct.unpack('>I', otp_bytes)[0]
 otp = otp_int % 10**6
 
 print('Your OTP is :',otp)
+
+# Get the user's input for the OTP
+user_otp = input('Enter your OTP: ')
+
+# Verifying the OTP
+if int(user_otp) == otp:
+    print('OTP is valid')
+else:
+    try:
+        num = int('abc')
+    except ValueError:
+      print('OTP is invalid')
