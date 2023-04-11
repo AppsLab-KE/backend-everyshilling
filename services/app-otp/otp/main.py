@@ -21,3 +21,14 @@ hash = hmac.new(secret, time_bytes, hashlib.sha1).digest()
 
 # Get the last 4 bits of the hash
 offset = hash[-1] & 0x0F
+
+# Extract a 4-byte slice from the hash starting at the offset
+otp_bytes = hash[offset:offset+4]
+
+# Convert the bytes to an integer
+otp_int = struct.unpack('>I', otp_bytes)[0]
+
+# Generate the OTP as a 6 digit number
+otp = otp_int % 10**6
+
+print('Your OTP is :',otp)
