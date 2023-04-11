@@ -1,11 +1,8 @@
 version: '3'
 services:
 
-  #mocking API using prism http server
   prism:
     image: stoplight/prism:4
-    # command: 'mock -h 0.0.0.0 /usr/src/prism/'
-
     command: mock -p 4010 --host 0.0.0.0 everyshilling_openapi.yaml
     ports:
       - "4010:4010"
@@ -40,16 +37,16 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
 
-  # app-otp:
-  #   build:
-  #     context: services/app-otp
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "50051:50051"
+  app-otp:
+    build:
+      context: services/app-otp
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
   #   # depends_on:
   #   #   - go_service
   #   networks:
-  #     - grpc_networka
+  #     - grpc_network
 
   app-auth:
     build:
@@ -57,17 +54,6 @@ services:
       dockerfile: Dev.Dockerfile
     ports:
       - "8080:8080"
-
-
-# switching to cloud environment
-  # tf:
-  #   image: hashicorp/terraform:latest
-  #   volumes:
-  #     - .:/infra
-  #   working_dir: /infra
-  #     - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-  #     - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-
 
 # networks:
 #   grpc_network:

@@ -1,10 +1,25 @@
+# FROM python:3.9.7-alpine
+
+# WORKDIR /app-otp/otp
+
+# COPY requirements.txt requirements.txt
+# RUN pip install --no-cache-dir -r requirements.txt
+
+# COPY . .
+
+# CMD ["python3" , "main.py"]
+
+# Use an official Python runtime as a base image
+
 FROM python:3.9.7-alpine
 
-WORKDIR /app-otp
+WORKDIR /app
 
-COPY requirements.txt /app-otp/
+COPY otp/requirements.txt .
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /app-otp/
+COPY otp .
 
-CMD ["python" , "apps.py"]
+EXPOSE 3000
+CMD ["python", "main.py"]
