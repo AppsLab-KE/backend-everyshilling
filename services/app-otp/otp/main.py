@@ -7,7 +7,7 @@ import struct
 secret = b'MysecretKey'
 
 # Set the steps and get the unix time
-time_step=120
+time_step=10
 current_time =int(time.time())
 
 # Get the number of time steps
@@ -30,6 +30,7 @@ otp_int = struct.unpack('>I', otp_bytes)[0]
 
 # Generate the OTP as a 6 digit number
 otp = otp_int % 10**6
+# otp = '{:06d}'.format(otp_raw)
 
 print('Your OTP is :',otp)
 
