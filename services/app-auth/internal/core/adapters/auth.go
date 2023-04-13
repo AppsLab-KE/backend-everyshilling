@@ -7,7 +7,7 @@ import (
 )
 
 type AuthService interface {
-	RequestOtp(request dto.OtpReq) dto.DefaultRes[any]
+	RequestOtp(request dto.RequestOTP) dto.DefaultRes[any]
 	CreateUser(registerRequest dto.RegisterRequest) (*dto.UserRegistrationRes, error)
 }
 

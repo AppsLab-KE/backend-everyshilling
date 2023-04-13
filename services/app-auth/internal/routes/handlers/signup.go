@@ -37,19 +37,16 @@ func (h Handler) Register(c *gin.Context) {
 		c.JSON(200, responseBody)
 		return
 	}
-
-	responseBody.Error = err.Error()
-	responseBody.Message = "Registration failed"
-
-	switch err.(type) {
-	case *errors.ErrUserExists:
+	switch err {
+	case errors.ErrUserExists:
 		responseBody.Code = http.StatusConflict
-	case *errors.ErrUserCreation:
+	case errors.ErrUserCreation:
 		responseBody.Code = http.StatusInternalServerError
-	case *errors.ErrRequestValidation:
+	case errors.ErrRequestValidation:
 		responseBody.Code = http.StatusBadRequest
 	default:
 		responseBody.Error = ""
 	}
+
 	c.JSON(responseBody.Code, responseBody)
 }
