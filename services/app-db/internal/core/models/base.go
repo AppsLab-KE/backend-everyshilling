@@ -20,8 +20,3 @@ func (b *Model) BeforeCreate(db *gorm.DB) error {
 	b.CreatedAt = time.Now()
 	return nil
 }
-
-func (b *Model) BeforeUpdate(db *gorm.DB) error {
-	b.UpdatedAt = time.Now()
-	return nil
-}
