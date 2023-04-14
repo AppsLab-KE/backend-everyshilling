@@ -1,1 +1,3 @@
-myenv/pyvenv.cfg
+otp/myenv
+otp/config.py
+.env.local
