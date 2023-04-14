@@ -64,7 +64,7 @@ func (a authRepo) GetUserByEmail(ctx context.Context, email string) (*entity.Use
 	}
 	keyValueReq := &pb.GetByfieldReq{
 		Filter: map[string]*anypb.Any{
-			"phone": &emailFilter,
+			"email": &emailFilter,
 		},
 		Offset: 0,
 		Limit:  0,

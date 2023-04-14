@@ -26,9 +26,10 @@ services:
   #     interval: 10s
   #     retries: 10
 
-  postgres:
+  postgres-db:
     image: postgres:13-alpine
     restart: always
+    container_name: postgres-db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
@@ -36,6 +37,8 @@ services:
       - '5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
+    networks:
+      - internal_network
 
   app-otp:
     build:
@@ -47,6 +50,18 @@ services:
   #   #   - go_service
   #   networks:
   #     - grpc_network
+
+  app-db:
+    container_name: app-db
+    build:
+      context: services/app-auth
+      dockerfile: Dev.Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - internal_network
+    depends_on:
+      - postgres-db
 
   app-auth:
     build:
