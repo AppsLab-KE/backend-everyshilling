@@ -7,6 +7,7 @@ import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/storage"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	pb "github.com/AppsLab-KE/be-go-gen-grpc/db"
+	anypb "google.golang.org/protobuf/types/known/anypb"
 )
 
 type authRepo struct {
@@ -19,8 +20,13 @@ func (a authRepo) CreateOtpCode(ctx context.Context, data entity.Otp) error {
 }
 
 func (a authRepo) CreateUser(ctx context.Context, registerRequest dto.RegisterRequest) (*entity.User, error) {
-	userReq := pb.CreateUserReq
-	userRes, err := a.client.CreateUser(ctx, userReq)
+	userReq := pb.CreateUserReq{
+		Name:         registerRequest.Name,
+		Email:        registerRequest.Email,
+		PhoneNumber:  registerRequest.PhoneNumber,
+		PasswordHash: registerRequest.Password,
+	}
+	userRes, err := a.client.CreateUser(ctx, &userReq)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +37,16 @@ func (a authRepo) CreateUser(ctx context.Context, registerRequest dto.RegisterRe
 }
 
 func (a authRepo) GetUserByPhone(ctx context.Context, phone string) (*entity.User, error) {
-	keyValueReq := &pb.KeyValueRequest{}
+	phoneFilter := anypb.Any{
+		Value: []byte(phone),
+	}
+	keyValueReq := &pb.GetByfieldReq{
+		Filter: map[string]*anypb.Any{
+			"phone": &phoneFilter,
+		},
+		Offset: 0,
+		Limit:  0,
+	}
 	userRes, err := a.client.GetUserByField(ctx, keyValueReq)
 	if err != nil {
 		return nil, err
@@ -44,7 +59,16 @@ func (a authRepo) GetUserByPhone(ctx context.Context, phone string) (*entity.Use
 }
 
 func (a authRepo) GetUserByEmail(ctx context.Context, email string) (*entity.User, error) {
-	keyValueReq := &pb.KeyValueRequest{}
+	emailFilter := anypb.Any{
+		Value: []byte(email),
+	}
+	keyValueReq := &pb.GetByfieldReq{
+		Filter: map[string]*anypb.Any{
+			"email": &emailFilter,
+		},
+		Offset: 0,
+		Limit:  0,
+	}
 	userRes, err := a.client.GetUserByField(ctx, keyValueReq)
 	if err != nil {
 		return nil, err

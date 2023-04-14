@@ -26,16 +26,20 @@ services:
   #     interval: 10s
   #     retries: 10
 
-  postgres:
+  postgres-db:
     image: postgres:13-alpine
     restart: always
+    container_name: postgres-db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=everyshillings
     ports:
       - '5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
+    networks:
+      - internal_network
 
   app-otp:
     build:
@@ -48,6 +52,20 @@ services:
   #   networks:
   #     - grpc_network
 
+  app-db:
+    container_name: app-db
+    build:
+      context: services/app-db
+      dockerfile: Dev.Dockerfile
+    env_file:
+      - services/app-db/.env.example
+    ports:
+      - "3001:3001"
+    networks:
+      - internal_network
+    depends_on:
+      - postgres-db
+
   app-auth:
     build:
       context: services/app-auth
@@ -59,7 +77,7 @@ services:
 #   grpc_network:
 #     driver: bridge
 
-#to be changed once grpc is set
+#to be changed once handlers is set
 networks:
   internal_network:
     driver: bridge

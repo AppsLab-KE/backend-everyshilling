@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+package otp;
+option go_package = "github.com/AppsLab-KE/backend-everyshillings/otp";
+

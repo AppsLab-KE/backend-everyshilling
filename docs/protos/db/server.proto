@@ -1,14 +1,16 @@
 syntax = "proto3";
 
-import "db/user.proto";
+import "db/user.model.proto";
 package db;
 option go_package = "github.com/AppsLab-KE/backend-everyshillings/db";
 
 service DbService {
     rpc HealthCheck(DefaultRequest) returns (HealthResponse);
-
-    rpc CreateUser(CreateUserReq) returns (User);
-    rpc GetUserByField(KeyValueRequest) returns (User);
+    // USERS
+    rpc CreateUser(CreateUserReq) returns (CreateUserRes) {}
+    rpc UpdateUser(UpdateUserReq) returns (UpdateUserRes) {}
+    rpc GetPagedUsers(GetPagedUsersReq) returns (GetPagedUsersRes) {}
+    rpc GetUserByField(GetByfieldReq) returns (GetByfieldRes) {}
 }
 
 message DefaultRequest {}

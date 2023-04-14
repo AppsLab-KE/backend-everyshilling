@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+package db;
+option go_package = "github.com/AppsLab-KE/backend-everyshillings/db";
+
+// Base model
+message User {
+    string name = 1;
+    string email = 2;
+    string phone_number = 3;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
+    google.protobuf.Timestamp deleted_ad = 8;
+}
+
+
+// CREATE
+message CreateUserReq {
+    string name = 1;
+    string email = 2;
+    string phone_number = 3;
+    string password_hash = 4;
+}
+
+
+message CreateUserRes {
+    string name = 1;
+    string email = 2;
+    string phone_number = 3;
+    google.protobuf.Timestamp created_at = 4;
+    google.protobuf.Timestamp updated_at = 5;
+    google.protobuf.Timestamp deleted_ad = 6;
+}
+
+
+// UPDATE
+message UpdateUserReq {
+     string name = 1;
+     string email = 2;
+     string phone_number = 3;
+     string password_hash = 4;
+}
+
+message UpdateUserRes {
+    string name = 1;
+    string email = 2;
+    string phone_number = 3;
+    google.protobuf.Timestamp created_at = 4;
+    google.protobuf.Timestamp updated_at = 5;
+    google.protobuf.Timestamp deleted_ad = 6;
+}
+
+// READ
+message GetPagedUsersReq {
+    int32 offset = 1;
+    int32 limit = 2;
+}
+
+message GetPagedUsersRes{
+    int32 offset = 1;
+    int32 limit = 2;
+    repeated User users = 3;
+}
+
+message GetByfieldReq {
+    map<string, google.protobuf.Any> filter = 1;
+    int64 offset = 2;
+    int64 limit = 3;
+}
+
+message GetByfieldRes {
+    repeated User users = 1;
+}
