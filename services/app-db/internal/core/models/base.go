@@ -17,6 +17,5 @@ type Model struct {
 
 func (b *Model) BeforeCreate(db *gorm.DB) error {
 	b.ID = uuid.New()
-	b.CreatedAt = time.Now()
 	return nil
 }
