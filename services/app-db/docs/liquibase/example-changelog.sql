@@ -8,7 +8,7 @@ create table user (
     password varchar(50) not null,
     email varchar(50) not null,
     created_at timestamp default current_timestamp not null
-)
+);
 --rollback DROP TABLE user;
 --changeset your.name:2 labels:example-label context:example-context
 --comment: example comment
@@ -18,10 +18,10 @@ create table otp (
     user_id int not null ,
     created_at timestamp default current_timestamp not null
 
-)
+);
 --rollback DROP TABLE otp;
 --changeset other.dev:3 labels:example-label context:example-context
 --comment: example comment
-alter table person add column country varchar(2)
---rollback ALTER TABLE person DROP COLUMN country;
+alter table user add column username varchar(50)
+--rollback ALTER TABLE person DROP COLUMN ;
 
