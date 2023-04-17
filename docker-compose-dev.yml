@@ -70,8 +70,10 @@ services:
     build:
       context: services/app-auth
       dockerfile: Dev.Dockerfile
+    environment:
+      - PORT=3002
     ports:
-      - "8080:8080"
+      - "3002:3002"
 
 # networks:
 #   grpc_network:

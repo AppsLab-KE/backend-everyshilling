@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-db/internal/core/models"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-db/internal/core/ports"
-	"github.com/AppsLab-KE/backend-everyshilling/services/app-db/internal/dto"
 	"gorm.io/gorm"
 )
 
@@ -40,7 +39,7 @@ func (s userStorage) UpdateUser(ctx context.Context, user *models.User) (*models
 	}
 	return user, nil
 }
-func (s userStorage) GetPagedUsers(ctx context.Context, paging *dto.Paging) ([]models.User, error) {
+func (s userStorage) GetPagedUsers(ctx context.Context, paging *models.Paging) ([]models.User, error) {
 	var users []models.User
 	if err := s.client.Offset(paging.Offset).Limit(paging.Limit).Find(&users).Error; err != nil {
 		return nil, err
@@ -48,7 +47,7 @@ func (s userStorage) GetPagedUsers(ctx context.Context, paging *dto.Paging) ([]m
 	return users, nil
 }
 
-func (s userStorage) GetUserByField(ctx context.Context, m *map[string]interface{}, paging dto.Paging) ([]models.User, error) {
+func (s userStorage) GetUserByField(ctx context.Context, m *map[string]interface{}, paging models.Paging) ([]models.User, error) {
 	var users []models.User
 	query := s.client.Offset(paging.Offset).Limit(paging.Limit)
 	for k, v := range *m {

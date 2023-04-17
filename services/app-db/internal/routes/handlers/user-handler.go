@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-db/internal/core/models"
-	"github.com/AppsLab-KE/backend-everyshilling/services/app-db/internal/dto"
 	"github.com/AppsLab-KE/be-go-gen-grpc/db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -13,10 +12,10 @@ func (s *Handler) CreateUser(context context.Context, userReq *db.CreateUserReq)
 		return nil, ErrEmptyRequest
 	}
 	user := &models.User{
-		Name:         userReq.Name,
-		Email:        userReq.Email,
-		Phone:        userReq.PhoneNumber,
-		PasswordHash: userReq.PasswordHash,
+		Name:     userReq.Name,
+		Email:    userReq.Email,
+		Phone:    userReq.PhoneNumber,
+		Password: userReq.PasswordHash,
 	}
 
 	createdUser, err := s.userRepo.CreateUser(context, user)
@@ -41,10 +40,10 @@ func (s *Handler) UpdateUser(context context.Context, userReq *db.UpdateUserReq)
 		return nil, ErrEmptyRequest
 	}
 	user := &models.User{
-		Name:         userReq.Name,
-		Email:        userReq.Email,
-		Phone:        userReq.PhoneNumber,
-		PasswordHash: userReq.PasswordHash,
+		Name:     userReq.Name,
+		Email:    userReq.Email,
+		Phone:    userReq.PhoneNumber,
+		Password: userReq.PasswordHash,
 	}
 
 	createdUser, err := s.userRepo.UpdateUser(context, user)
@@ -69,7 +68,7 @@ func (s *Handler) GetPagedUsers(ctx context.Context, page *db.GetPagedUsersReq) 
 		return nil, ErrEmptyRequest
 	}
 
-	pageDto := &dto.Paging{
+	pageDto := &models.Paging{
 		Offset: int(page.Offset),
 		Limit:  int(page.Limit),
 	}

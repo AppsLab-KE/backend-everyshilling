@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-db/internal/core/models"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-db/internal/core/ports"
-	"github.com/AppsLab-KE/backend-everyshilling/services/app-db/internal/dto"
 )
 
 type userRepo struct {
@@ -20,11 +19,11 @@ func (u userRepo) UpdateUser(ctx context.Context, user *models.User) (*models.Us
 	return u.db.UpdateUser(ctx, user)
 }
 
-func (u userRepo) GetPagedUsers(ctx context.Context, paging *dto.Paging) ([]models.User, error) {
+func (u userRepo) GetPagedUsers(ctx context.Context, paging *models.Paging) ([]models.User, error) {
 	return u.db.GetPagedUsers(ctx, paging)
 }
 
-func (u userRepo) GetUserByField(ctx context.Context, m *map[string]interface{}, paging dto.Paging) ([]models.User, error) {
+func (u userRepo) GetUserByField(ctx context.Context, m *map[string]interface{}, paging models.Paging) ([]models.User, error) {
 	return u.db.GetUserByField(ctx, m, paging)
 }
 
