@@ -17,7 +17,7 @@ private_key = key
 secret = b'MysecretKey'
 
 # Set the steps and get the unix time
-time_step=300
+time_step=120
 current_time =int(time.time())
 
 # Get the number of time steps
