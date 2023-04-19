@@ -1,27 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
-
 metadata:
-  name: auth-deployment
-  labels:
-    app: auth
-
+  name: grpcserver
+  namespace: grpcserver
 spec:
-  replicas: 3
   selector:
     matchLabels:
-      app: auth
-
+      app: grpcserver
+  replicas: 1
   template:
     metadata:
       labels:
-        app: nginx
-
+        app: grpcserver
     spec:
       containers:
-
-      - name: go-app-auth
-        image: nginx:1.14.2
-        imagePullPolicy: IfNotPresent
+      - name: grpc-demo
+        image: 540828511394.dkr.ecr.us-east-1.amazonaws.com/app-auth:latest   #<------- Change to the URI that the Docker image is pushed to
+        imagePullPolicy: Always
         ports:
-        - containerPort: 80
+        - name: grpc-api
+          containerPort: 9000
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+      restartPolicy: Always
