@@ -10,9 +10,7 @@ services:
     volumes:
       - ./docs/everyshilling_openapi.yaml:/usr/src/prism/packages/cli/everyshilling_openapi.yaml
 
-
-
-  # #backend services for both python and go
+  #backend services for both python and go
   # app-auth:
   #   container_name: app-auth
   #   env_file: services/app-auth/.env.example
@@ -26,54 +24,54 @@ services:
   #     interval: 10s
   #     retries: 10
 
-#   postgres-db:
-#     image: postgres:13-alpine
-#     restart: always
-#     container_name: postgres-db
-#     environment:
-#       - POSTGRES_USER=postgres
-#       - POSTGRES_PASSWORD=password
-#       - POSTGRES_DB=everyshillings
-#     ports:
-#       - '5432:5432'
-#     volumes:
-#       - db:/var/lib/postgresql/data
-#     networks:
-#       - internal_network
+  postgres-db:
+    image: postgres:13-alpine
+    restart: always
+    container_name: postgres-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=everyshillings
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - internal_network
 
-#   app-otp:
-#     build:
-#       context: services/app-otp
-#       dockerfile: Dockerfile
-#     ports:
-#       - "3000:3000"
-#   #   # depends_on:
-#   #   #   - go_service
-#   #   networks:
-#   #     - grpc_network
+  # app-otp:
+  #   build:
+  #     context: services/app-otp
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:3000"
+  #   # depends_on:
+  #   #   - go_service
+  #   networks:
+  #     - grpc_network
 
-#   app-db:
-#     container_name: app-db
-#     build:
-#       context: services/app-db
-#       dockerfile: Dev.Dockerfile
-#     env_file:
-#       - services/app-db/.env.example
-#     ports:
-#       - "3001:3001"
-#     networks:
-#       - internal_network
-#     depends_on:
-#       - postgres-db
+  app-db:
+    container_name: app-db
+    build:
+      context: services/app-db
+      dockerfile: Dev.Dockerfile
+    env_file:
+      - services/app-db/.env.example
+    ports:
+      - "3001:3001"
+    networks:
+      - internal_network
+    depends_on:
+      - postgres-db
 
-#   app-auth:
-#     build:
-#       context: services/app-auth
-#       dockerfile: Dev.Dockerfile
-#     environment:
-#       - PORT=3002
-#     ports:
-#       - "3002:3002"
+  app-auth:
+    build:
+      context: services/app-auth
+      dockerfile: Dev.Dockerfile
+    environment:
+      - PORT=3002
+    ports:
+      - "3002:3002"
 
 # networks:
 #   grpc_network:
