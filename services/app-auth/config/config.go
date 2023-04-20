@@ -5,7 +5,12 @@ type Jwt struct {
 	ExpiryMinutes int
 }
 
-type Database struct {
+type DatabaseService struct {
+	Port string
+	Host string
+}
+
+type OtpService struct {
 	Port string
 	Host string
 }
@@ -26,5 +31,6 @@ type Config struct {
 	Rabbit   Rabbit
 	Cache    Cache
 	Jwt      Jwt
-	Database Database
+	Database DatabaseService
+	OTP      OtpService
 }

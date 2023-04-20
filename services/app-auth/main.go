@@ -21,8 +21,6 @@ func main() {
 	log := logrus.New()
 	// Dependency initialisation
 
-	// TODO Connect to infrastructure
-
 	// TODO Initialise repositories & services
 
 	// Initialise usecases
