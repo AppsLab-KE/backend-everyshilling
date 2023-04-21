@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/adapters"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/usecase"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"net/http"
@@ -27,6 +28,6 @@ func okResponse[T any](data T) dto.DefaultRes[T] {
 	}
 }
 
-func NewHandler(authUC *usecase.AuthUseCase) ServerInterface {
+func NewHandler(authUC adapters.AuthUseCase) ServerInterface {
 	return &Handler{}
 }

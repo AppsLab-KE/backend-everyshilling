@@ -8,11 +8,11 @@ import (
 )
 
 func (h Handler) Login(c *gin.Context) {
-	var requestBody dto.RequestLogin
-	var responseBody dto.DefaultRes[*dto.UserLoginRes]
+	var requestBody dto.LoginInitReq
+	var responseBody dto.DefaultRes[*dto.LoginInitRes]
 
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
-		responseBody = badRequest[*dto.UserLoginRes](err.Error())
+		responseBody = badRequest[*dto.LoginInitRes](err.Error())
 		c.JSON(http.StatusBadRequest, responseBody)
 		return
 	}
@@ -22,29 +22,33 @@ func (h Handler) Login(c *gin.Context) {
 
 	usr, err := h.AuthUC.LoginUser(ctx, requestBody)
 	if err != nil {
-		responseBody = badRequest[*dto.UserLoginRes](err.Error())
+		responseBody = badRequest[*dto.LoginInitRes](err.Error())
 		// TODO Process error types
 		c.JSON(http.StatusBadRequest, responseBody)
 		return
 	}
 
-	responseBody = okResponse[*dto.UserLoginRes](usr)
+	responseBody = okResponse[*dto.LoginInitRes](usr)
 	c.JSON(200, responseBody)
 }
 
 func (h Handler) VerifyLoginOTP(c *gin.Context, trackingUuid string) {
 	// Get trackingID
 	// Body otpCode
-	var requestBody dto.OtpVerificationReq
 	var responseBody dto.DefaultRes[*dto.OtpVerificationRes]
-
+	var otpBody dto.LoginOTPBody
 	mainCtx, cancelFunc := context.WithCancel(context.Background())
 	defer cancelFunc()
 
-	if err := c.ShouldBindJSON(&requestBody); err != nil {
+	if err := c.ShouldBindJSON(&otpBody); err != nil {
 		responseBody = badRequest[*dto.OtpVerificationRes](err.Error())
 		c.JSON(http.StatusBadRequest, responseBody)
 		return
+	}
+
+	requestBody := dto.OtpVerificationReq{
+		TrackingUID: trackingUuid,
+		OtpCode:     trackingUuid,
 	}
 
 	res, err := h.AuthUC.VerifyLoginOTP(mainCtx, requestBody)

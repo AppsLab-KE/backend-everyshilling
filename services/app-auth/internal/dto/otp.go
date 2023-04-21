@@ -12,7 +12,7 @@ type OtpGenRes struct {
 
 type OtpVerificationReq struct {
 	TrackingUID string
-	OtpCode     string
+	OtpCode     string `json:"otp_code"`
 }
 
 type OtpVerificationRes struct {

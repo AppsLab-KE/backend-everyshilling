@@ -333,6 +333,7 @@ components:
           description: User's password
       required:
         - phone
+        - password
 
     Response:
       type: object
