@@ -57,7 +57,7 @@ func (s *Server) Run() {
 	go func() {
 		err = grpcServer.Serve(lis)
 		if err != nil {
-			log.Fatal("cannot start grpc server:", err)
+			log.Fatal("cannot start apps server:", err)
 			return
 		}
 	}()

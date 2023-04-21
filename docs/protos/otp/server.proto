@@ -8,6 +8,7 @@ service OtpService {
     rpc HealthCheck(DefaultRequest) returns (HealthResponse);
     rpc CreateAndSendOtp(CreateAndSendOtpReq) returns (CreateAndSendOtpRes);
     rpc VerifyOtp(VerifyOTPReq) returns (VerifyOTPRes) {}
+    rpc ResendOTP(ResendOTPRed) returns (ResendOTPRes) {}
 }
 
 message DefaultRequest {}
