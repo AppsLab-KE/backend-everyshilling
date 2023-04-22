@@ -2,13 +2,13 @@ import uuid
 import grpc
 import logging
 from . import otp
-from everyshillingsproto.otp import server_pb2_grpc
-from everyshillingsproto.otp import server_pb2
+from everyshillingsproto.otp import otpserver_pb2_grpc
+from everyshillingsproto.otp import otpserver_pb2
 
 
-class otp_service(server_pb2_grpc.OtpServiceServicer):
+class otp_service(otpserver_pb2_grpc.OtpServiceServicer):
     def HealthCheck(self, request, context):
-        health = server_pb2.DefaultResponse()
+        health = otpserver_pb2.DefaultResponse()
         return health
 
     def CreateAndSendOtp(self, request, context):
@@ -20,7 +20,7 @@ class otp_service(server_pb2_grpc.OtpServiceServicer):
 
         # Send otp to phone using africa's talking
 
-        return server_pb2.CreateAndSendOtpRes(
+        return otpserver_pb2.CreateAndSendOtpRes(
             message=message,
             status_code=status_code,
             tracking_uuid=tracking_uuid,
@@ -30,7 +30,7 @@ class otp_service(server_pb2_grpc.OtpServiceServicer):
         message = "otp valid"
         status_code = 200
 
-        return server_pb2.VerifyOTPRes(
+        return otpserver_pb2.VerifyOTPRes(
             message=message,
             status_code=status_code
         )
@@ -41,7 +41,7 @@ class otp_service(server_pb2_grpc.OtpServiceServicer):
 
     async def run(self, port):
         server = grpc.aio.server()
-        server_pb2_grpc.add_OtpServiceServicer_to_server(self, server)
+        otpserver_pb2_grpc.add_OtpServiceServicer_to_server(self, server)
         listen_addr = f"[::]:{port}"
         server.add_insecure_port(listen_addr)
         logging.info("starting server")

@@ -22,7 +22,7 @@ type authRepo struct {
 }
 
 func (a authRepo) ResendOtpCode(ctx context.Context, data dto.ResendOTPReq) (*dto.ResendOTPRes, error) {
-	resendOtpReq := &otp.ResendOTPRed{
+	resendOtpReq := &otp.ResendOTPReq{
 		TrackingId: data.TrackingUID,
 	}
 

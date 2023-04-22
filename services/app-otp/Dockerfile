@@ -1,24 +1,17 @@
-# FROM python:3.9.7-alpine
-
-# WORKDIR /app-otp/otp
-
-# COPY requirements.txt requirements.txt
-# RUN pip install --no-cache-dir -r requirements.txt
-
-# COPY . .
-
-# CMD ["python3" , "otp.py"]
-
-# Use an official Python runtime as a base image
-
 FROM python:3.9.7-alpine
 
 WORKDIR /app
+RUN apk  add git gcc openssl-dev
+
+RUN pip install -U \
+    pip \
+    setuptools \
+    wheel
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-COPY otp .
+RUN pip install -r requirements.txt
 
-EXPOSE 3000
+COPY . .
+
 CMD ["python", "main.py"]

@@ -3,7 +3,7 @@ module github.com/AppsLab-KE/backend-everyshilling/services/app-authentication
 go 1.19
 
 require (
-	github.com/AppsLab-KE/be-go-gen-grpc v0.0.6
+	github.com/AppsLab-KE/be-go-gen-grpc v0.0.10
 	github.com/deepmap/oapi-codegen v1.12.4
 	github.com/gin-gonic/gin v1.9.0
 	github.com/golang-jwt/jwt/v5 v5.0.0-rc.2

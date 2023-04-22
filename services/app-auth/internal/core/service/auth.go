@@ -37,8 +37,8 @@ func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error)
 	cancel()
 
 	// check if user with phone number exists
-	user, _ := d.repo.GetUserByPhone(ctx, request.Phone)
-	if user != nil {
+	user, err := d.repo.GetUserByPhone(ctx, request.Phone)
+	if user == nil || err != nil {
 		return nil, ErrUserNotFound
 	}
 
@@ -166,9 +166,9 @@ func (d AuthService) SendLoginOtp(request dto.LoginInitReq) (*dto.LoginInitRes, 
 	otpReq := dto.OtpGenReq{Phone: request.Phone}
 
 	// check if user with phone number exists
-	user, _ := d.repo.GetUserByPhone(ctx, request.Phone)
-	if user != nil {
-		return nil, ErrIncorrectPassword
+	user, err := d.repo.GetUserByPhone(ctx, request.Phone)
+	if user == nil || err != nil {
+		return nil, ErrUserNotFound
 	}
 
 	// verify login password
@@ -213,8 +213,8 @@ func (d AuthService) VerifyLoginOtp(request dto.OtpVerificationReq) (*dto.LoginR
 	}
 
 	// check if user with phone number exists
-	user, _ := d.repo.GetUserByPhone(ctx, phone)
-	if user != nil {
+	user, err := d.repo.GetUserByPhone(ctx, phone)
+	if user == nil || err != nil {
 		return nil, ErrIncorrectOTP
 	}
 
@@ -280,9 +280,9 @@ func (d AuthService) SendVerifyPhoneOTP(request dto.OtpGenReq) (*dto.OtpGenRes, 
 	otpReq := dto.OtpGenReq{Phone: request.Phone}
 
 	// check if user with phone number exists
-	user, _ := d.repo.GetUserByPhone(ctx, request.Phone)
-	if user != nil {
-		return nil, ErrIncorrectPassword
+	user, err := d.repo.GetUserByPhone(ctx, request.Phone)
+	if user == nil || err != nil {
+		return nil, ErrUserNotFound
 	}
 
 	// if user exists, send otp
@@ -316,8 +316,8 @@ func (d AuthService) VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) 
 	}
 
 	// check if user with phone number exists
-	user, _ := d.repo.GetUserByPhone(ctx, phone)
-	if user != nil {
+	user, err := d.repo.GetUserByPhone(ctx, phone)
+	if user != nil || err != nil {
 		return nil, ErrIncorrectOTP
 	}
 

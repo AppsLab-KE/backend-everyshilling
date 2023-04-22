@@ -18,7 +18,7 @@ type DBStorage interface {
 type OTPStorage interface {
 	HealthCheck(ctx context.Context, in *otpProto.DefaultRequest, opts ...grpc.CallOption) (*otpProto.HealthResponse, error)
 	CreateAndSendOtp(ctx context.Context, in *otpProto.CreateAndSendOtpReq, opts ...grpc.CallOption) (*otpProto.CreateAndSendOtpRes, error)
-	ResendOTP(ctx context.Context, in *otpProto.ResendOTPRed, opts ...grpc.CallOption) (*otpProto.ResendOTPRes, error)
+	ResendOTP(ctx context.Context, in *otpProto.ResendOTPReq, opts ...grpc.CallOption) (*otpProto.ResendOTPRes, error)
 	VerifyOtp(ctx context.Context, in *otpProto.VerifyOTPReq, opts ...grpc.CallOption) (*otpProto.VerifyOTPRes, error)
 }
 

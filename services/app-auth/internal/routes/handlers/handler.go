@@ -2,13 +2,12 @@ package handlers
 
 import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/adapters"
-	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/usecase"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"net/http"
 )
 
 type Handler struct {
-	AuthUC usecase.AuthUseCase
+	AuthUC adapters.AuthUseCase
 }
 
 func handleError[T any](err error) dto.DefaultRes[T] {
@@ -29,5 +28,7 @@ func okResponse[T any](data T, message string) dto.DefaultRes[T] {
 }
 
 func NewHandler(authUC adapters.AuthUseCase) ServerInterface {
-	return &Handler{}
+	return &Handler{
+		AuthUC: authUC,
+	}
 }
