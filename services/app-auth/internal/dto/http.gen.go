@@ -5,8 +5,8 @@ package dto
 
 // Phone defines model for Phone.
 type Phone struct {
-	// Email valid phone
-	Email *string `json:"email,omitempty"`
+	// Phone valid phone
+	Phone *string `json:"phone,omitempty"`
 }
 
 // RegisterRequest defines model for RegisterRequest.
@@ -36,7 +36,7 @@ type RequestLogin struct {
 // RequestOTP defines model for RequestOTP.
 type RequestOTP struct {
 	// OtpCode Generated OTP
-	OtpCode *string `json:"otp_code,omitempty"`
+	OtpCode string `json:"otp_code"`
 }
 
 // RequestResetCredentials defines model for RequestResetCredentials.
@@ -73,8 +73,14 @@ type RegisterJSONRequestBody = RegisterRequest
 // ResetJSONRequestBody defines body for Reset for application/json ContentType.
 type ResetJSONRequestBody = Phone
 
+// VerifyResetOTPJSONRequestBody defines body for VerifyResetOTP for application/json ContentType.
+type VerifyResetOTPJSONRequestBody = RequestOTP
+
 // ChangePasswordJSONRequestBody defines body for ChangePassword for application/json ContentType.
 type ChangePasswordJSONRequestBody = RequestResetCredentials
 
-// VerifyResetOTPJSONRequestBody defines body for VerifyResetOTP for application/json ContentType.
-type VerifyResetOTPJSONRequestBody = RequestOTP
+// VerifyPhoneJSONRequestBody defines body for VerifyPhone for application/json ContentType.
+type VerifyPhoneJSONRequestBody = Phone
+
+// VerifyVerificationOTPJSONRequestBody defines body for VerifyVerificationOTP for application/json ContentType.
+type VerifyVerificationOTPJSONRequestBody = RequestOTP

@@ -11,17 +11,17 @@ type Handler struct {
 	AuthUC usecase.AuthUseCase
 }
 
-func badRequest[T any](err string) dto.DefaultRes[T] {
+func handleError[T any](err error) dto.DefaultRes[T] {
 	return dto.DefaultRes[T]{
 		Message: "failed",
-		Error:   err,
+		Error:   err.Error(),
 		Code:    http.StatusBadRequest,
 	}
 }
 
-func okResponse[T any](data T) dto.DefaultRes[T] {
+func okResponse[T any](data T, message string) dto.DefaultRes[T] {
 	return dto.DefaultRes[T]{
-		Message: "Success",
+		Message: message,
 		Error:   "",
 		Code:    200,
 		Data:    data,

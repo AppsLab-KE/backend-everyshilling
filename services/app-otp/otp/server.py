@@ -1,10 +1,9 @@
-import pkgutil
-from everyshillingsproto.otp import otp_pb2
-from everyshillingsproto.otp import server_pb2_grpc
-from everyshillingsproto.otp import server_pb2
-from . import otp
 import uuid
 import grpc
+import logging
+from . import otp
+from everyshillingsproto.otp import server_pb2_grpc
+from everyshillingsproto.otp import server_pb2
 
 
 class otp_service(server_pb2_grpc.OtpServiceServicer):
@@ -45,5 +44,6 @@ class otp_service(server_pb2_grpc.OtpServiceServicer):
         server_pb2_grpc.add_OtpServiceServicer_to_server(self, server)
         listen_addr = f"[::]:{port}"
         server.add_insecure_port(listen_addr)
+        logging.info("starting server")
         await server.start()
         await server.wait_for_termination()

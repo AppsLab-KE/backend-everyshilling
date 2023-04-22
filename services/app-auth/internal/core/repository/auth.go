@@ -21,7 +21,7 @@ type authRepo struct {
 	cacheStorage adapters.CacheStorage
 }
 
-func (a authRepo) ResendOtpCode(ctx context.Context, data dto.ResendLoginOTPReq) (*dto.ResendLoginOTPRes, error) {
+func (a authRepo) ResendOtpCode(ctx context.Context, data dto.ResendOTPReq) (*dto.ResendOTPRes, error) {
 	resendOtpReq := &otp.ResendOTPRed{
 		TrackingId: data.TrackingUID,
 	}
@@ -31,7 +31,7 @@ func (a authRepo) ResendOtpCode(ctx context.Context, data dto.ResendLoginOTPReq)
 		return nil, err
 	}
 
-	otpRes := &dto.ResendLoginOTPRes{
+	otpRes := &dto.ResendOTPRes{
 		StatusCode:   createOtpRes.StatusCode,
 		Message:      createOtpRes.Message,
 		TrackingUuid: createOtpRes.TrackingUuid,

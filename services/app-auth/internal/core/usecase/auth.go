@@ -27,7 +27,7 @@ func (a *AuthUseCase) SendResetOtp(ctx context.Context, req dto.OtpGenReq) (*dto
 	return res, nil
 }
 
-func (a *AuthUseCase) VerifyLoginOTP(ctx context.Context, req dto.OtpVerificationReq) (*dto.OtpVerificationRes, error) {
+func (a *AuthUseCase) VerifyLoginOTP(ctx context.Context, req dto.OtpVerificationReq) (*dto.LoginRes, error) {
 	res, err := a.authService.VerifyLoginOtp(req)
 	if err != nil {
 		return nil, err
@@ -59,6 +59,46 @@ func (a *AuthUseCase) ChangePassword(ctx context.Context, uuid string, body dto.
 // RegisterUser Implements authservice to register a new user
 func (a *AuthUseCase) RegisterUser(ctx context.Context, user dto.RegisterRequest) (*dto.UserRegistrationRes, error) {
 	res, err := a.authService.CreateUser(user)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (a *AuthUseCase) VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) (*dto.OtpVerificationRes, error) {
+	res, err := a.authService.VerifyPhoneOTP(verificationRequest)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (a *AuthUseCase) SendVerifyPhoneOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
+	res, err := a.authService.SendVerifyPhoneOTP(request)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (a *AuthUseCase) ResendVerifyPhoneOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error) {
+	res, err := a.authService.ResendVerifyPhoneOTP(request)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (a *AuthUseCase) ResendLoginOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error) {
+	res, err := a.authService.ResendLoginOTP(request)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (a *AuthUseCase) ResendResetOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error) {
+	res, err := a.authService.ResendResetOTP(request)
 	if err != nil {
 		return nil, err
 	}

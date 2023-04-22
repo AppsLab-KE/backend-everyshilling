@@ -1,7 +1,7 @@
 package dto
 
 type OtpGenReq struct {
-	Phone string
+	Phone string `json:"phone"`
 }
 
 type OtpGenRes struct {
