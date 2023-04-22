@@ -44,7 +44,12 @@ func (a *AuthUseCase) VerifyResetOTP(ctx context.Context, uuid string, body dto.
 }
 
 func (a *AuthUseCase) ChangePassword(ctx context.Context, uuid string, body dto.RequestResetCredentials) (*dto.ResetRes, error) {
-	res, err := a.authService.ChangePassword(body)
+	resetReq := dto.ResetReq{
+		ConfirmPassword: body.ConfirmPassword,
+		Password:        body.Password,
+		TrackerUUID:     uuid,
+	}
+	res, err := a.authService.ChangePassword(resetReq)
 	if err != nil {
 		return nil, err
 	}

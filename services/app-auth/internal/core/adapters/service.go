@@ -18,7 +18,7 @@ type AuthService interface {
 
 	// ChangePassword updates the user's password after successful verification of the OTP sent to the user.
 	// It takes in a dto.RequestResetCredentials as input and returns a dto.ResetRes and an error as output.
-	ChangePassword(request dto.RequestResetCredentials) (*dto.ResetRes, error)
+	ChangePassword(request dto.ResetReq) (*dto.ResetRes, error)
 
 	// SendLoginOtp sends an OTP to the user's registered phone number or email to initiate the login process.
 	// It takes in a dto.LoginInitReq as input and returns a dto.LoginInitRes and an error as output.

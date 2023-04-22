@@ -16,8 +16,9 @@ var (
 )
 
 type authRepo struct {
-	dbStorage  adapters.DBStorage
-	otpStorage adapters.OTPStorage
+	dbStorage    adapters.DBStorage
+	otpStorage   adapters.OTPStorage
+	cacheStorage adapters.CacheStorage
 }
 
 func (a authRepo) ResendOtpCode(ctx context.Context, data dto.ResendLoginOTPReq) (*dto.ResendLoginOTPRes, error) {
@@ -188,9 +189,34 @@ func (a authRepo) UpdateUser(ctx context.Context, user entity.User) (*entity.Use
 	return &updatedUser, nil
 }
 
-func NewAuthRepo(dbStorage adapters.DBStorage, otpStorage adapters.OTPStorage) adapters.AuthRepo {
+func (a authRepo) SavePhoneFromLoginOTP(ctx context.Context, trackerUUID, phone string) error {
+	return a.cacheStorage.SavePhoneFromLoginOTP(ctx, trackerUUID, phone)
+}
+
+func (a authRepo) GetPhoneFromLoginOTP(ctx context.Context, trackerUUID string) (string, error) {
+	return a.cacheStorage.GetPhoneFromLoginOTP(ctx, trackerUUID)
+}
+
+func (a authRepo) SavePhoneFromResetOTP(ctx context.Context, trackerUUID, phone string) error {
+	return a.SavePhoneFromResetOTP(ctx, trackerUUID, phone)
+}
+
+func (a authRepo) GetPhoneFromResetOTP(ctx context.Context, trackerUUID string) (string, error) {
+	return a.cacheStorage.GetPhoneFromResetOTP(ctx, trackerUUID)
+}
+
+func (a authRepo) SavePhoneFromVerificationOTP(ctx context.Context, trackerUUID, phone string) error {
+	return a.cacheStorage.SavePhoneFromVerificationOTP(ctx, trackerUUID, phone)
+}
+
+func (a authRepo) GetPhoneFromVerificationOTP(ctx context.Context, trackerUUID string) (string, error) {
+	return a.cacheStorage.GetPhoneFromVerificationOTP(ctx, trackerUUID)
+}
+
+func NewAuthRepo(cacheStorage adapters.CacheStorage, dbStorage adapters.DBStorage, otpStorage adapters.OTPStorage) adapters.AuthRepo {
 	return &authRepo{
-		dbStorage:  dbStorage,
-		otpStorage: otpStorage,
+		dbStorage:    dbStorage,
+		otpStorage:   otpStorage,
+		cacheStorage: cacheStorage,
 	}
 }

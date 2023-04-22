@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"context"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/service"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
-	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -38,11 +38,11 @@ func (h Handler) Register(c *gin.Context) {
 		return
 	}
 	switch err {
-	case errors.ErrUserExists:
+	case service.ErrUserExists:
 		responseBody.Code = http.StatusConflict
-	case errors.ErrUserCreation:
+	case service.ErrUserCreation:
 		responseBody.Code = http.StatusInternalServerError
-	case errors.ErrRequestValidation:
+	case service.ErrRequestValidation:
 		responseBody.Code = http.StatusBadRequest
 	default:
 		responseBody.Error = ""

@@ -22,6 +22,7 @@ var (
 	ErrUserCreation      = errors.New("io error while creating user. see server logs")
 	ErrValidationError   = errors.New("validation error")
 	ErrRequestValidation = errors.New("validation  error")
+	ErrCache             = errors.New("Error occured while saving cache")
 )
 
 func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
@@ -38,6 +39,12 @@ func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error)
 	otpRes, err := d.repo.CreateOtpCode(ctx, request)
 	if user != nil {
 		return nil, err
+	}
+
+	// save trackerID
+	err = d.repo.SavePhoneFromResetOTP(ctx, otpRes.TrackingUuid, request.Phone)
+	if err != nil {
+		return nil, ErrCache
 	}
 
 	return otpRes, nil
@@ -90,18 +97,23 @@ func (d AuthService) CreateUser(registerRequest dto.RegisterRequest) (*dto.UserR
 }
 
 func (d AuthService) VerifyResetOTP(request dto.OtpVerificationReq) (*dto.OtpVerificationRes, error) {
-	//TODO implement me
-	panic("implement me")
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	verificationRes, err := d.repo.VerifyOtpCode(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+
+	return verificationRes, nil
 }
 
-func (d AuthService) ChangePassword(request dto.RequestResetCredentials) (*dto.ResetRes, error) {
-	//TODO implement me
-	panic("implement me")
+func (d AuthService) ChangePassword(request dto.ResetReq) (*dto.ResetRes, error) {
+
 }
 
 func (d AuthService) SendLoginOtp(request dto.LoginInitReq) (*dto.LoginInitRes, error) {
-	//TODO implement me
-	panic("implement me")
+
 }
 
 func (d AuthService) VerifyLoginOtp(request dto.OtpVerificationReq) (*dto.OtpVerificationRes, error) {
