@@ -1,1 +1,2 @@
+pycryptodome==3.17
 everyshillings-proto @ git+https://github.com/AppsLab-KE/be-python-gen-grpc.git@main

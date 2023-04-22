@@ -41,8 +41,8 @@ type RequestOTP struct {
 
 // RequestResetCredentials defines model for RequestResetCredentials.
 type RequestResetCredentials struct {
-	ConfirmPassword *string `json:"confirm_password,omitempty"`
-	Password        *string `json:"password,omitempty"`
+	ConfirmPassword string `json:"confirm_password"`
+	Password        string `json:"password"`
 }
 
 // Response defines model for Response.

@@ -58,7 +58,6 @@ func (a *AuthUseCase) ChangePassword(ctx context.Context, uuid string, body dto.
 
 // RegisterUser Implements authservice to register a new user
 func (a *AuthUseCase) RegisterUser(ctx context.Context, user dto.RegisterRequest) (*dto.UserRegistrationRes, error) {
-	// TODO: Validate struct
 	res, err := a.authService.CreateUser(user)
 	if err != nil {
 		return nil, err

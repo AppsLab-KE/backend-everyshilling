@@ -45,16 +45,30 @@ services:
      networks:
        - internal_network
 
+  redis-db:
+    image: redis:6-alpine
+    container_name: cache-db
+    ports:
+      - '3007:3007'
+    restart: always
+    command: --port 3007
+    healthcheck:
+      test: ping -c3 cache-db:3007
+      interval: 10s
+      retries: 10
+    networks:
+      - internal_network
+
+
   app-otp:
      build:
        context: services/app-otp
        dockerfile: Dockerfile
      ports:
        - "3000:3000"
-   #   # depends_on:
-   #   #   - go_service
-   #   networks:
-   #     - grpc_network
+     depends_on:
+       - redis-db
+       - app-db
 
   app-db:
      container_name: app-db
@@ -69,13 +83,6 @@ services:
        - internal_network
      depends_on:
        - postgres-db
-
-
-
-
-# networks:
-#   grpc_network:
-#     driver: bridge
 
 #to be changed once handlers is set
 networks:

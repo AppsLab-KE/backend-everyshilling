@@ -22,7 +22,10 @@ var (
 	ErrUserCreation      = errors.New("io error while creating user. see server logs")
 	ErrValidationError   = errors.New("validation error")
 	ErrRequestValidation = errors.New("validation  error")
-	ErrCache             = errors.New("Error occured while saving cache")
+	ErrCache             = errors.New("error occured while saving cache")
+	ErrCacheFetch        = errors.New("error occured while fetching cache")
+	ErrPasswordNotMatch  = errors.New("passwords dont match")
+	ErrIncorrectPassword = errors.New("incorrect password/username")
 )
 
 func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
@@ -100,6 +103,12 @@ func (d AuthService) VerifyResetOTP(request dto.OtpVerificationReq) (*dto.OtpVer
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 
+	// Save some IO time by checking redis
+	_, err := d.repo.GetPhoneFromResetOTP(ctx, request.TrackingUID)
+	if err != nil {
+		return nil, ErrCacheFetch
+	}
+
 	verificationRes, err := d.repo.VerifyOtpCode(ctx, request)
 	if err != nil {
 		return nil, err
@@ -109,36 +118,97 @@ func (d AuthService) VerifyResetOTP(request dto.OtpVerificationReq) (*dto.OtpVer
 }
 
 func (d AuthService) ChangePassword(request dto.ResetReq) (*dto.ResetRes, error) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
 
+	if request.ConfirmPassword != request.Password {
+		return nil, ErrPasswordNotMatch
+	}
+	phone, err := d.repo.GetPhoneFromResetOTP(ctx, request.TrackerUUID)
+	if err != nil {
+		return nil, ErrCacheFetch
+	}
+
+	user, err := d.repo.GetUserByPhone(ctx, phone)
+	if user != nil {
+		return nil, ErrUserExists
+	}
+
+	// create password hash
+	hashedPassword, err := hash.GenerateHash(request.Password)
+	if err != nil {
+		log.Errorf("password hashing error: %s", err)
+		return nil, err
+	}
+
+	user.Hash = hashedPassword
+
+	// update user
+	_, err = d.repo.UpdateUser(ctx, *user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.ResetRes{}, nil
 }
 
 func (d AuthService) SendLoginOtp(request dto.LoginInitReq) (*dto.LoginInitRes, error) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
 
+	otpReq := dto.OtpGenReq{Phone: request.Phone}
+
+	// check if user with phone number exists
+	user, _ := d.repo.GetUserByPhone(ctx, request.Phone)
+	if user != nil {
+		return nil, ErrIncorrectPassword
+	}
+
+	// verify login password
+	if !hash.CompareHash(request.Password, user.Hash) {
+		return nil, ErrIncorrectPassword
+	}
+
+	// if user exists, send otp
+	otpRes, err := d.repo.CreateOtpCode(ctx, otpReq)
+	if user != nil {
+		return nil, err
+	}
+
+	// save trackerID
+	err = d.repo.SavePhoneFromLoginOTP(ctx, otpRes.TrackingUuid, request.Phone)
+	if err != nil {
+		return nil, ErrCache
+	}
+
+	// generate response
+	loginRes := &dto.LoginInitRes{
+		StatusCode:   otpRes.StatusCode,
+		Message:      otpRes.Message,
+		TrackingUuid: otpRes.TrackingUuid,
+	}
+
+	return loginRes, nil
 }
 
 func (d AuthService) VerifyLoginOtp(request dto.OtpVerificationReq) (*dto.OtpVerificationRes, error) {
-	//TODO implement me
-	panic("implement me")
+
 }
 
 func (d AuthService) ResendLoginOTP(request dto.ResendLoginOTPReq) (*dto.ResendLoginOTPRes, error) {
-	//TODO implement me
-	panic("implement me")
+
 }
 
 func (d AuthService) SendVerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) (*dto.OtpVerificationRes, error) {
-	//TODO implement me
-	panic("implement me")
+
 }
 
 func (d AuthService) VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) (*dto.OtpVerificationRes, error) {
-	//TODO implement me
-	panic("implement me")
+
 }
 
 func (d AuthService) ResendVerifyPhoneOTP(request dto.ResendLoginOTPReq) (*dto.ResendLoginOTPRes, error) {
-	//TODO implement me
-	panic("implement me")
+
 }
 
 func NewDefaultAuthService(jwtConfig config.Jwt, repo adapters.AuthRepo) adapters.AuthService {

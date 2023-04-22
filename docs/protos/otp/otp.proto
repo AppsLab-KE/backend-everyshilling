@@ -4,8 +4,6 @@ package otp;
 option go_package = "github.com/AppsLab-KE/backend-everyshillings/otp";
 
 
-
-
 message CreateAndSendOtpReq {
   string phone_number = 1;
 }

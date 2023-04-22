@@ -320,6 +320,9 @@ components:
         confirm_password:
           type: string
           example: "BlackApple78"
+      required:
+        - password
+        - confirm_password
 
     RequestLogin:
       type: object
