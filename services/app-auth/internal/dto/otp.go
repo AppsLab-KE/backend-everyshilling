@@ -1,7 +1,7 @@
 package dto
 
 type OtpGenReq struct {
-	Phone string
+	Phone string `json:"phone"`
 }
 
 type OtpGenRes struct {
@@ -12,7 +12,7 @@ type OtpGenRes struct {
 
 type OtpVerificationReq struct {
 	TrackingUID string
-	OtpCode     string
+	OtpCode     string `json:"otp_code"`
 }
 
 type OtpVerificationRes struct {

@@ -18,6 +18,17 @@ type DBStorage interface {
 type OTPStorage interface {
 	HealthCheck(ctx context.Context, in *otpProto.DefaultRequest, opts ...grpc.CallOption) (*otpProto.HealthResponse, error)
 	CreateAndSendOtp(ctx context.Context, in *otpProto.CreateAndSendOtpReq, opts ...grpc.CallOption) (*otpProto.CreateAndSendOtpRes, error)
-	ResendOTP(ctx context.Context, in *otpProto.ResendOTPRed, opts ...grpc.CallOption) (*otpProto.ResendOTPRes, error)
+	ResendOTP(ctx context.Context, in *otpProto.ResendOTPReq, opts ...grpc.CallOption) (*otpProto.ResendOTPRes, error)
 	VerifyOtp(ctx context.Context, in *otpProto.VerifyOTPReq, opts ...grpc.CallOption) (*otpProto.VerifyOTPRes, error)
+}
+
+type CacheStorage interface {
+	SavePhoneFromLoginOTP(ctx context.Context, trackerUUID, phone string) error
+	GetPhoneFromLoginOTP(ctx context.Context, trackerUUID string) (string, error)
+
+	SavePhoneFromResetOTP(ctx context.Context, trackerUUID, phone string) error
+	GetPhoneFromResetOTP(ctx context.Context, trackerUUID string) (string, error)
+
+	SavePhoneFromVerificationOTP(ctx context.Context, trackerUUID, phone string) error
+	GetPhoneFromVerificationOTP(ctx context.Context, trackerUUID string) (string, error)
 }

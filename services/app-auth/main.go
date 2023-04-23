@@ -42,8 +42,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	cacheStorage, err := storage.NewCacheStorage(cfg.Redis)
+	if err != nil {
+		log.Fatal(err)
+	}
 	// Repos
-	authRepo := repository.NewAuthRepo(dbStorage, otpStorage)
+	authRepo := repository.NewAuthRepo(cacheStorage, dbStorage, otpStorage)
 	// services
 	authService := service.NewDefaultAuthService(cfg.Jwt, authRepo)
 
@@ -51,11 +55,7 @@ func main() {
 	authUC := usecase.NewAuthUsecase(authService, nil)
 
 	// server config
-	serverConfig := server.Config{
-		AuthUsecase: authUC,
-		Logger:      log,
-	}
-	handler := server.NewServer(serverConfig)
+	handler := server.NewServer(authUC)
 
 	port := ":" + os.Getenv("PORT")
 	srv := &http.Server{

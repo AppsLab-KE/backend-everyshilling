@@ -14,6 +14,8 @@ message User {
     google.protobuf.Timestamp created_at = 6;
     google.protobuf.Timestamp updated_at = 7;
     google.protobuf.Timestamp deleted_at = 8;
+    string hash = 9;
+    bool verified = 10;
 }
 
 
@@ -35,6 +37,7 @@ message CreateUserRes {
     google.protobuf.Timestamp created_at = 4;
     google.protobuf.Timestamp updated_at = 5;
     google.protobuf.Timestamp deleted_at = 6;
+    string hash = 9;
 }
 
 
@@ -45,7 +48,7 @@ message UpdateUserReq {
      string phone_number = 3;
      string password_hash = 4;
      bool verified = 8;
-    string userID = 5;
+     string userID = 5;
 }
 
 message UpdateUserRes {

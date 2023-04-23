@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "db/user.model.proto";
+import "user.proto";
 package db;
 option go_package = "github.com/AppsLab-KE/backend-everyshillings/db";
 

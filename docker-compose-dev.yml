@@ -6,7 +6,11 @@ services:
     command: mock -p 4010 --host 0.0.0.0 everyshilling_openapi.yaml
     ports:
       - "4010:4010"
-
+    restart: always
+    healthcheck:
+      test: sh -c "ping -c3 prism:4010"
+      interval: 10s
+      retries: 10
     volumes:
       - ./docs/everyshilling_openapi.yaml:/usr/src/prism/packages/cli/everyshilling_openapi.yaml
 
@@ -26,7 +30,7 @@ services:
 
      restart: always
      healthcheck:
-       test: sh -c "ping -c3 app-auth:$AUTH_GRPC_PORT"
+       test: sh -c "ping -c3 app-auth:3002"
        interval: 10s
        retries: 10
 
@@ -42,19 +46,42 @@ services:
        - '5432:5432'
      volumes:
        - db:/var/lib/postgresql/data
+     healthcheck:
+        test: ping -c3 postgres-db:5432
+        interval: 10s
+        retries: 10
      networks:
        - internal_network
+
+  redis-db:
+    image: redis:6-alpine
+    container_name: redis-db
+    ports:
+      - '3007:3007'
+    restart: always
+    command: --port 3007
+    healthcheck:
+      test: ping -c3 cache-db:3007
+      interval: 10s
+      retries: 10
+    networks:
+      - internal_network
+
 
   app-otp:
      build:
        context: services/app-otp
        dockerfile: Dockerfile
      ports:
-       - "3000:3000"
-   #   # depends_on:
-   #   #   - go_service
-   #   networks:
-   #     - grpc_network
+       - "3008:3008"
+     restart: always
+     healthcheck:
+       test: sh -c "ping -c3 app-otp:3008"
+       interval: 10s
+       retries: 10
+     depends_on:
+       - redis-db
+       - app-db
 
   app-db:
      container_name: app-db
@@ -65,17 +92,14 @@ services:
        - services/app-db/.env.example
      ports:
        - "3001:3001"
+     healthcheck:
+       test: sh -c "ping -c3 app-db:3001"
+       interval: 10s
+       retries: 10
      networks:
        - internal_network
      depends_on:
        - postgres-db
-
-
-
-
-# networks:
-#   grpc_network:
-#     driver: bridge
 
 #to be changed once handlers is set
 networks:

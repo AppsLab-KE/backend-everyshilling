@@ -18,7 +18,7 @@ type otpStorage struct {
 	client otp.OtpServiceClient
 }
 
-func (o otpStorage) ResendOTP(ctx context.Context, in *otp.ResendOTPRed, opts ...grpc.CallOption) (*otp.ResendOTPRes, error) {
+func (o otpStorage) ResendOTP(ctx context.Context, in *otp.ResendOTPReq, opts ...grpc.CallOption) (*otp.ResendOTPRes, error) {
 	if o.client == nil {
 		return nil, ErrOTPDown
 	}
