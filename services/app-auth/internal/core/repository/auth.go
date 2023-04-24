@@ -80,7 +80,7 @@ func (a authRepo) VerifyOtpCode(ctx context.Context, data dto.OtpVerificationReq
 	return otpRes, nil
 }
 
-func (a authRepo) CreateUser(ctx context.Context, registerRequest dto.RegisterRequest) (*entity.User, error) {
+func (a authRepo) CreateUser(ctx context.Context, registerRequest dto.RegisterReq) (*entity.User, error) {
 	userReq := db.CreateUserReq{
 		Name:         registerRequest.Name,
 		Email:        registerRequest.Email,

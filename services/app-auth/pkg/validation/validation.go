@@ -6,10 +6,10 @@ import (
 )
 
 var (
-	emailRegexp   = regexp.MustCompilePOSIX("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
-	phoneRegexp   = regexp.MustCompilePOSIX("^(\\+?254|0)[7821]\\d{8}$")
-	otpRegex      = regexp.MustCompilePOSIX("^\\d{6}$")
-	passwordRegex = regexp.MustCompilePOSIX("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\w\\d\\s:])(.{8,})$\n")
+	emailRegexp   = regexp.MustCompile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
+	phoneRegexp   = regexp.MustCompile("^(\\+?254|0)[7821][0-9]{8}$")
+	otpRegex      = regexp.MustCompile("^\\d{6}$")
+	passwordRegex = regexp.MustCompile("^.{8,}$")
 )
 
 func ValidateEmail(email string) bool {

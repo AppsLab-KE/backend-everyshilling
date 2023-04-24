@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/adapters"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/entity"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/service"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"net/http"
@@ -44,6 +45,12 @@ func handleError[T any](err error) dto.DefaultRes[T] {
 	default:
 		responseCode = http.StatusInternalServerError
 
+	}
+
+	// custom error types
+	switch err.(type) {
+	case *entity.ValidationError:
+		responseCode = http.StatusBadRequest
 	}
 
 	responseMessage := http.StatusText(responseCode)

@@ -8,6 +8,9 @@ import (
 )
 
 func (h Handler) Login(c *gin.Context) {
+	if c.IsAborted() {
+		return
+	}
 	var requestBody dto.LoginInitReq
 	var responseBody dto.DefaultRes[*dto.LoginInitRes]
 
@@ -32,6 +35,10 @@ func (h Handler) Login(c *gin.Context) {
 }
 
 func (h Handler) ResendLoginOTP(c *gin.Context, trackingUuid string) {
+	if c.IsAborted() {
+		return
+	}
+
 	var responseBody dto.DefaultRes[*dto.ResendOTPRes]
 	var resendOTPReq dto.ResendOTPReq = dto.ResendOTPReq{
 		TrackingUID: trackingUuid,
@@ -47,6 +54,9 @@ func (h Handler) ResendLoginOTP(c *gin.Context, trackingUuid string) {
 }
 
 func (h Handler) VerifyLoginOTP(c *gin.Context, trackingUuid string) {
+	if c.IsAborted() {
+		return
+	}
 	// Get trackingID
 	// Body otpCode
 	var responseBody dto.DefaultRes[*dto.LoginRes]

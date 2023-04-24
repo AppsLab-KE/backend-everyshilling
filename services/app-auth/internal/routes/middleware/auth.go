@@ -30,24 +30,27 @@ func (m *Manager) Auth(ctx *gin.Context) {
 	}
 
 	if _, exists := ctx.Get(handlers.BearerScopes); exists {
+		// generate default error when unauthorised
 		unauthorisedResponse := unauthorisedError()
+
+		// get token from header
 		bearerToken := ctx.GetHeader(AuthorisationHeader)
 		bearerToken = strings.TrimPrefix(AuthorisationHeaderPrefix, bearerToken)
+
+		// if token is missing, abort
 		if bearerToken == "" {
-			ctx.JSON(http.StatusUnauthorized, unauthorisedResponse)
-			ctx.Abort()
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, unauthorisedResponse)
 			return
 		}
 
+		// validate token
 		userId, err := tokens.VerifyToken(bearerToken, m.config.Jwt.Secret)
 		if err != nil {
-			ctx.JSON(http.StatusUnauthorized, unauthorisedResponse)
-			ctx.Abort()
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, unauthorisedResponse)
 			return
 		}
 
 		ctx.Set(UserUIDKey, userId)
 	}
-
 	ctx.Next()
 }

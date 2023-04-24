@@ -34,7 +34,7 @@ type AuthService interface {
 
 	// CreateUser creates a new user account with the details provided in the dto.RegisterRequest.
 	// It returns a dto.UserRegistrationRes and an error as output.
-	CreateUser(registerRequest dto.RegisterRequest) (*dto.UserRegistrationRes, error)
+	CreateUser(registerRequest dto.RegisterReq) (*dto.UserRegistrationRes, error)
 	// SendVerifyPhoneOTP sends an OTP to the user's registered phone number or email to initiate the phone number verification process.
 	// It takes in a dto.OtpVerificationReq as input and returns a dto.OtpVerificationRes and an error as output.
 	SendVerifyPhoneOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error)

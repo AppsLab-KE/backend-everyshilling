@@ -63,7 +63,7 @@ func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error)
 	return otpRes, nil
 }
 
-func (d AuthService) CreateUser(registerRequest dto.RegisterRequest) (*dto.UserRegistrationRes, error) {
+func (d AuthService) CreateUser(registerRequest dto.RegisterReq) (*dto.UserRegistrationRes, error) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
