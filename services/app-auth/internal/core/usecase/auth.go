@@ -12,6 +12,8 @@ type AuthUseCase struct {
 }
 
 func (a *AuthUseCase) LoginUser(ctx context.Context, req dto.LoginInitReq) (*dto.LoginInitRes, error) {
+	// validate phone
+
 	res, err := a.authService.SendLoginOtp(req)
 	if err != nil {
 		return nil, err
