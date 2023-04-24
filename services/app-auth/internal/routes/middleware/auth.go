@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/routes/handlers"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/pkg/tokens"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -28,22 +29,25 @@ func (m *Manager) Auth(ctx *gin.Context) {
 		return
 	}
 
-	unauthorisedResponse := unauthorisedError()
-	bearerToken := ctx.GetHeader(AuthorisationHeader)
-	bearerToken = strings.TrimPrefix(AuthorisationHeaderPrefix, bearerToken)
-	if bearerToken == "" {
-		ctx.JSON(http.StatusUnauthorized, unauthorisedResponse)
-		ctx.Abort()
-		return
+	if _, exists := ctx.Get(handlers.BearerScopes); exists {
+		unauthorisedResponse := unauthorisedError()
+		bearerToken := ctx.GetHeader(AuthorisationHeader)
+		bearerToken = strings.TrimPrefix(AuthorisationHeaderPrefix, bearerToken)
+		if bearerToken == "" {
+			ctx.JSON(http.StatusUnauthorized, unauthorisedResponse)
+			ctx.Abort()
+			return
+		}
+
+		userId, err := tokens.VerifyToken(bearerToken, m.config.Jwt.Secret)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, unauthorisedResponse)
+			ctx.Abort()
+			return
+		}
+
+		ctx.Set(UserUIDKey, userId)
 	}
 
-	userId, err := tokens.VerifyToken(bearerToken, m.config.Jwt.Secret)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, unauthorisedResponse)
-		ctx.Abort()
-		return
-	}
-
-	ctx.Set(UserUIDKey, userId)
 	ctx.Next()
 }

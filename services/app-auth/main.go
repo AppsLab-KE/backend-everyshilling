@@ -55,7 +55,7 @@ func main() {
 	authUC := usecase.NewAuthUsecase(authService, nil)
 
 	// server config
-	handler := server.NewServer(authUC)
+	handler := server.NewServer(authUC, cfg)
 
 	port := ":" + os.Getenv("PORT")
 	srv := &http.Server{

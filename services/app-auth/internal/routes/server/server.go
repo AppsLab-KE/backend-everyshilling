@@ -1,8 +1,10 @@
 package server
 
 import (
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/config"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/adapters"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/routes/handlers"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/routes/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,10 +14,20 @@ type Config struct {
 	AuthUsecase adapters.AuthUseCase
 }
 
-func NewServer(authUseCase adapters.AuthUseCase) *gin.Engine {
+func NewServer(authUseCase adapters.AuthUseCase, cfg config.Config) *gin.Engine {
 	r := gin.Default()
+
+	middlewareManager := middleware.NewManager(cfg, authUseCase)
+
+	middlewares := []handlers.MiddlewareFunc{
+		middlewareManager.Auth,
+		//middlewareManager.RateLimiter,
+		//middlewareManager.Log,
+	}
+
 	options := handlers.GinServerOptions{
-		BaseURL: BaseUrl,
+		BaseURL:     BaseUrl,
+		Middlewares: middlewares,
 	}
 
 	// Serve swagger spec
