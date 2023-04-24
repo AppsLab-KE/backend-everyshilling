@@ -23,4 +23,6 @@ type AuthRepo interface {
 
 	SavePhoneFromVerificationOTP(ctx context.Context, trackerUUID, phone string) error
 	GetPhoneFromVerificationOTP(ctx context.Context, trackerUUID string) (string, error)
+
+	InvalidateSession() error
 }
