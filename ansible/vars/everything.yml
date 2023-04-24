@@ -1,15 +1,10 @@
 
 cluster_name: everyshilling
-repository_name: everyshilling
+repository_name: backend_everyshilling
+ecr_repository_url: "540828511394.dkr.ecr.us-east-1.amazonaws.com"
 ecr_repo: twala
-image_name: backend_everyshilling_app-db
 image_name : backend_everyshilling_app-auth
-image_name : backend_everyshilling_app-otp
-image_name : redis
-image_version: latest
-image_version: latest
-image_version: latest
-image_version: 6-alpine
+image_version : redis
 region: us-east-1
 size_of_cluster: 4
 

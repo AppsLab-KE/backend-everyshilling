@@ -93,7 +93,7 @@
       docker_image:
         name: "{{ ecr_repo.repository.repositoryUri }}:{{ image_version }}"
         push: yes
-        
+
     - name: Setup ECS cluster
       ecs_cluster:
         name: "{{ cluster_name }}"
