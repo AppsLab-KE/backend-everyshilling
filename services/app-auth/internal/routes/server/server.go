@@ -18,6 +18,8 @@ func NewServer(authUseCase adapters.AuthUseCase) *gin.Engine {
 		BaseURL: BaseUrl,
 	}
 
+	// Serve swagger spec
+
 	// Map handlers
 	h := handlers.NewHandler(authUseCase)
 	handlers.RegisterHandlersWithOptions(r, h, options)

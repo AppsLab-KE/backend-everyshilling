@@ -4,6 +4,7 @@ import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/config"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/adapters"
 	"github.com/AppsLab-KE/be-go-gen-grpc/db"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -16,6 +17,7 @@ func NewDBServiceClient(config config.DatabaseService) (db.DbServiceClient, erro
 		return nil, err
 	}
 
+	log.Info("connected to app-db")
 	client := db.NewDbServiceClient(conn)
 	return client, nil
 }

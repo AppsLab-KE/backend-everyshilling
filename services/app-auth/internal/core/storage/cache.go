@@ -48,7 +48,10 @@ func (c Cache) GetPhoneFromVerificationOTP(ctx context.Context, trackerUUID stri
 }
 
 func NewCacheStorage(redisCfg config.Redis) (adapters.CacheStorage, error) {
-	client := cache.NewClient(redisCfg)
+	client, err := cache.NewClient(redisCfg)
+	if err != nil {
+		return nil, err
+	}
 	return &Cache{
 		client: client,
 	}, nil

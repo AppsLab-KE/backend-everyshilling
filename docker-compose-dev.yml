@@ -33,6 +33,12 @@ services:
        test: sh -c "ping -c3 app-auth:3002"
        interval: 10s
        retries: 10
+     networks:
+        - internal_network
+     depends_on:
+       - app-db
+       - app-otp
+       - redis-db
 
   postgres-db:
      image: postgres:13-alpine
@@ -61,7 +67,7 @@ services:
     restart: always
     command: --port 3007
     healthcheck:
-      test: ping -c3 cache-db:3007
+      test: ping -c3 redis-db:3007
       interval: 10s
       retries: 10
     networks:
@@ -72,6 +78,8 @@ services:
      build:
        context: services/app-otp
        dockerfile: Dockerfile
+     env_file:
+       - services/app-otp/.env.example
      ports:
        - "3008:3008"
      restart: always
@@ -82,6 +90,8 @@ services:
      depends_on:
        - redis-db
        - app-db
+     networks:
+       - internal_network
 
   app-db:
      container_name: app-db

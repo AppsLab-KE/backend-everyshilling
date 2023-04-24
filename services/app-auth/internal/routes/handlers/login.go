@@ -27,7 +27,7 @@ func (h Handler) Login(c *gin.Context) {
 		return
 	}
 
-	responseBody = okResponse[*dto.LoginInitRes](usr, "")
+	responseBody = okResponse[*dto.LoginInitRes](usr, usr.Message)
 	c.JSON(responseBody.Code, responseBody)
 }
 

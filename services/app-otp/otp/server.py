@@ -2,6 +2,7 @@ import uuid
 import grpc
 import logging
 from . import otp
+from everyshillingsproto.otp import otp_pb2
 from everyshillingsproto.otp import otpserver_pb2_grpc
 from everyshillingsproto.otp import otpserver_pb2
 
@@ -20,7 +21,7 @@ class otp_service(otpserver_pb2_grpc.OtpServiceServicer):
 
         # Send otp to phone using africa's talking
 
-        return otpserver_pb2.CreateAndSendOtpRes(
+        return otp_pb2.CreateAndSendOtpRes(
             message=message,
             status_code=status_code,
             tracking_uuid=tracking_uuid,
@@ -30,7 +31,7 @@ class otp_service(otpserver_pb2_grpc.OtpServiceServicer):
         message = "otp valid"
         status_code = 200
 
-        return otpserver_pb2.VerifyOTPRes(
+        return otp_pb2.VerifyOTPRes(
             message=message,
             status_code=status_code
         )

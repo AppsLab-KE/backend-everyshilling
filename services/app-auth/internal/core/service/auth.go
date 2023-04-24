@@ -8,6 +8,7 @@ import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/pkg/hash"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/pkg/tokens"
+	"github.com/redis/go-redis/v9"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
@@ -34,7 +35,7 @@ var (
 
 func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
 	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
+	defer cancel()
 
 	// check if user with phone number exists
 	user, err := d.repo.GetUserByPhone(ctx, request.Phone)
@@ -44,7 +45,7 @@ func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error)
 
 	// if user exists, send otp
 	otpRes, err := d.repo.CreateOtpCode(ctx, request)
-	if user != nil {
+	if err != nil {
 		return nil, err
 	}
 
@@ -54,6 +55,7 @@ func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error)
 	// save trackerID
 	err = d.repo.SavePhoneFromResetOTP(ctx, otpRes.TrackingUuid, request.Phone)
 	if err != nil {
+		log.Errorf("error while caching %v", err)
 		return nil, ErrCacheSave
 	}
 
@@ -108,7 +110,7 @@ func (d AuthService) CreateUser(registerRequest dto.RegisterRequest) (*dto.UserR
 
 func (d AuthService) VerifyResetOTP(request dto.OtpVerificationReq) (*dto.OtpVerificationRes, error) {
 	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
+	defer cancel()
 
 	// Save some IO time by checking redis
 	_, err := d.repo.GetPhoneFromResetOTP(ctx, request.TrackingUID)
@@ -126,18 +128,23 @@ func (d AuthService) VerifyResetOTP(request dto.OtpVerificationReq) (*dto.OtpVer
 
 func (d AuthService) ChangePassword(request dto.ResetReq) (*dto.ResetRes, error) {
 	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
+	defer cancel()
 
 	if request.ConfirmPassword != request.Password {
 		return nil, ErrPasswordNotMatch
 	}
 	phone, err := d.repo.GetPhoneFromResetOTP(ctx, request.TrackerUUID)
 	if err != nil {
+		if err == redis.Nil {
+			return nil, ErrUserNotFound
+		}
+
+		log.Errorf("error fetching from cache: %v", err)
 		return nil, ErrCacheFetch
 	}
 
 	user, err := d.repo.GetUserByPhone(ctx, phone)
-	if user != nil {
+	if err != nil {
 		return nil, ErrUserExists
 	}
 
@@ -161,7 +168,7 @@ func (d AuthService) ChangePassword(request dto.ResetReq) (*dto.ResetRes, error)
 
 func (d AuthService) SendLoginOtp(request dto.LoginInitReq) (*dto.LoginInitRes, error) {
 	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
+	defer cancel()
 
 	otpReq := dto.OtpGenReq{Phone: request.Phone}
 
@@ -178,7 +185,7 @@ func (d AuthService) SendLoginOtp(request dto.LoginInitReq) (*dto.LoginInitRes, 
 
 	// if user exists, send otp
 	otpRes, err := d.repo.CreateOtpCode(ctx, otpReq)
-	if user != nil {
+	if err != nil {
 		return nil, err
 	}
 
@@ -209,6 +216,11 @@ func (d AuthService) VerifyLoginOtp(request dto.OtpVerificationReq) (*dto.LoginR
 	// get phone from DB
 	phone, err := d.repo.GetPhoneFromLoginOTP(ctx, request.TrackingUID)
 	if err != nil {
+		if err == redis.Nil {
+			return nil, ErrUserNotFound
+		}
+
+		log.Errorf("error fetching from cache: %v", err)
 		return nil, ErrCacheFetch
 	}
 
@@ -252,6 +264,11 @@ func (d AuthService) ResendLoginOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 	// get phone from DB
 	phone, err := d.repo.GetPhoneFromLoginOTP(ctx, request.TrackingUID)
 	if err != nil {
+		if err == redis.Nil {
+			return nil, ErrUserNotFound
+		}
+
+		log.Errorf("error fetching from cache: %v", err)
 		return nil, ErrCacheFetch
 	}
 
@@ -275,19 +292,21 @@ func (d AuthService) ResendLoginOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 
 func (d AuthService) SendVerifyPhoneOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
 	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
+	defer cancel()
 
 	otpReq := dto.OtpGenReq{Phone: request.Phone}
 
 	// check if user with phone number exists
 	user, err := d.repo.GetUserByPhone(ctx, request.Phone)
 	if user == nil || err != nil {
+		log.Error(err)
 		return nil, ErrUserNotFound
 	}
 
 	// if user exists, send otp
 	otpRes, err := d.repo.CreateOtpCode(ctx, otpReq)
-	if user != nil {
+	if err != nil {
+		log.Errorf("otp creation error: %v", err)
 		return nil, err
 	}
 
@@ -298,6 +317,7 @@ func (d AuthService) SendVerifyPhoneOTP(request dto.OtpGenReq) (*dto.OtpGenRes, 
 	// save trackerID
 	err = d.repo.SavePhoneFromVerificationOTP(ctx, otpRes.TrackingUuid, request.Phone)
 	if err != nil {
+		log.Errorf("error while caching %v", err)
 		return nil, ErrCacheSave
 	}
 
@@ -312,6 +332,10 @@ func (d AuthService) VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) 
 	// get phone from DB
 	phone, err := d.repo.GetPhoneFromVerificationOTP(ctx, verificationRequest.TrackingUID)
 	if err != nil {
+		if err == redis.Nil {
+			return nil, ErrIncorrectOTP
+		}
+		log.Errorf("error fetching from cache: %v", err)
 		return nil, ErrCacheFetch
 	}
 
@@ -324,6 +348,7 @@ func (d AuthService) VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) 
 	// compare with the otp service
 	otpVerificationRes, err := d.repo.VerifyOtpCode(ctx, verificationRequest)
 	if err != nil {
+		log.Errorf("error while verifying: %v", err)
 		return nil, ErrIncorrectOTP
 	}
 
@@ -365,6 +390,7 @@ func (d AuthService) ResendVerifyPhoneOTP(request dto.ResendOTPReq) (*dto.Resend
 	// cache tracking uuid
 	err = d.repo.SavePhoneFromVerificationOTP(ctx, resendOTPRes.TrackingUuid, phone)
 	if err != nil {
+		log.Errorf("error while caching %v", err)
 		return nil, ErrCacheSave
 	}
 
@@ -394,6 +420,7 @@ func (d AuthService) ResendResetOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 	// cache tracking uuid
 	err = d.repo.SavePhoneFromResetOTP(ctx, resendOTPRes.TrackingUuid, phone)
 	if err != nil {
+		log.Errorf("error while caching %v", err)
 		return nil, ErrCacheSave
 	}
 
