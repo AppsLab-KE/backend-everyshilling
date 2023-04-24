@@ -1,6 +1,7 @@
 package hash
 
 import (
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -17,6 +18,7 @@ func GenerateHash(password string) (string, error) {
 func CompareHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err != nil {
+		log.Error("error comparing hashes ", err)
 		return false
 	}
 	return true

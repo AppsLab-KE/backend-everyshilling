@@ -106,7 +106,7 @@ func (a authRepo) GetUserByPhone(ctx context.Context, phone string) (*entity.Use
 			"phone": &phoneFilter,
 		},
 		Offset: 0,
-		Limit:  0,
+		Limit:  1,
 	}
 	userRes, err := a.dbStorage.GetUserByField(ctx, keyValueReq)
 	if err != nil {
@@ -123,6 +123,8 @@ func (a authRepo) GetUserByPhone(ctx context.Context, phone string) (*entity.Use
 			Name:        userRes.Users[0].Name,
 			Email:       userRes.Users[0].Email,
 			PhoneNumber: userRes.Users[0].PhoneNumber,
+			Verified:    userRes.Users[0].Verified,
+			Hash:        userRes.Users[0].Hash,
 		}
 
 		return user, nil
@@ -140,7 +142,7 @@ func (a authRepo) GetUserByEmail(ctx context.Context, email string) (*entity.Use
 			"email": &emailFilter,
 		},
 		Offset: 0,
-		Limit:  0,
+		Limit:  1,
 	}
 	userRes, err := a.dbStorage.GetUserByField(ctx, keyValueReq)
 	if err != nil {
@@ -157,6 +159,8 @@ func (a authRepo) GetUserByEmail(ctx context.Context, email string) (*entity.Use
 			Name:        userRes.Users[0].Name,
 			Email:       userRes.Users[0].Email,
 			PhoneNumber: userRes.Users[0].PhoneNumber,
+			Verified:    userRes.Users[0].Verified,
+			Hash:        userRes.Users[0].Hash,
 		}
 
 		return user, nil
@@ -172,6 +176,7 @@ func (a authRepo) UpdateUser(ctx context.Context, user entity.User) (*entity.Use
 		PhoneNumber:  user.PhoneNumber,
 		PasswordHash: user.Hash,
 		UserID:       user.UserId,
+		Verified:     user.Verified,
 	}
 
 	userRes, err := a.dbStorage.UpdateUser(ctx, updateUserReq)
@@ -184,6 +189,7 @@ func (a authRepo) UpdateUser(ctx context.Context, user entity.User) (*entity.Use
 		Name:        userRes.Name,
 		Email:       userRes.Email,
 		PhoneNumber: userRes.PhoneNumber,
+		Verified:    userRes.Verified,
 	}
 
 	return &updatedUser, nil
@@ -198,7 +204,7 @@ func (a authRepo) GetPhoneFromLoginOTP(ctx context.Context, trackerUUID string) 
 }
 
 func (a authRepo) SavePhoneFromResetOTP(ctx context.Context, trackerUUID, phone string) error {
-	return a.SavePhoneFromResetOTP(ctx, trackerUUID, phone)
+	return a.cacheStorage.SavePhoneFromResetOTP(ctx, trackerUUID, phone)
 }
 
 func (a authRepo) GetPhoneFromResetOTP(ctx context.Context, trackerUUID string) (string, error) {

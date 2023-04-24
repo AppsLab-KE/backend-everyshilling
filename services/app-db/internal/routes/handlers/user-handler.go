@@ -27,6 +27,8 @@ func (s *Handler) CreateUser(context context.Context, userReq *db.CreateUserReq)
 		Name:        createdUser.Name,
 		Email:       createdUser.Email,
 		PhoneNumber: createdUser.Phone,
+		Verified:    createdUser.Verified,
+		UserID:      user.ID.String(),
 		CreatedAt:   timestamppb.New(createdUser.CreatedAt),
 		UpdatedAt:   timestamppb.New(createdUser.UpdatedAt),
 		DeletedAt:   timestamppb.New(createdUser.DeletedAt.Time),
@@ -43,6 +45,7 @@ func (s *Handler) UpdateUser(context context.Context, userReq *db.UpdateUserReq)
 		Name:     userReq.Name,
 		Email:    userReq.Email,
 		Phone:    userReq.PhoneNumber,
+		Verified: userReq.Verified,
 		Password: userReq.PasswordHash,
 	}
 
@@ -102,7 +105,6 @@ func (s *Handler) GetUserByField(ctx context.Context, filter *db.GetByfieldReq) 
 		return nil, ErrEmptyRequest
 	}
 	var filterMap map[string]interface{} = make(map[string]interface{})
-
 	// fill the filterMap with the filter values
 	for k, f := range filter.Filter {
 		filterMap[k] = f.Value
@@ -127,11 +129,11 @@ func (s *Handler) GetUserByField(ctx context.Context, filter *db.GetByfieldReq) 
 			Name:        usr.Name,
 			Email:       usr.Email,
 			PhoneNumber: usr.Phone,
+			Hash:        usr.Password,
 			CreatedAt:   timestamppb.New(usr.CreatedAt),
 			UpdatedAt:   timestamppb.New(usr.UpdatedAt),
 			DeletedAt:   timestamppb.New(usr.DeletedAt.Time),
 		})
 	}
-
-	return nil, ErrEmptyRequest
+	return &db.GetByfieldRes{Users: res.Users}, nil
 }

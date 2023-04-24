@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 func (h Handler) VerifyPhone(c *gin.Context) {
@@ -23,9 +24,11 @@ func (h Handler) VerifyPhone(c *gin.Context) {
 	if err != nil {
 		responseBody = handleError[*dto.OtpGenRes](err)
 		c.JSON(responseBody.Code, responseBody)
-		c.JSON(400, responseBody)
 		return
 	}
+
+	log.Info("RES", res)
+
 	responseBody = okResponse[*dto.OtpGenRes](res, res.Message)
 	c.JSON(responseBody.Code, responseBody)
 }
