@@ -1,6 +1,7 @@
 
 cluster_name: everyshilling
-repository_name: twala
+repository_name: everyshilling
+ecr_repo: twala
 image_name: backend_everyshilling_app-db
 image_name : backend_everyshilling_app-auth
 image_name : backend_everyshilling_app-otp
@@ -10,7 +11,7 @@ image_version: latest
 image_version: latest
 image_version: 6-alpine
 region: us-east-1
-size_of_cluster: 3
+size_of_cluster: 4
 
 cloud_config:
   region: '{{ region }}'
@@ -23,7 +24,7 @@ cloud_config:
   internet_gateway: true                                           # Only set to false if using local repos (node will be without Internet access)
   admin_username: ec2-user
   security_groups:
-    - name: reverseapi-http
+    - name: everyshilling
       rules:
         - {"proto":"tcp", "from_port":"80", "to_port":"80", "cidr_ip":"0.0.0.0/0"}
         - {"proto":"tcp", "from_port":"443", "to_port":"443", "cidr_ip":"0.0.0.0/0"}
