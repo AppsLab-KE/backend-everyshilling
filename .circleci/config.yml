@@ -7,9 +7,9 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: Build and Push Images
-          command: |
-            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-            make run-dev
-            docker tag everyshilling-backend:latest $DOCKERHUB_USERNAME/everyshilling-backend:latest
-            docker push $DOCKERHUB_USERNAME/everyshilling-backend:latest
+            name: Build and Push Images
+            command: |
+              echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+              make run-dev
+              docker tag everyshilling-backend:latest "$DOCKERHUB_USERNAME/everyshilling-backend:latest"
+              docker push "$DOCKERHUB_USERNAME/everyshilling-backend:latest"
