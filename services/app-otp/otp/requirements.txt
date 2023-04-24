@@ -1,0 +1,5 @@
+pip==23.1
+pycryptodome==3.17
+setuptools==67.6.1
+wheel==0.40.0
+
