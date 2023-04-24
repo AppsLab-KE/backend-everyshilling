@@ -7,7 +7,7 @@ from everyshillingsproto.otp import otpserver_pb2_grpc
 from everyshillingsproto.otp import otpserver_pb2
 
 
-class otp_service(otpserver_pb2_grpc.OtpServiceServicer):
+class OtpService(otpserver_pb2_grpc.OtpServiceServicer):
     def HealthCheck(self, request, context):
         health = otpserver_pb2.DefaultResponse()
         return health
@@ -18,7 +18,6 @@ class otp_service(otpserver_pb2_grpc.OtpServiceServicer):
         tracking_uuid = str(uuid.uuid4())
 
         otp_code = otp.generate_otp()
-
         # Send otp to phone using africa's talking
 
         return otp_pb2.CreateAndSendOtpRes(
@@ -38,7 +37,6 @@ class otp_service(otpserver_pb2_grpc.OtpServiceServicer):
 
     def ResendOTP(self, request, context):
         return super().ResendOTP(request, context)
-
 
     async def run(self, port):
         server = grpc.aio.server()

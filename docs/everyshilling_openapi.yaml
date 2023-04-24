@@ -9,11 +9,11 @@ info:
     email: everyshilling@co.ke
     url: https://everyshilling.ke
 servers:
-  - url: ''
+  - url: 'http://localhost:4010'
     description: 'Mock server'
-  - url: ''
-    description: 'Local'
   - url: 'http://localhost:3002/api'
+    description: 'Local'
+  - url: ''
     description: 'Staging'
   - url: ''
     description: 'Production'
@@ -198,6 +198,7 @@ paths:
           schema:
             type: string
             example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+            
       requestBody:
         description: "The 6 Digit OTP code sent to the user's email"
         content:
@@ -240,6 +241,7 @@ paths:
           schema:
             type: string
             example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+            
       requestBody:
         description: "The user's new passwords"
         content:
@@ -288,6 +290,7 @@ paths:
           schema:
             type: string
             example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+            
       responses:
         '200':
           description: OTP generated and sent successfully
@@ -314,6 +317,8 @@ paths:
       summary: Verify phone number
       description: resend the OTP to the server for verification.
       tags: [ Phone Verification ]
+      security:
+        - Bearer: [ ]
       requestBody:
         content:
           application/json:
@@ -344,6 +349,8 @@ paths:
       tags: [ Phone Verification ]
       summary: "Verify OTP"
       description: "Once a user has sent their email, they receive an OTP code for verifying if indeed they are the owners of the account"
+      security:
+        - Bearer: [ ]
       parameters:
         - name: tracking-uuid
           description: "Verificatiion request UUID"
@@ -352,6 +359,7 @@ paths:
           schema:
             type: string
             example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+            
       requestBody:
         description: "The 6 Digit OTP code sent to the user's phone"
         content:
@@ -386,6 +394,8 @@ paths:
       summary: Resend verification OTP
       description: resend the OTP to the user's phone
       tags: [ Phone Verification ]
+      security:
+        - Bearer: []
       parameters:
         - name: tracking-uuid
           description: " request UUID"
@@ -394,6 +404,7 @@ paths:
           schema:
             type: string
             example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+            
       responses:
         '200':
           description: OTP generated and sent successfully
@@ -427,6 +438,12 @@ tags:
 
 
 components:
+  securitySchemes:
+    Bearer:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     RequestOTP:
       type: object

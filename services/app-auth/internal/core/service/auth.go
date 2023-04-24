@@ -21,7 +21,7 @@ type AuthService struct {
 var (
 	ErrUserNotFound      = errors.New("user not found")
 	ErrUserExists        = errors.New("user exists")
-	ErrUserCreation      = errors.New("io error while creating user. see server logs")
+	ErrDatabaseWrite     = errors.New("io error while creating user. see server logs")
 	ErrValidationError   = errors.New("validation error")
 	ErrRequestValidation = errors.New("validation  error")
 	ErrCacheSave         = errors.New("error occured while saving cache")
@@ -29,8 +29,9 @@ var (
 	ErrPasswordNotMatch  = errors.New("passwords dont match")
 	ErrIncorrectPassword = errors.New("incorrect password/username")
 	ErrIncorrectOTP      = errors.New("incorrect otp")
-	ErrUserLogin         = errors.New("system error occured while login in")
-	ErrOTPGeneration     = errors.New("otp generation error")
+	ErrTokenGeneration   = errors.New("io error while generating token")
+	ErrHashGeneration    = errors.New("io error in generating password hash")
+	ErrOTPNotInitialied  = errors.New("otp tracking uuid missing from cache")
 )
 
 func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
@@ -50,7 +51,7 @@ func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error)
 	}
 
 	if otpRes.StatusCode != http.StatusOK {
-		return nil, ErrOTPGeneration
+		return nil, ErrHashGeneration
 	}
 	// save trackerID
 	err = d.repo.SavePhoneFromResetOTP(ctx, otpRes.TrackingUuid, request.Phone)
@@ -81,7 +82,7 @@ func (d AuthService) CreateUser(registerRequest dto.RegisterRequest) (*dto.UserR
 	hashedPassword, err := hash.GenerateHash(registerRequest.Password)
 	if err != nil {
 		log.Errorf("password hashing error: %s", err)
-		return nil, ErrUserCreation
+		return nil, ErrHashGeneration
 	}
 
 	registerRequest.Password = hashedPassword
@@ -90,14 +91,14 @@ func (d AuthService) CreateUser(registerRequest dto.RegisterRequest) (*dto.UserR
 	createdUser, err := d.repo.CreateUser(ctx, registerRequest)
 	if err != nil {
 		log.Errorf("user creation error: %s", err)
-		return nil, ErrUserCreation
+		return nil, ErrDatabaseWrite
 	}
 
 	// generate jwt
 	jwtToken, err := tokens.GenerateToken(createdUser.UserId, d.config.Secret, d.config.ExpiryMinutes)
 	if err != nil {
 		log.Errorf("jwt generation error: %s", err)
-		return nil, ErrUserCreation
+		return nil, ErrTokenGeneration
 	}
 
 	res := dto.UserRegistrationRes{
@@ -115,6 +116,11 @@ func (d AuthService) VerifyResetOTP(request dto.OtpVerificationReq) (*dto.OtpVer
 	// Save some IO time by checking redis
 	_, err := d.repo.GetPhoneFromResetOTP(ctx, request.TrackingUID)
 	if err != nil {
+		if err == redis.Nil {
+			return nil, ErrOTPNotInitialied
+		}
+
+		log.Errorf("error fetching from cache: %v", err)
 		return nil, ErrCacheFetch
 	}
 
@@ -136,7 +142,7 @@ func (d AuthService) ChangePassword(request dto.ResetReq) (*dto.ResetRes, error)
 	phone, err := d.repo.GetPhoneFromResetOTP(ctx, request.TrackerUUID)
 	if err != nil {
 		if err == redis.Nil {
-			return nil, ErrUserNotFound
+			return nil, ErrOTPNotInitialied
 		}
 
 		log.Errorf("error fetching from cache: %v", err)
@@ -190,7 +196,7 @@ func (d AuthService) SendLoginOtp(request dto.LoginInitReq) (*dto.LoginInitRes, 
 	}
 
 	if otpRes.StatusCode != http.StatusOK {
-		return nil, ErrOTPGeneration
+		return nil, ErrHashGeneration
 	}
 
 	// save trackerID
@@ -217,7 +223,7 @@ func (d AuthService) VerifyLoginOtp(request dto.OtpVerificationReq) (*dto.LoginR
 	phone, err := d.repo.GetPhoneFromLoginOTP(ctx, request.TrackingUID)
 	if err != nil {
 		if err == redis.Nil {
-			return nil, ErrUserNotFound
+			return nil, ErrOTPNotInitialied
 		}
 
 		log.Errorf("error fetching from cache: %v", err)
@@ -244,7 +250,7 @@ func (d AuthService) VerifyLoginOtp(request dto.OtpVerificationReq) (*dto.LoginR
 	jwtToken, err := tokens.GenerateToken(user.UserId, d.config.Secret, d.config.ExpiryMinutes)
 	if err != nil {
 		log.Errorf("jwt generation error: %s", err)
-		return nil, ErrUserLogin
+		return nil, ErrTokenGeneration
 	}
 
 	// return response
@@ -265,7 +271,7 @@ func (d AuthService) ResendLoginOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 	phone, err := d.repo.GetPhoneFromLoginOTP(ctx, request.TrackingUID)
 	if err != nil {
 		if err == redis.Nil {
-			return nil, ErrUserNotFound
+			return nil, ErrOTPNotInitialied
 		}
 
 		log.Errorf("error fetching from cache: %v", err)
@@ -274,11 +280,11 @@ func (d AuthService) ResendLoginOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 
 	resendOTPRes, err := d.repo.ResendOtpCode(ctx, request)
 	if err != nil {
-		return nil, ErrCacheFetch
+		return nil, ErrHashGeneration
 	}
 
 	if resendOTPRes.StatusCode != http.StatusOK {
-		return nil, ErrOTPGeneration
+		return nil, ErrHashGeneration
 	}
 
 	// cache tracking uuid
@@ -307,11 +313,11 @@ func (d AuthService) SendVerifyPhoneOTP(request dto.OtpGenReq) (*dto.OtpGenRes, 
 	otpRes, err := d.repo.CreateOtpCode(ctx, otpReq)
 	if err != nil {
 		log.Errorf("otp creation error: %v", err)
-		return nil, err
+		return nil, ErrHashGeneration
 	}
 
 	if otpRes.StatusCode != http.StatusOK {
-		return nil, ErrOTPGeneration
+		return nil, ErrHashGeneration
 	}
 
 	// save trackerID
@@ -333,7 +339,7 @@ func (d AuthService) VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) 
 	phone, err := d.repo.GetPhoneFromVerificationOTP(ctx, verificationRequest.TrackingUID)
 	if err != nil {
 		if err == redis.Nil {
-			return nil, ErrIncorrectOTP
+			return nil, ErrOTPNotInitialied
 		}
 		log.Errorf("error fetching from cache: %v", err)
 		return nil, ErrCacheFetch
@@ -375,6 +381,10 @@ func (d AuthService) ResendVerifyPhoneOTP(request dto.ResendOTPReq) (*dto.Resend
 	// get phone from DB
 	phone, err := d.repo.GetPhoneFromVerificationOTP(ctx, request.TrackingUID)
 	if err != nil {
+		if err == redis.Nil {
+			return nil, ErrOTPNotInitialied
+		}
+		log.Errorf("error fetching from cache: %v", err)
 		return nil, ErrCacheFetch
 	}
 
@@ -384,7 +394,7 @@ func (d AuthService) ResendVerifyPhoneOTP(request dto.ResendOTPReq) (*dto.Resend
 	}
 
 	if resendOTPRes.StatusCode != http.StatusOK {
-		return nil, ErrOTPGeneration
+		return nil, ErrHashGeneration
 	}
 
 	// cache tracking uuid
@@ -405,6 +415,10 @@ func (d AuthService) ResendResetOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 	// get phone from DB
 	phone, err := d.repo.GetPhoneFromResetOTP(ctx, request.TrackingUID)
 	if err != nil {
+		if err == redis.Nil {
+			return nil, ErrOTPNotInitialied
+		}
+		log.Errorf("error fetching from cache: %v", err)
 		return nil, ErrCacheFetch
 	}
 
@@ -414,7 +428,7 @@ func (d AuthService) ResendResetOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 	}
 
 	if resendOTPRes.StatusCode != http.StatusOK {
-		return nil, ErrOTPGeneration
+		return nil, ErrHashGeneration
 	}
 
 	// cache tracking uuid
