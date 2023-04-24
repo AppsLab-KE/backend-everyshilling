@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+import "user.proto";
+package db;
+option go_package = "github.com/AppsLab-KE/backend-everyshillings/db";
+
+service DbService {
+    rpc HealthCheck(DefaultRequest) returns (HealthResponse);
+    // USERS
+    rpc CreateUser(CreateUserReq) returns (CreateUserRes) {}
+    rpc UpdateUser(UpdateUserReq) returns (UpdateUserRes) {}
+    rpc GetPagedUsers(GetPagedUsersReq) returns (GetPagedUsersRes) {}
+    rpc GetUserByField(GetByfieldReq) returns (GetByfieldRes) {}
+}
+
+message DefaultRequest {}
+
+message GetResourceByIdRequest {
+    string resource_id = 1;
+}
+
+message KeyValueRequest {
+    string key = 1;
+    string value = 2;
+}
+
+message MultipleKeyValueRequest {
+    repeated KeyValueRequest data = 1;
+}
+
+message DefaultResponse {
+    string message = 1;
+    bool error = 2;
+}
+
+message HealthResponse {
+    string message = 1;
+}

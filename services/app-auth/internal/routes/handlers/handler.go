@@ -1,32 +1,71 @@
 package handlers
 
 import (
-	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/usecase"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/adapters"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/service"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"net/http"
 )
 
+const (
+	BearerScopes = "Bearer.Scopes"
+)
+
 type Handler struct {
-	AuthUC usecase.AuthUseCase
+	AuthUC adapters.AuthUseCase
 }
 
-func badRequest[T any](err string) dto.DefaultRes[T] {
+func handleError[T any](err error) dto.DefaultRes[T] {
+	var responseCode int
+
+	switch err {
+	case service.ErrIncorrectPassword:
+		responseCode = http.StatusUnauthorized
+	case service.ErrValidationError:
+		responseCode = http.StatusBadRequest
+	case service.ErrCacheFetch:
+		responseCode = http.StatusInternalServerError
+	case service.ErrCacheSave:
+		responseCode = http.StatusInternalServerError
+	case service.ErrRequestValidation:
+		responseCode = http.StatusBadRequest
+	case service.ErrHashGeneration:
+		responseCode = http.StatusInternalServerError
+	case service.ErrTokenGeneration:
+		responseCode = http.StatusInternalServerError
+	case service.ErrUserNotFound:
+		responseCode = http.StatusNotFound
+	case service.ErrDatabaseWrite:
+		responseCode = http.StatusInternalServerError
+	case service.ErrOTPNotInitialied:
+		responseCode = http.StatusUnauthorized
+	case service.ErrUserExists:
+		responseCode = http.StatusConflict
+	default:
+		responseCode = http.StatusInternalServerError
+
+	}
+
+	responseMessage := http.StatusText(responseCode)
+
 	return dto.DefaultRes[T]{
-		Message: "failed",
-		Error:   err,
-		Code:    http.StatusBadRequest,
+		Message: "failed: " + responseMessage,
+		Error:   err.Error(),
+		Code:    responseCode,
 	}
 }
 
-func okResponse[T any](data T) dto.DefaultRes[T] {
+func okResponse[T any](data T, message string) dto.DefaultRes[T] {
 	return dto.DefaultRes[T]{
-		Message: "Success",
+		Message: message,
 		Error:   "",
 		Code:    200,
 		Data:    data,
 	}
 }
 
-func NewHandler(authUC *usecase.AuthUseCase) ServerInterface {
-	return &Handler{}
+func NewHandler(authUC adapters.AuthUseCase) ServerInterface {
+	return &Handler{
+		AuthUC: authUC,
+	}
 }
