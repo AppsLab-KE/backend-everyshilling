@@ -21,6 +21,10 @@ type authRepo struct {
 	cacheStorage adapters.CacheStorage
 }
 
+func (a authRepo) InvalidateSession() error {
+	return nil
+}
+
 func (a authRepo) ResendOtpCode(ctx context.Context, data dto.ResendOTPReq) (*dto.ResendOTPRes, error) {
 	resendOtpReq := &otp.ResendOTPReq{
 		TrackingId: data.TrackingUID,
