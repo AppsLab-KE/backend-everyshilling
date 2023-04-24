@@ -3,10 +3,12 @@ package handlers
 import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 )
 
 func (h Handler) VerifyPhone(c *gin.Context) {
+	if c.IsAborted() {
+		return
+	}
 	//get the request body
 	var requestBody dto.OtpGenReq
 	var responseBody dto.DefaultRes[*dto.OtpGenRes]
@@ -27,13 +29,14 @@ func (h Handler) VerifyPhone(c *gin.Context) {
 		return
 	}
 
-	log.Info("RES", res)
-
 	responseBody = okResponse[*dto.OtpGenRes](res, res.Message)
 	c.JSON(responseBody.Code, responseBody)
 }
 
 func (h Handler) ResendVerificationOTP(c *gin.Context, trackingUuid string) {
+	if c.IsAborted() {
+		return
+	}
 	var responseBody dto.DefaultRes[*dto.ResendOTPRes]
 	var resendOTPReq dto.ResendOTPReq = dto.ResendOTPReq{
 		TrackingUID: trackingUuid,
@@ -49,6 +52,9 @@ func (h Handler) ResendVerificationOTP(c *gin.Context, trackingUuid string) {
 }
 
 func (h Handler) VerifyVerificationOTP(c *gin.Context, trackingUuid string) {
+	if c.IsAborted() {
+		return
+	}
 	// Body otpCode
 	var responseBody dto.DefaultRes[*dto.OtpVerificationRes]
 	var otpBody dto.RequestOTP

@@ -63,7 +63,7 @@ func (a *AuthUseCase) ChangePassword(ctx context.Context, uuid string, body dto.
 }
 
 // RegisterUser Implements authservice to register a new user
-func (a *AuthUseCase) RegisterUser(ctx context.Context, user dto.RegisterRequest) (*dto.UserRegistrationRes, error) {
+func (a *AuthUseCase) RegisterUser(ctx context.Context, user dto.RegisterReq) (*dto.UserRegistrationRes, error) {
 	// validate password
 	if validation.ValidatePassword(user.Password) {
 		return nil, entity.NewValidationError("password should be at least 8 letters " +

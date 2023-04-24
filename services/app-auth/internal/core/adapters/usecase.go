@@ -6,7 +6,7 @@ import (
 )
 
 type AuthUseCase interface {
-	RegisterUser(ctx context.Context, user dto.RegisterRequest) (*dto.UserRegistrationRes, error)
+	RegisterUser(ctx context.Context, user dto.RegisterReq) (*dto.UserRegistrationRes, error)
 	SendResetOtp(ctx context.Context, user dto.OtpGenReq) (*dto.OtpGenRes, error)
 	LoginUser(ctx context.Context, user dto.LoginInitReq) (*dto.LoginInitRes, error)
 	VerifyLoginOTP(ctx context.Context, req dto.OtpVerificationReq) (*dto.LoginRes, error)

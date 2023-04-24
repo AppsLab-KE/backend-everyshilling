@@ -7,6 +7,9 @@ import (
 )
 
 func (h Handler) Reset(c *gin.Context) {
+	if c.IsAborted() {
+		return
+	}
 	//get the request body
 	var requestBody dto.OtpGenReq
 	var responseBody dto.DefaultRes[*dto.OtpGenRes]
@@ -34,6 +37,9 @@ func (h Handler) Reset(c *gin.Context) {
 }
 
 func (h Handler) VerifyResetOTP(c *gin.Context, trackingUuid string) {
+	if c.IsAborted() {
+		return
+	}
 	//get the request body
 	var requestBody dto.RequestOTP
 	var responseBody dto.DefaultRes[*dto.OtpVerificationRes]
@@ -64,6 +70,9 @@ func (h Handler) VerifyResetOTP(c *gin.Context, trackingUuid string) {
 }
 
 func (h Handler) ResendResetOTP(c *gin.Context, trackingUuid string) {
+	if c.IsAborted() {
+		return
+	}
 	var responseBody dto.DefaultRes[*dto.ResendOTPRes]
 	var resendOTPReq dto.ResendOTPReq = dto.ResendOTPReq{
 		TrackingUID: trackingUuid,
@@ -79,6 +88,9 @@ func (h Handler) ResendResetOTP(c *gin.Context, trackingUuid string) {
 }
 
 func (h Handler) ChangePassword(c *gin.Context, trackingUuid string) {
+	if c.IsAborted() {
+		return
+	}
 	// get the request body
 	var requestBody dto.ChangePasswordJSONRequestBody
 	var responseBody dto.DefaultRes[*dto.ResetRes]
