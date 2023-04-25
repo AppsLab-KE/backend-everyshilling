@@ -12,7 +12,7 @@ import (
 const (
 	AuthorisationHeader       = "Authorisation"
 	AuthorisationHeaderPrefix = "Bearer"
-	UserUIDKey                = "UserUID"
+	UserUUIDKey               = "UserUID"
 )
 
 func unauthorisedError() dto.DefaultRes[any] {
@@ -44,13 +44,13 @@ func (m *Manager) Auth(ctx *gin.Context) {
 		}
 
 		// validate token
-		userId, err := tokens.VerifyToken(bearerToken, m.config.Jwt.Secret)
+		userId, err := tokens.VerifyToken(bearerToken)
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, unauthorisedResponse)
 			return
 		}
 
-		ctx.Set(UserUIDKey, userId)
+		ctx.Set(UserUUIDKey, userId)
 	}
 	ctx.Next()
 }

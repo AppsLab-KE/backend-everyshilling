@@ -28,7 +28,7 @@ func TestGenerateToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GenerateToken(tt.args.userId, tt.args.secretKey, tt.args.expiryMinutes)
+			got, err := GenerateToken(tt.args.userId, tt.args.expiryMinutes)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GenerateToken() errors = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -73,7 +73,7 @@ func TestVerifyToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotUserId, err := VerifyToken(tt.args.jwtToken, "SUPER_SECRET_KEY")
+			gotUserId, err := VerifyToken(tt.args.jwtToken)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("VerifyToken() errors = %v, wantErr %v", err, tt.wantErr)
 				return

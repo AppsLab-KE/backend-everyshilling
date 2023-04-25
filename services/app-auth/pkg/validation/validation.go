@@ -38,13 +38,7 @@ func ValidateOTP(otp string) bool {
 }
 
 func ValidatePassword(password string) bool {
-	if len(password) < 8 {
-		return false
-	}
-	if passwordRegex != nil {
-		return passwordRegex.MatchString(password)
-	}
-	return false
+	return len(password) >= 8
 }
 
 func ValidatePhone(phone string) bool {
