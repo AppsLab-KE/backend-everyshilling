@@ -307,6 +307,58 @@ paths:
                     type: string
                     example: "RESET_INVALID_REQUEST"
 
+#LogOut Endpoint
+  /logout:
+    post:
+      summary: Invalidatation to access token and logout user
+      description: Endpoint to invalidate access token and log out the user.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User logged out successfully
+        '401':
+          description: Unauthorized: Invalid or expired token
+        '500':
+          description: Internal server error
+
+#Refresh Token
+  /refresh-token:
+    post:
+      summary: Refresh access token using refresh token
+      description: Endpoint to refresh access token using refresh token.
+      requestBody:
+        description: User's refresh token
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  description: User's refresh token
+              required:
+                - refresh_token
+      responses:
+        '200':
+          description: Access token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: New access token
+                  expires_in:
+                    type: integer
+                    description: Time in seconds until access token expires
+        '400':
+          description: Bad request: missing or invalid refresh token
+        '500':
+          description: Internal server error
+
+
 tags:
   - name: Register
     description: Registration description
@@ -316,6 +368,12 @@ tags:
 
   - name: Password Reset
     description: Help the user gain access and reset password
+  
+  - name: Logout
+  - description: Logout Description
+
+  - name: Refresh Token
+  - description: Provides new token for user to Login
 
 
 components:
