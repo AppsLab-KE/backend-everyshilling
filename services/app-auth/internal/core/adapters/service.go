@@ -47,4 +47,11 @@ type AuthService interface {
 	ResendVerifyPhoneOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error)
 
 	ResendResetOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error)
+
+	RefreshToken(request dto.RefreshTokenReq) (*dto.RefreshTokenRes, error)
+
+	// Logout logs out the user by invalidating the user's session.
+	Logout(userUUID string) error
+
+	VerifyToken(token string) (string, error)
 }

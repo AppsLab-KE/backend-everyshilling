@@ -3,7 +3,6 @@ package middleware
 import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/routes/handlers"
-	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/pkg/tokens"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -12,7 +11,7 @@ import (
 const (
 	AuthorisationHeader       = "Authorisation"
 	AuthorisationHeaderPrefix = "Bearer"
-	UserUUIDKey               = "UserUID"
+	UserUUIDKey               = "UserUUID"
 )
 
 func unauthorisedError() dto.DefaultRes[any] {
@@ -44,7 +43,7 @@ func (m *Manager) Auth(ctx *gin.Context) {
 		}
 
 		// validate token
-		userId, err := tokens.VerifyToken(bearerToken)
+		userId, err := m.authUC.VerifyToken(bearerToken)
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, unauthorisedResponse)
 			return

@@ -33,6 +33,7 @@ var (
 	ErrTokenGeneration   = errors.New("io error while generating token")
 	ErrHashGeneration    = errors.New("io error in generating password hash")
 	ErrOTPNotInitialied  = errors.New("otp tracking uuid missing from cache")
+	ErrTokenBlacklisted  = errors.New("token expired/invalid")
 )
 
 func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
@@ -269,6 +270,13 @@ func (d AuthService) VerifyLoginOtp(request dto.OtpVerificationReq) (*dto.LoginR
 		return nil, ErrCacheDelete
 	}
 
+	// delete user frp, blacklist
+	err = d.repo.UnBlacklistToken(ctx, user.UserId)
+	if err != nil {
+		log.Errorf("error deleting from cache: %v", err)
+		return nil, ErrCacheDelete
+	}
+
 	// return response
 	loginRes := &dto.LoginRes{
 		StatusCode:   otpVerificationRes.StatusCode,
@@ -485,6 +493,73 @@ func (d AuthService) ResendResetOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 
 	// return response
 	return resendOTPRes, nil
+}
+
+func (d AuthService) RefreshToken(request dto.RefreshTokenReq) (*dto.RefreshTokenRes, error) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	// verify token
+	userUUID, err := tokens.VerifyToken(request.RefreshToken)
+	if err != nil {
+		return nil, err
+	}
+
+	// check if user is logged out
+	blacklisted, _ := d.repo.IsTokenBlacklisted(ctx, request.RefreshToken)
+	if err != nil {
+		return nil, err
+	}
+
+	if blacklisted {
+		return nil, ErrTokenBlacklisted
+	}
+
+	// generate new token
+	token, refreshToken, err := tokens.GenerateToken(userUUID, d.config.ExpiryMinutes, d.config.RefreshExpiryDays)
+	if err != nil {
+		return nil, err
+	}
+
+	//return response
+	return &dto.RefreshTokenRes{
+		BearerToken:  token,
+		RefreshToken: refreshToken,
+	}, nil
+}
+
+func (d AuthService) Logout(userUUID string) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// add uuid to blacklist
+	err := d.repo.BlacklistToken(ctx, userUUID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (d AuthService) VerifyToken(token string) (string, error) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	// verify token
+	userUUID, err := tokens.VerifyToken(token)
+	if err != nil {
+		return "", err
+	}
+
+	// check if user is logged i
+	blacklisted, err := d.repo.IsTokenBlacklisted(ctx, token)
+	if err != nil {
+		return "", err
+	}
+
+	if blacklisted {
+		return "", ErrTokenBlacklisted
+	}
+
+	return userUUID, nil
 }
 
 func NewDefaultAuthService(jwtConfig config.Jwt, repo adapters.AuthRepo) adapters.AuthService {

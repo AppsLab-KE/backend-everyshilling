@@ -13,6 +13,26 @@ type AuthUseCase struct {
 	sessionService adapters.SessionService
 }
 
+func (a *AuthUseCase) VerifyToken(token string) (string, error) {
+	return a.authService.VerifyToken(token)
+}
+
+func (a *AuthUseCase) RefreshToken(request dto.RefreshTokenReq) (*dto.RefreshTokenRes, error) {
+	res, err := a.authService.RefreshToken(request)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (a *AuthUseCase) Logout(uuid string) error {
+	err := a.authService.Logout(uuid)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (a *AuthUseCase) LoginUser(ctx context.Context, req dto.LoginInitReq) (*dto.LoginInitRes, error) {
 	// validate phone
 	if !validation.ValidatePhone(req.PhoneNumber) {

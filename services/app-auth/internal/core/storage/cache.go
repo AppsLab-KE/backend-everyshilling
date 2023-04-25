@@ -17,6 +17,30 @@ type Cache struct {
 	client *redis.Client
 }
 
+func (c Cache) BlacklistToken(ctx context.Context, userUUID string) error {
+	err := c.client.Set(ctx, userUUID, true, Expiration).Err()
+	return err
+}
+
+func (c Cache) IsTokenBlacklisted(ctx context.Context, userUUID string) (bool, error) {
+	val, err := c.client.Get(ctx, userUUID).Result()
+	if err != nil {
+		if err == redis.Nil {
+			return false, nil
+		}
+		return false, err
+	}
+	if val == "true" {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (c Cache) UnBlacklistToken(ctx context.Context, userUUID string) error {
+	err := c.client.Del(ctx, userUUID).Err()
+	return err
+}
+
 func (c Cache) InvalidateLoginTracker(ctx context.Context, trackerUUID string) error {
 	err := c.client.Del(ctx, trackerUUID).Err()
 	return err
