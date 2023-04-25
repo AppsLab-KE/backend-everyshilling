@@ -71,28 +71,33 @@
       with_items: "{{ cloud_config.security_groups }}"
       register: cluster_security_groups
 
-    # - name: Docker login (must `--no-include-email`)
-    #   shell: "{{ lookup('env','HOME') }}/.local/bin/aws ecr get-login-password
-    #     --region {{ cloud_config.region }} | docker login --username AWS
-    #     --password-stdin {{ cloud_config.registry }}"
-    #   args:
-    #     executable: /bin/bash
 
-    # - name: Docker login (must `--no-include-email`)
-    #   shell: "$(aws ecr get-login --region {{ cloud_config.region }} --no-include-email)"
-    #   args:
-    #     executable: /bin/bash
+    # - name: Build Docker image
+    #   docker_image:
+    #     name: "{{ image_name }}"
+    #     tag: "{{ image_tag }}"
+    #     path: /path/to/dockerfile
+    #     state: present
 
-    - name: Tag local image to push to ecr
-      docker_image:
-        name: "{{ image_name }}:{{ image_version }}"
-        repository: "{{ ecr_repo.repository.repositoryUri }}"
-        tag: "{{ ecr_repo.repository.repositoryUri }}:{{ image_version }}"
+    # - name: Log in to ECR
+    #   ecr_login:
+    #     region: "{{ aws_region }}"
 
-    - name: Push image to ecr
-      docker_image:
-        name: "{{ ecr_repo.repository.repositoryUri }}:{{ image_version }}"
-        push: yes
+    # - name: Tag local image to push to ecr
+    #   docker_image:
+    #     name: "{{ image_name }}:{{ image_version }}"
+    #     repository: "{{ ecr_repo.repository_name.repositoryUri }}"
+    #     tag: "{{ ecr_repo.repository_name.repositoryUri }}:{{ image_version }}"
+
+    # - name: Tag Docker image
+    #   docker_image:
+    #     name: "{{ image_name }}"
+    #     source: "{{ docker_image_name }}"
+
+    # - name: Push image to ecr
+    #   docker_image:
+    #     name: "{{ ecr_repo.repository_name.repositoryUri }}:{{ image_version }}"
+    #     push: yes
 
     - name: Setup ECS cluster
       ecs_cluster:
