@@ -1,0 +1,35 @@
+sequenceDiagram
+    participant User
+    participant Client
+    participant Server
+    User->>Client: Login
+    Client->>Server: Authenticate user
+    alt Authentication successful
+        Server->>Server: Generate JWT
+        Server->>Client: Return JWT
+    else Authentication failed
+        Client->>User: Display error message
+    end
+    User->>Client: Access protected resource
+    Client->>Server: Include JWT in request header
+    Server->>Server: Validate JWT
+    alt JWT valid
+        Server->>Server: Process request
+        Server->>Client: Return response
+    else JWT invalid
+        Server->>Server: Return 401 Unauthorized
+        Server->>Client: Return error response
+    end
+    User->>Client: Access refresh endpoint
+    Client->>Server: Include JWT in request header
+    Server->>Server: Validate JWT
+    alt JWT valid
+        Server->>Server: Generate new JWT
+        Server->>Client: Return new JWT
+    else JWT invalid
+        Server->>Server: Return 401 Unauthorized
+        Server->>Client: Return error response
+    end
+    User->>Client: Logout
+    Client->>Server: Request logout
+    Server->>Server: Add JWT to blacklist

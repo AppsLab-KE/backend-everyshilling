@@ -95,7 +95,7 @@ func (d AuthService) CreateUser(registerRequest dto.RegisterReq) (*dto.UserRegis
 	}
 
 	// generate jwt
-	jwtToken, err := tokens.GenerateToken(createdUser.UserId, d.config.Secret, d.config.ExpiryMinutes)
+	jwtToken, err := tokens.GenerateToken(createdUser.UserId, d.config.ExpiryMinutes)
 	if err != nil {
 		log.Errorf("jwt generation error: %s", err)
 		return nil, ErrTokenGeneration
@@ -176,10 +176,10 @@ func (d AuthService) SendLoginOtp(request dto.LoginInitReq) (*dto.LoginInitRes, 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	otpReq := dto.OtpGenReq{Phone: request.Phone}
+	otpReq := dto.OtpGenReq{Phone: request.PhoneNumber}
 
 	// check if user with phone number exists
-	user, err := d.repo.GetUserByPhone(ctx, request.Phone)
+	user, err := d.repo.GetUserByPhone(ctx, request.PhoneNumber)
 	if user == nil || err != nil {
 		return nil, ErrUserNotFound
 	}
@@ -200,7 +200,7 @@ func (d AuthService) SendLoginOtp(request dto.LoginInitReq) (*dto.LoginInitRes, 
 	}
 
 	// save trackerID
-	err = d.repo.SavePhoneFromLoginOTP(ctx, otpRes.TrackingUuid, request.Phone)
+	err = d.repo.SavePhoneFromLoginOTP(ctx, otpRes.TrackingUuid, request.PhoneNumber)
 	if err != nil {
 		return nil, ErrCacheSave
 	}
@@ -247,7 +247,7 @@ func (d AuthService) VerifyLoginOtp(request dto.OtpVerificationReq) (*dto.LoginR
 	}
 
 	// generate jwt
-	jwtToken, err := tokens.GenerateToken(user.UserId, d.config.Secret, d.config.ExpiryMinutes)
+	jwtToken, err := tokens.GenerateToken(user.UserId, d.config.ExpiryMinutes)
 	if err != nil {
 		log.Errorf("jwt generation error: %s", err)
 		return nil, ErrTokenGeneration

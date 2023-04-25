@@ -2,18 +2,46 @@ package tokens
 
 import (
 	"errors"
+	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	"io"
+	"os"
 	"time"
 )
 
-func GenerateToken(userId string, secretKey string, expiryMinutes int) (string, error) {
+const (
+	publicKeyPath  = "/etc/auth-service/public.pem"
+	privateKeyPath = "/etc/auth-service/private.pem"
+)
+
+func GenerateToken(userId string, expiryMinutes int) (string, error) {
+	// open private key
+	file, err := os.Open(privateKeyPath)
+	if err != nil {
+		return "", err
+	}
+
+	defer file.Close()
+
+	// read public key
+	privateKey, err := io.ReadAll(file)
+	if err != nil {
+		return "", err
+	}
+
+	// parse pub
+	rsaPrivateKey, err := jwt.ParseRSAPrivateKeyFromPEM(privateKey)
+	if err != nil {
+		return "", err
+	}
+
 	claims := jwt.MapClaims{}
 	claims["uuid"] = userId
 	claims["exp"] = time.Now().Add(time.Minute * time.Duration(expiryMinutes)).UnixNano()
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 
-	tokenString, err := token.SignedString([]byte(secretKey))
+	tokenString, err := token.SignedString(rsaPrivateKey)
 	if err != nil {
 		return "", err
 	}
@@ -21,13 +49,34 @@ func GenerateToken(userId string, secretKey string, expiryMinutes int) (string, 
 	return tokenString, nil
 }
 
-func VerifyToken(jwtToken string, secretKey string) (userId string, err error) {
-	parsedToken, err := jwt.Parse(jwtToken, func(t *jwt.Token) (interface{}, error) {
-		_, ok := t.Method.(*jwt.SigningMethodHMAC)
-		if !ok {
-			return nil, errors.New("unexpected sign algorithm")
+func VerifyToken(jwtToken string) (userId string, err error) {
+
+	// open public key
+	file, err := os.Open(publicKeyPath)
+	if err != nil {
+		return "", err
+	}
+
+	defer file.Close()
+
+	// read public key
+	publicKey, err := io.ReadAll(file)
+	if err != nil {
+		return "", err
+	}
+
+	// parse public key
+	rsaPublicKey, err := jwt.ParseRSAPublicKeyFromPEM(publicKey)
+	if err != nil {
+		return "", err
+	}
+
+	// Parse the signed JWT and verify it with the RSA public key
+	parsedToken, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+			return nil, fmt.Errorf("unexepcted signing method: %v", token.Header["alg"])
 		}
-		return []byte(secretKey), nil
+		return rsaPublicKey, nil
 	})
 
 	if err != nil {
