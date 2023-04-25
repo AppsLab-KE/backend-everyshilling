@@ -223,6 +223,18 @@ func (a authRepo) GetPhoneFromVerificationOTP(ctx context.Context, trackerUUID s
 	return a.cacheStorage.GetPhoneFromVerificationOTP(ctx, trackerUUID)
 }
 
+func (a authRepo) InvalidateLoginTracker(ctx context.Context, trackerUUID string) error {
+	return a.cacheStorage.InvalidateLoginTracker(ctx, trackerUUID)
+}
+
+func (a authRepo) InvalidateResetTracker(ctx context.Context, trackerUID string) error {
+	return a.cacheStorage.InvalidateResetTracker(ctx, trackerUID)
+}
+
+func (a authRepo) InvalidateVerificationTracker(ctx context.Context, trackerUUID string) error {
+	return a.cacheStorage.InvalidateVerificationTracker(ctx, trackerUUID)
+}
+
 func NewAuthRepo(cacheStorage adapters.CacheStorage, dbStorage adapters.DBStorage, otpStorage adapters.OTPStorage) adapters.AuthRepo {
 	return &authRepo{
 		dbStorage:    dbStorage,
