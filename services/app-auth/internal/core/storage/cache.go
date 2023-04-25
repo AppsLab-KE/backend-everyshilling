@@ -17,6 +17,21 @@ type Cache struct {
 	client *redis.Client
 }
 
+func (c Cache) InvalidateLoginTracker(ctx context.Context, trackerUUID string) error {
+	err := c.client.Del(ctx, trackerUUID).Err()
+	return err
+}
+
+func (c Cache) InvalidateResetTracker(ctx context.Context, trackerUID string) error {
+	err := c.client.Del(ctx, trackerUID).Err()
+	return err
+}
+
+func (c Cache) InvalidateVerificationTracker(ctx context.Context, trackerUUID string) error {
+	err := c.client.Del(ctx, trackerUUID).Err()
+	return err
+}
+
 func (c Cache) SavePhoneFromLoginOTP(ctx context.Context, trackerUUID, phone string) error {
 	err := c.client.Set(ctx, trackerUUID, phone, Expiration).Err()
 	return err

@@ -26,6 +26,7 @@ var (
 	ErrRequestValidation = errors.New("validation  error")
 	ErrCacheSave         = errors.New("error occured while saving cache")
 	ErrCacheFetch        = errors.New("error occured while fetching cache")
+	ErrCacheDelete       = errors.New("error occured while deleting cache")
 	ErrPasswordNotMatch  = errors.New("passwords dont match")
 	ErrIncorrectPassword = errors.New("incorrect password/username")
 	ErrIncorrectOTP      = errors.New("incorrect otp")
@@ -170,6 +171,13 @@ func (d AuthService) ChangePassword(request dto.ResetReq) (*dto.ResetRes, error)
 		return nil, err
 	}
 
+	// delete otp tracker
+	err = d.repo.InvalidateResetTracker(ctx, request.TrackerUUID)
+	if err != nil {
+		log.Errorf("error deleting from cache: %v", err)
+		return nil, ErrCacheDelete
+	}
+
 	return &dto.ResetRes{}, nil
 }
 
@@ -254,6 +262,13 @@ func (d AuthService) VerifyLoginOtp(request dto.OtpVerificationReq) (*dto.LoginR
 		return nil, ErrTokenGeneration
 	}
 
+	// delete otp tracker
+	err = d.repo.InvalidateLoginTracker(ctx, request.TrackingUID)
+	if err != nil {
+		log.Errorf("error deleting from cache: %v", err)
+		return nil, ErrCacheDelete
+	}
+
 	// return response
 	loginRes := &dto.LoginRes{
 		StatusCode:   otpVerificationRes.StatusCode,
@@ -293,6 +308,13 @@ func (d AuthService) ResendLoginOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 	err = d.repo.SavePhoneFromLoginOTP(ctx, resendOTPRes.TrackingUuid, phone)
 	if err != nil {
 		return nil, ErrCacheSave
+	}
+
+	// invalidate previous otp
+	err = d.repo.InvalidateLoginTracker(ctx, request.TrackingUID)
+	if err != nil {
+		log.Errorf("error deleting from cache: %v", err)
+		return nil, ErrCacheDelete
 	}
 
 	return resendOTPRes, nil
@@ -372,6 +394,13 @@ func (d AuthService) VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) 
 		return nil, ErrIncorrectOTP
 	}
 
+	// invalidate cache
+	err = d.repo.InvalidateVerificationTracker(ctx, verificationRequest.TrackingUID)
+	if err != nil {
+		log.Errorf("error while invalidating cache: %v", err)
+		return nil, ErrCacheSave
+	}
+
 	// return response
 	return otpVerificationRes, nil
 }
@@ -406,6 +435,13 @@ func (d AuthService) ResendVerifyPhoneOTP(request dto.ResendOTPReq) (*dto.Resend
 		return nil, ErrCacheSave
 	}
 
+	// invalidate previous otp
+	err = d.repo.InvalidateVerificationTracker(ctx, request.TrackingUID)
+	if err != nil {
+		log.Errorf("error deleting from cache: %v", err)
+		return nil, ErrCacheDelete
+	}
+
 	// return response
 	return resendOTPRes, nil
 }
@@ -438,6 +474,13 @@ func (d AuthService) ResendResetOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 	if err != nil {
 		log.Errorf("error while caching %v", err)
 		return nil, ErrCacheSave
+	}
+
+	// invalidate previous otp
+	err = d.repo.InvalidateResetTracker(ctx, request.TrackingUID)
+	if err != nil {
+		log.Errorf("error deleting from cache: %v", err)
+		return nil, ErrCacheDelete
 	}
 
 	// return response
