@@ -430,6 +430,7 @@ paths:
       summary: Invalidatation to access token and logout user
       description: Endpoint to invalidate access token and log out the user.
       tags: [ Login ]
+      operationId: "Logout"
       security:
         - Bearer: []
       responses:
@@ -446,6 +447,7 @@ paths:
       summary: Refresh access token using refresh token
       description: Endpoint to refresh access token using refresh token.
       tags: [ Login ]
+      operationId: "RefreshToken"
       requestBody:
         description: User's refresh token
         content:
