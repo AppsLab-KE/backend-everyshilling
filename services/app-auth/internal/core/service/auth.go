@@ -95,15 +95,16 @@ func (d AuthService) CreateUser(registerRequest dto.RegisterReq) (*dto.UserRegis
 	}
 
 	// generate jwt
-	jwtToken, err := tokens.GenerateToken(createdUser.UserId, d.config.ExpiryMinutes)
+	jwtToken, refreshToken, err := tokens.GenerateToken(createdUser.UserId, d.config.ExpiryMinutes, d.config.RefreshExpiryDays)
 	if err != nil {
 		log.Errorf("jwt generation error: %s", err)
 		return nil, ErrTokenGeneration
 	}
 
 	res := dto.UserRegistrationRes{
-		User:  *createdUser,
-		Token: jwtToken,
+		User:         *createdUser,
+		Token:        jwtToken,
+		RefreshToken: refreshToken,
 	}
 
 	return &res, nil
@@ -247,7 +248,7 @@ func (d AuthService) VerifyLoginOtp(request dto.OtpVerificationReq) (*dto.LoginR
 	}
 
 	// generate jwt
-	jwtToken, err := tokens.GenerateToken(user.UserId, d.config.ExpiryMinutes)
+	authToken, refreshToken, err := tokens.GenerateToken(user.UserId, d.config.ExpiryMinutes, d.config.RefreshExpiryDays)
 	if err != nil {
 		log.Errorf("jwt generation error: %s", err)
 		return nil, ErrTokenGeneration
@@ -255,10 +256,11 @@ func (d AuthService) VerifyLoginOtp(request dto.OtpVerificationReq) (*dto.LoginR
 
 	// return response
 	loginRes := &dto.LoginRes{
-		StatusCode: otpVerificationRes.StatusCode,
-		Message:    otpVerificationRes.Message,
-		Token:      jwtToken,
-		User:       user,
+		StatusCode:   otpVerificationRes.StatusCode,
+		Message:      otpVerificationRes.Message,
+		Token:        authToken,
+		User:         user,
+		RefreshToken: refreshToken,
 	}
 	return loginRes, nil
 }
