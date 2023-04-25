@@ -14,11 +14,11 @@ const (
 	privateKeyPath = "/etc/auth-service/private.pem"
 )
 
-func GenerateToken(userId string, expiryMinutes int) (string, error) {
+func GenerateToken(userId string, expiryMinutes, refreshExpiryDays int) (string, string, error) {
 	// open private key
 	file, err := os.Open(privateKeyPath)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	defer file.Close()
@@ -26,13 +26,13 @@ func GenerateToken(userId string, expiryMinutes int) (string, error) {
 	// read public key
 	privateKey, err := io.ReadAll(file)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	// parse pub
 	rsaPrivateKey, err := jwt.ParseRSAPrivateKeyFromPEM(privateKey)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	claims := jwt.MapClaims{}
@@ -43,10 +43,17 @@ func GenerateToken(userId string, expiryMinutes int) (string, error) {
 
 	tokenString, err := token.SignedString(rsaPrivateKey)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	return tokenString, nil
+	claims["exp"] = time.Now().Add(time.Hour * 24 * time.Duration(refreshExpiryDays)).UnixNano()
+
+	refreshTokenString, err := token.SignedString(rsaPrivateKey)
+	if err != nil {
+		return "", "", err
+	}
+
+	return tokenString, refreshTokenString, nil
 }
 
 func VerifyToken(jwtToken string) (userId string, err error) {

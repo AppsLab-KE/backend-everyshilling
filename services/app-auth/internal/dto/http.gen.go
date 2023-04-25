@@ -13,6 +13,21 @@ type Phone struct {
 	Phone *string `json:"phone,omitempty"`
 }
 
+// RefreshTokenReq defines model for RefreshTokenReq.
+type RefreshTokenReq struct {
+	// RefreshToken User's refresh token
+	RefreshToken string `json:"refresh_token"`
+}
+
+// RefreshTokenRes defines model for RefreshTokenRes.
+type RefreshTokenRes struct {
+	// BearerToken New Bearer token
+	BearerToken string `json:"bearer_token"`
+
+	// RefreshToken New Refresh token
+	RefreshToken string `json:"refresh_token"`
+}
+
 // RegisterRequest defines model for RegisterRequest.
 type RegisterRequest struct {
 	// Email valid email
@@ -70,6 +85,9 @@ type ResponseSuccess struct {
 	Error   *string `json:"error,omitempty"`
 	Message *string `json:"message,omitempty"`
 }
+
+// RefreshTokenJSONRequestBody defines body for RefreshToken for application/json ContentType.
+type RefreshTokenJSONRequestBody = RefreshTokenReq
 
 // RegisterJSONRequestBody defines body for Register for application/json ContentType.
 type RegisterJSONRequestBody = RegisterRequest
