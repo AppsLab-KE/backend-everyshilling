@@ -19,20 +19,24 @@ type AuthService struct {
 }
 
 var (
-	ErrUserNotFound      = errors.New("user not found")
-	ErrUserExists        = errors.New("user exists")
-	ErrDatabaseWrite     = errors.New("io error while creating user. see server logs")
-	ErrValidationError   = errors.New("validation error")
-	ErrRequestValidation = errors.New("validation  error")
-	ErrCacheSave         = errors.New("error occured while saving cache")
-	ErrCacheFetch        = errors.New("error occured while fetching cache")
-	ErrCacheDelete       = errors.New("error occured while deleting cache")
-	ErrPasswordNotMatch  = errors.New("passwords dont match")
-	ErrIncorrectPassword = errors.New("incorrect password/username")
-	ErrIncorrectOTP      = errors.New("incorrect otp")
-	ErrTokenGeneration   = errors.New("io error while generating token")
-	ErrHashGeneration    = errors.New("io error in generating password hash")
-	ErrOTPNotInitialied  = errors.New("otp tracking uuid missing from cache")
+	ErrUserNotFound             = errors.New("user not found")
+	ErrUserExists               = errors.New("user exists")
+	ErrDatabaseWrite            = errors.New("io error while creating user. see server logs")
+	ErrValidationError          = errors.New("validation error")
+	ErrRequestValidation        = errors.New("validation  error")
+	ErrCacheSave                = errors.New("error occured while saving cache")
+	ErrCacheFetch               = errors.New("error occured while fetching cache")
+	ErrCacheDelete              = errors.New("error occured while deleting cache")
+	ErrPasswordNotMatch         = errors.New("passwords dont match")
+	ErrIncorrectPassword        = errors.New("incorrect password/username")
+	ErrIncorrectOTP             = errors.New("incorrect otp")
+	ErrTokenGeneration          = errors.New("io error while generating token")
+	ErrHashGeneration           = errors.New("io error in generating password hash")
+	ErrOTPNotInitialied         = errors.New("otp tracking uuid missing from cache")
+	ErrTokenBlacklisted         = errors.New("token expired/invalid")
+	ErrTokenInvalid             = errors.New("token invalid or expired")
+	ErrVerificationOnWrongPhone = errors.New("verification on wrong phone number")
+	ErrUserLoggedOut            = errors.New("user logged out")
 )
 
 func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
@@ -269,6 +273,13 @@ func (d AuthService) VerifyLoginOtp(request dto.OtpVerificationReq) (*dto.LoginR
 		return nil, ErrCacheDelete
 	}
 
+	// delete user frp, blacklist
+	err = d.repo.UnBlacklistToken(ctx, user.UserId)
+	if err != nil {
+		log.Errorf("error deleting from cache: %v", err)
+		return nil, ErrCacheDelete
+	}
+
 	// return response
 	loginRes := &dto.LoginRes{
 		StatusCode:   otpVerificationRes.StatusCode,
@@ -320,7 +331,7 @@ func (d AuthService) ResendLoginOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 	return resendOTPRes, nil
 }
 
-func (d AuthService) SendVerifyPhoneOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
+func (d AuthService) SendVerifyPhoneOTP(request dto.AccountVerificationOTPGenReq) (*dto.OtpGenRes, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -331,6 +342,10 @@ func (d AuthService) SendVerifyPhoneOTP(request dto.OtpGenReq) (*dto.OtpGenRes, 
 	if user == nil || err != nil {
 		log.Error(err)
 		return nil, ErrUserNotFound
+	}
+
+	if user.UserId != request.UserUUID {
+		return nil, ErrVerificationOnWrongPhone
 	}
 
 	// if user exists, send otp
@@ -485,6 +500,74 @@ func (d AuthService) ResendResetOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 
 	// return response
 	return resendOTPRes, nil
+}
+
+func (d AuthService) RefreshToken(request dto.RefreshTokenReq) (*dto.RefreshTokenRes, error) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	// verify token
+	userUUID, err := tokens.VerifyToken(request.RefreshToken, true)
+	if err != nil {
+		return nil, ErrTokenInvalid
+	}
+
+	// check if user is logged out
+	blacklisted, _ := d.repo.IsTokenBlacklisted(ctx, userUUID)
+	if err != nil {
+		return nil, err
+	}
+
+	if blacklisted {
+		return nil, ErrTokenBlacklisted
+	}
+
+	// generate new token
+	token, refreshToken, err := tokens.GenerateToken(userUUID, d.config.ExpiryMinutes, d.config.RefreshExpiryDays)
+	if err != nil {
+		return nil, err
+	}
+
+	//return response
+	return &dto.RefreshTokenRes{
+		BearerToken:  token,
+		RefreshToken: refreshToken,
+	}, nil
+}
+
+func (d AuthService) Logout(userUUID string) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// add uuid to blacklist
+	err := d.repo.BlacklistToken(ctx, userUUID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (d AuthService) VerifyAccessToken(token string) (string, error) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	// verify token
+	userUUID, err := tokens.VerifyToken(token, false)
+	if err != nil {
+		log.Errorf("error while verifying token: %v", err)
+		return "", ErrTokenInvalid
+	}
+
+	// check if user is logged i
+	blacklisted, err := d.repo.IsTokenBlacklisted(ctx, userUUID)
+	if err != nil {
+		return "", ErrUserLoggedOut
+	}
+
+	if blacklisted {
+		return "", ErrTokenBlacklisted
+	}
+
+	return userUUID, nil
 }
 
 func NewDefaultAuthService(jwtConfig config.Jwt, repo adapters.AuthRepo) adapters.AuthService {

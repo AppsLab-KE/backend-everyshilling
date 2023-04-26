@@ -14,9 +14,15 @@ type AuthUseCase interface {
 	ChangePassword(ctx context.Context, uuid string, body dto.RequestResetCredentials) (*dto.ResetRes, error)
 
 	VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) (*dto.OtpVerificationRes, error)
-	SendVerifyPhoneOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error)
+	SendVerifyPhoneOTP(request dto.AccountVerificationOTPGenReq) (*dto.OtpGenRes, error)
 
 	ResendVerifyPhoneOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error)
 	ResendLoginOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error)
 	ResendResetOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error)
+
+	RefreshToken(request dto.RefreshTokenReq) (*dto.RefreshTokenRes, error)
+	// Logout logs out the user by invalidating the user's session.
+	Logout(uuid string) error
+
+	VerifyAccessToken(token string) (string, error)
 }

@@ -4,6 +4,11 @@ type OtpGenReq struct {
 	Phone string `json:"phone"`
 }
 
+type AccountVerificationOTPGenReq struct {
+	Phone    string `json:"phone"`
+	UserUUID string `json:"user_uuid"`
+}
+
 type OtpGenRes struct {
 	StatusCode   int32  `json:"status_code,omitempty"`
 	Message      string `json:"message,omitempty"`

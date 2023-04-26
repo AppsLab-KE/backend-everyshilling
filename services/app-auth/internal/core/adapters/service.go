@@ -37,7 +37,7 @@ type AuthService interface {
 	CreateUser(registerRequest dto.RegisterReq) (*dto.UserRegistrationRes, error)
 	// SendVerifyPhoneOTP sends an OTP to the user's registered phone number or email to initiate the phone number verification process.
 	// It takes in a dto.OtpVerificationReq as input and returns a dto.OtpVerificationRes and an error as output.
-	SendVerifyPhoneOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error)
+	SendVerifyPhoneOTP(request dto.AccountVerificationOTPGenReq) (*dto.OtpGenRes, error)
 	// VerifyPhoneOTP verifies the OTP entered by the user to complete the phone number verification process.
 	// It takes in a dto.OtpVerificationReq as input and returns a dto.OtpVerificationRes and an error as output.
 	VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) (*dto.OtpVerificationRes, error)
@@ -47,4 +47,11 @@ type AuthService interface {
 	ResendVerifyPhoneOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error)
 
 	ResendResetOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error)
+
+	RefreshToken(request dto.RefreshTokenReq) (*dto.RefreshTokenRes, error)
+
+	// Logout logs out the user by invalidating the user's session.
+	Logout(userUUID string) error
+
+	VerifyAccessToken(token string) (string, error)
 }

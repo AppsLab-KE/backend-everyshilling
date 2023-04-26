@@ -34,4 +34,8 @@ type CacheStorage interface {
 	SavePhoneFromVerificationOTP(ctx context.Context, trackerUUID, phone string) error
 	InvalidateVerificationTracker(ctx context.Context, trackerUUID string) error
 	GetPhoneFromVerificationOTP(ctx context.Context, trackerUUID string) (string, error)
+
+	BlacklistToken(ctx context.Context, userUUID string) error
+	IsTokenBlacklisted(ctx context.Context, userUUID string) (bool, error)
+	UnBlacklistToken(ctx context.Context, userUUID string) error
 }

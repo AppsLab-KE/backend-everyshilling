@@ -22,8 +22,11 @@ RUN go build -o /tmp/app-auth
 
 # Generate private and public keys
 RUN mkdir -p /etc/auth-service
-RUN openssl genrsa -out /etc/auth-service/private.pem 2048
-RUN openssl rsa -in /etc/auth-service/private.pem -pubout -out /etc/auth-service/public.pem
+
+RUN if [ ! -e "/etc/auth-service/public.pem" ]; then \
+       openssl genrsa -out /etc/auth-service/private.pem 2048; \
+       openssl rsa -in /etc/auth-service/private.pem -pubout -out /etc/auth-service/public.pem; \
+    fi;
 
 FROM app-builder AS prepare-bin
 
