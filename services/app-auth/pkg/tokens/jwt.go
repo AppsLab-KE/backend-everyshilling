@@ -95,7 +95,6 @@ func VerifyToken(jwtToken string, isTypeRefreshToken bool) (userId string, err e
 	}
 
 	if !parsedToken.Valid {
-		log.Info("invalid token", jwtToken)
 		return "", errors.New("invalid token")
 	}
 
