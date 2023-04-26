@@ -44,6 +44,8 @@ func handleError[T any](err error) dto.DefaultRes[T] {
 		responseCode = http.StatusConflict
 	case service.ErrTokenInvalid:
 		responseCode = http.StatusUnauthorized
+	case service.ErrVerificationOnWrongPhone:
+		responseCode = http.StatusForbidden
 	default:
 		responseCode = http.StatusInternalServerError
 

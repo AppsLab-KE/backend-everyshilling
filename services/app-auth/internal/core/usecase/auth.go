@@ -109,7 +109,7 @@ func (a *AuthUseCase) VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq)
 	return res, nil
 }
 
-func (a *AuthUseCase) SendVerifyPhoneOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
+func (a *AuthUseCase) SendVerifyPhoneOTP(request dto.AccountVerificationOTPGenReq) (*dto.OtpGenRes, error) {
 	// validate phone
 	if !validation.ValidatePhone(request.Phone) {
 		return nil, entity.NewValidationError("phone number should be in the format +2547XXXXXXXX")

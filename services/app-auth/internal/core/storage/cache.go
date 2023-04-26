@@ -18,7 +18,7 @@ type Cache struct {
 }
 
 func (c Cache) BlacklistToken(ctx context.Context, userUUID string) error {
-	err := c.client.Set(ctx, userUUID, true, Expiration).Err()
+	err := c.client.Set(ctx, userUUID, "true", Expiration*10000).Err()
 	return err
 }
 

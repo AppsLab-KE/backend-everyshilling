@@ -19,22 +19,23 @@ type AuthService struct {
 }
 
 var (
-	ErrUserNotFound      = errors.New("user not found")
-	ErrUserExists        = errors.New("user exists")
-	ErrDatabaseWrite     = errors.New("io error while creating user. see server logs")
-	ErrValidationError   = errors.New("validation error")
-	ErrRequestValidation = errors.New("validation  error")
-	ErrCacheSave         = errors.New("error occured while saving cache")
-	ErrCacheFetch        = errors.New("error occured while fetching cache")
-	ErrCacheDelete       = errors.New("error occured while deleting cache")
-	ErrPasswordNotMatch  = errors.New("passwords dont match")
-	ErrIncorrectPassword = errors.New("incorrect password/username")
-	ErrIncorrectOTP      = errors.New("incorrect otp")
-	ErrTokenGeneration   = errors.New("io error while generating token")
-	ErrHashGeneration    = errors.New("io error in generating password hash")
-	ErrOTPNotInitialied  = errors.New("otp tracking uuid missing from cache")
-	ErrTokenBlacklisted  = errors.New("token expired/invalid")
-	ErrTokenInvalid      = errors.New("token invalid or expired")
+	ErrUserNotFound             = errors.New("user not found")
+	ErrUserExists               = errors.New("user exists")
+	ErrDatabaseWrite            = errors.New("io error while creating user. see server logs")
+	ErrValidationError          = errors.New("validation error")
+	ErrRequestValidation        = errors.New("validation  error")
+	ErrCacheSave                = errors.New("error occured while saving cache")
+	ErrCacheFetch               = errors.New("error occured while fetching cache")
+	ErrCacheDelete              = errors.New("error occured while deleting cache")
+	ErrPasswordNotMatch         = errors.New("passwords dont match")
+	ErrIncorrectPassword        = errors.New("incorrect password/username")
+	ErrIncorrectOTP             = errors.New("incorrect otp")
+	ErrTokenGeneration          = errors.New("io error while generating token")
+	ErrHashGeneration           = errors.New("io error in generating password hash")
+	ErrOTPNotInitialied         = errors.New("otp tracking uuid missing from cache")
+	ErrTokenBlacklisted         = errors.New("token expired/invalid")
+	ErrTokenInvalid             = errors.New("token invalid or expired")
+	ErrVerificationOnWrongPhone = errors.New("verification on wrong phone number")
 )
 
 func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
@@ -329,7 +330,7 @@ func (d AuthService) ResendLoginOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 	return resendOTPRes, nil
 }
 
-func (d AuthService) SendVerifyPhoneOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
+func (d AuthService) SendVerifyPhoneOTP(request dto.AccountVerificationOTPGenReq) (*dto.OtpGenRes, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -340,6 +341,10 @@ func (d AuthService) SendVerifyPhoneOTP(request dto.OtpGenReq) (*dto.OtpGenRes, 
 	if user == nil || err != nil {
 		log.Error(err)
 		return nil, ErrUserNotFound
+	}
+
+	if user.UserId != request.UserUUID {
+		return nil, ErrVerificationOnWrongPhone
 	}
 
 	// if user exists, send otp
