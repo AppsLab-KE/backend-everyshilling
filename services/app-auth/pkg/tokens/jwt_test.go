@@ -28,7 +28,7 @@ func TestGenerateToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GenerateToken(tt.args.userId, tt.args.expiryMinutes)
+			got, _, err := GenerateToken(tt.args.userId, tt.args.expiryMinutes, 90)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GenerateToken() errors = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -56,7 +56,7 @@ func TestVerifyToken(t *testing.T) {
 		wantErr    bool
 	}{
 		{
-			name: "VerifyToken",
+			name: "VerifyAccessToken",
 			args: args{
 				jwtToken: jwtToken,
 			},
@@ -73,13 +73,13 @@ func TestVerifyToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotUserId, err := VerifyToken(tt.args.jwtToken)
+			gotUserId, err := VerifyToken(tt.args.jwtToken, false)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("VerifyToken() errors = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("VerifyAccessToken() errors = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if gotUserId != tt.wantUserId {
-				t.Errorf("VerifyToken() gotUserId = %v, want %v", gotUserId, tt.wantUserId)
+				t.Errorf("VerifyAccessToken() gotUserId = %v, want %v", gotUserId, tt.wantUserId)
 			}
 		})
 	}

@@ -13,8 +13,8 @@ type AuthUseCase struct {
 	sessionService adapters.SessionService
 }
 
-func (a *AuthUseCase) VerifyToken(token string) (string, error) {
-	return a.authService.VerifyToken(token)
+func (a *AuthUseCase) VerifyAccessToken(token string) (string, error) {
+	return a.authService.VerifyAccessToken(token)
 }
 
 func (a *AuthUseCase) RefreshToken(request dto.RefreshTokenReq) (*dto.RefreshTokenRes, error) {

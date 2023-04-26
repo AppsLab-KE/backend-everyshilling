@@ -4,20 +4,21 @@ import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/routes/handlers"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 )
 
 const (
-	AuthorisationHeader       = "Authorisation"
-	AuthorisationHeaderPrefix = "Bearer"
+	AuthorisationHeader       = "Authorization"
+	AuthorizationBearerPrefix = "Bearer"
 	UserUUIDKey               = "UserUUID"
 )
 
 func unauthorisedError() dto.DefaultRes[any] {
 	return dto.DefaultRes[any]{
 		Message: "Request failed",
-		Error:   "Unauthorised request",
+		Error:   "request not authorised: missing or invalid token",
 		Code:    http.StatusUnauthorized,
 		Data:    nil,
 	}
@@ -34,7 +35,8 @@ func (m *Manager) Auth(ctx *gin.Context) {
 
 		// get token from header
 		bearerToken := ctx.GetHeader(AuthorisationHeader)
-		bearerToken = strings.TrimPrefix(AuthorisationHeaderPrefix, bearerToken)
+		bearerToken = strings.TrimPrefix(bearerToken, AuthorizationBearerPrefix)
+		bearerToken = strings.TrimSpace(bearerToken)
 
 		// if token is missing, abort
 		if bearerToken == "" {
@@ -43,8 +45,9 @@ func (m *Manager) Auth(ctx *gin.Context) {
 		}
 
 		// validate token
-		userId, err := m.authUC.VerifyToken(bearerToken)
+		userId, err := m.authUC.VerifyAccessToken(bearerToken)
 		if err != nil {
+			log.Error(err)
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, unauthorisedResponse)
 			return
 		}

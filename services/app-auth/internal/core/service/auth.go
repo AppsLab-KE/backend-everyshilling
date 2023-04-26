@@ -34,6 +34,7 @@ var (
 	ErrHashGeneration    = errors.New("io error in generating password hash")
 	ErrOTPNotInitialied  = errors.New("otp tracking uuid missing from cache")
 	ErrTokenBlacklisted  = errors.New("token expired/invalid")
+	ErrTokenInvalid      = errors.New("token invalid or expired")
 )
 
 func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
@@ -499,9 +500,9 @@ func (d AuthService) RefreshToken(request dto.RefreshTokenReq) (*dto.RefreshToke
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	// verify token
-	userUUID, err := tokens.VerifyToken(request.RefreshToken)
+	userUUID, err := tokens.VerifyToken(request.RefreshToken, true)
 	if err != nil {
-		return nil, err
+		return nil, ErrTokenInvalid
 	}
 
 	// check if user is logged out
@@ -540,13 +541,14 @@ func (d AuthService) Logout(userUUID string) error {
 	return nil
 }
 
-func (d AuthService) VerifyToken(token string) (string, error) {
+func (d AuthService) VerifyAccessToken(token string) (string, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	// verify token
-	userUUID, err := tokens.VerifyToken(token)
+	userUUID, err := tokens.VerifyToken(token, false)
 	if err != nil {
-		return "", err
+		log.Errorf("error while verifying token: %v", err)
+		return "", ErrTokenInvalid
 	}
 
 	// check if user is logged i

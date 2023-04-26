@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/entity"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -17,6 +18,7 @@ func (h Handler) RefreshToken(c *gin.Context) {
 
 	// Bind request body to struct
 	if err := c.ShouldBindJSON(&tokenReq); err != nil {
+		err = entity.NewValidationError(err.Error())
 		responseBody = handleError[*dto.RefreshTokenRes](err)
 		c.JSON(http.StatusBadRequest, responseBody)
 		return

@@ -53,5 +53,5 @@ type AuthService interface {
 	// Logout logs out the user by invalidating the user's session.
 	Logout(userUUID string) error
 
-	VerifyToken(token string) (string, error)
+	VerifyAccessToken(token string) (string, error)
 }

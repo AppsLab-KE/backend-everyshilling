@@ -24,5 +24,5 @@ type AuthUseCase interface {
 	// Logout logs out the user by invalidating the user's session.
 	Logout(uuid string) error
 
-	VerifyToken(token string) (string, error)
+	VerifyAccessToken(token string) (string, error)
 }

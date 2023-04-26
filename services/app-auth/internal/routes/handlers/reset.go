@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/entity"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"github.com/gin-gonic/gin"
 )
@@ -16,6 +17,7 @@ func (h Handler) Reset(c *gin.Context) {
 
 	//parse the request body
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		err = entity.NewValidationError(err.Error())
 		responseBody = handleError[*dto.OtpGenRes](err)
 		c.JSON(responseBody.Code, responseBody)
 		return
@@ -46,6 +48,7 @@ func (h Handler) VerifyResetOTP(c *gin.Context, trackingUuid string) {
 
 	//parse the request body
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		err = entity.NewValidationError(err.Error())
 		responseBody = handleError[*dto.OtpVerificationRes](err)
 		c.JSON(responseBody.Code, responseBody)
 		return
@@ -97,6 +100,7 @@ func (h Handler) ChangePassword(c *gin.Context, trackingUuid string) {
 
 	//parse the request body
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		err = entity.NewValidationError(err.Error())
 		responseBody = handleError[*dto.ResetRes](err)
 		c.JSON(responseBody.Code, responseBody)
 		return
