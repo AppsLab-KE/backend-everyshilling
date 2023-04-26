@@ -46,6 +46,8 @@ func handleError[T any](err error) dto.DefaultRes[T] {
 		responseCode = http.StatusUnauthorized
 	case service.ErrVerificationOnWrongPhone:
 		responseCode = http.StatusForbidden
+	case service.ErrUserLoggedOut:
+		responseCode = http.StatusUnauthorized
 	default:
 		responseCode = http.StatusInternalServerError
 

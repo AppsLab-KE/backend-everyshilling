@@ -36,6 +36,7 @@ var (
 	ErrTokenBlacklisted         = errors.New("token expired/invalid")
 	ErrTokenInvalid             = errors.New("token invalid or expired")
 	ErrVerificationOnWrongPhone = errors.New("verification on wrong phone number")
+	ErrUserLoggedOut            = errors.New("user logged out")
 )
 
 func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
@@ -511,7 +512,7 @@ func (d AuthService) RefreshToken(request dto.RefreshTokenReq) (*dto.RefreshToke
 	}
 
 	// check if user is logged out
-	blacklisted, _ := d.repo.IsTokenBlacklisted(ctx, request.RefreshToken)
+	blacklisted, _ := d.repo.IsTokenBlacklisted(ctx, userUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -557,9 +558,9 @@ func (d AuthService) VerifyAccessToken(token string) (string, error) {
 	}
 
 	// check if user is logged i
-	blacklisted, err := d.repo.IsTokenBlacklisted(ctx, token)
+	blacklisted, err := d.repo.IsTokenBlacklisted(ctx, userUUID)
 	if err != nil {
-		return "", err
+		return "", ErrUserLoggedOut
 	}
 
 	if blacklisted {

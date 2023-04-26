@@ -17,8 +17,8 @@ const (
 
 func unauthorisedError() dto.DefaultRes[any] {
 	return dto.DefaultRes[any]{
-		Message: "Request failed",
-		Error:   "request not authorised: missing or invalid token",
+		Message: "request failed: unauthorised",
+		Error:   "request not authorised: missing a valid token",
 		Code:    http.StatusUnauthorized,
 		Data:    nil,
 	}

@@ -6,6 +6,7 @@ import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/adapters"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/platform/cache"
 	"github.com/redis/go-redis/v9"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -19,6 +20,7 @@ type Cache struct {
 
 func (c Cache) BlacklistToken(ctx context.Context, userUUID string) error {
 	err := c.client.Set(ctx, userUUID, "true", Expiration*10000).Err()
+	log.Info("blacklisting token: ", userUUID)
 	return err
 }
 
