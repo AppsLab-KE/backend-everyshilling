@@ -2,16 +2,21 @@ package handlers
 
 import (
 	"context"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/entity"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func (h Handler) Login(c *gin.Context) {
+	if c.IsAborted() {
+		return
+	}
 	var requestBody dto.LoginInitReq
 	var responseBody dto.DefaultRes[*dto.LoginInitRes]
 
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		err = entity.NewValidationError(err.Error())
 		responseBody = handleError[*dto.LoginInitRes](err)
 		c.JSON(http.StatusBadRequest, responseBody)
 		return
@@ -32,6 +37,10 @@ func (h Handler) Login(c *gin.Context) {
 }
 
 func (h Handler) ResendLoginOTP(c *gin.Context, trackingUuid string) {
+	if c.IsAborted() {
+		return
+	}
+
 	var responseBody dto.DefaultRes[*dto.ResendOTPRes]
 	var resendOTPReq dto.ResendOTPReq = dto.ResendOTPReq{
 		TrackingUID: trackingUuid,
@@ -47,6 +56,9 @@ func (h Handler) ResendLoginOTP(c *gin.Context, trackingUuid string) {
 }
 
 func (h Handler) VerifyLoginOTP(c *gin.Context, trackingUuid string) {
+	if c.IsAborted() {
+		return
+	}
 	// Get trackingID
 	// Body otpCode
 	var responseBody dto.DefaultRes[*dto.LoginRes]
@@ -55,6 +67,7 @@ func (h Handler) VerifyLoginOTP(c *gin.Context, trackingUuid string) {
 	defer cancelFunc()
 
 	if err := c.ShouldBindJSON(&otpBody); err != nil {
+		err = entity.NewValidationError(err.Error())
 		responseBody = handleError[*dto.LoginRes](err)
 		c.JSON(responseBody.Code, responseBody)
 		return

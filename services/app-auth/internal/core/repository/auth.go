@@ -21,6 +21,10 @@ type authRepo struct {
 	cacheStorage adapters.CacheStorage
 }
 
+func (a authRepo) InvalidateSession() error {
+	return nil
+}
+
 func (a authRepo) ResendOtpCode(ctx context.Context, data dto.ResendOTPReq) (*dto.ResendOTPRes, error) {
 	resendOtpReq := &otp.ResendOTPReq{
 		TrackingId: data.TrackingUID,
@@ -76,7 +80,7 @@ func (a authRepo) VerifyOtpCode(ctx context.Context, data dto.OtpVerificationReq
 	return otpRes, nil
 }
 
-func (a authRepo) CreateUser(ctx context.Context, registerRequest dto.RegisterRequest) (*entity.User, error) {
+func (a authRepo) CreateUser(ctx context.Context, registerRequest dto.RegisterReq) (*entity.User, error) {
 	userReq := db.CreateUserReq{
 		Name:         registerRequest.Name,
 		Email:        registerRequest.Email,
@@ -217,6 +221,30 @@ func (a authRepo) SavePhoneFromVerificationOTP(ctx context.Context, trackerUUID,
 
 func (a authRepo) GetPhoneFromVerificationOTP(ctx context.Context, trackerUUID string) (string, error) {
 	return a.cacheStorage.GetPhoneFromVerificationOTP(ctx, trackerUUID)
+}
+
+func (a authRepo) InvalidateLoginTracker(ctx context.Context, trackerUUID string) error {
+	return a.cacheStorage.InvalidateLoginTracker(ctx, trackerUUID)
+}
+
+func (a authRepo) InvalidateResetTracker(ctx context.Context, trackerUID string) error {
+	return a.cacheStorage.InvalidateResetTracker(ctx, trackerUID)
+}
+
+func (a authRepo) InvalidateVerificationTracker(ctx context.Context, trackerUUID string) error {
+	return a.cacheStorage.InvalidateVerificationTracker(ctx, trackerUUID)
+}
+
+func (a authRepo) BlacklistToken(ctx context.Context, userUUID string) error {
+	return a.cacheStorage.BlacklistToken(ctx, userUUID)
+}
+
+func (a authRepo) IsTokenBlacklisted(ctx context.Context, userUUID string) (bool, error) {
+	return a.cacheStorage.IsTokenBlacklisted(ctx, userUUID)
+}
+
+func (a authRepo) UnBlacklistToken(ctx context.Context, userUUID string) error {
+	return a.cacheStorage.UnBlacklistToken(ctx, userUUID)
 }
 
 func NewAuthRepo(cacheStorage adapters.CacheStorage, dbStorage adapters.DBStorage, otpStorage adapters.OTPStorage) adapters.AuthRepo {

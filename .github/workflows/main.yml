@@ -1,0 +1,24 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+      - name: Deploy to EC2
+        env:
+          EC2_INSTANCE_IP_ADDRESS: <EC2_INSTANCE_IP_ADDRESS>
+          EC2_USERNAME: <EC2_USERNAME>
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          echo "$EC2_INSTANCE_IP_ADDRESS ssh-rsa $(cat ~/.ssh/id_rsa.pub)" >> ~/.ssh/known_hosts
+          ssh -o StrictHostKeyChecking=no -i <(echo "$SSH_PRIVATE_KEY") $EC2_USERNAME@$EC2_INSTANCE_IP_ADDRESS 'cd /backend-everyshilling && make deploy'

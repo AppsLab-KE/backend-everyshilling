@@ -6,7 +6,7 @@ import (
 )
 
 type AuthUseCase interface {
-	RegisterUser(ctx context.Context, user dto.RegisterRequest) (*dto.UserRegistrationRes, error)
+	RegisterUser(ctx context.Context, user dto.RegisterReq) (*dto.UserRegistrationRes, error)
 	SendResetOtp(ctx context.Context, user dto.OtpGenReq) (*dto.OtpGenRes, error)
 	LoginUser(ctx context.Context, user dto.LoginInitReq) (*dto.LoginInitRes, error)
 	VerifyLoginOTP(ctx context.Context, req dto.OtpVerificationReq) (*dto.LoginRes, error)
@@ -14,9 +14,15 @@ type AuthUseCase interface {
 	ChangePassword(ctx context.Context, uuid string, body dto.RequestResetCredentials) (*dto.ResetRes, error)
 
 	VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) (*dto.OtpVerificationRes, error)
-	SendVerifyPhoneOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error)
+	SendVerifyPhoneOTP(request dto.AccountVerificationOTPGenReq) (*dto.OtpGenRes, error)
 
 	ResendVerifyPhoneOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error)
 	ResendLoginOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error)
 	ResendResetOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error)
+
+	RefreshToken(request dto.RefreshTokenReq) (*dto.RefreshTokenRes, error)
+	// Logout logs out the user by invalidating the user's session.
+	Logout(uuid string) error
+
+	VerifyAccessToken(token string) (string, error)
 }

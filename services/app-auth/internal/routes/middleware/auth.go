@@ -2,22 +2,23 @@ package middleware
 
 import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
-	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/pkg/tokens"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/routes/handlers"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 )
 
 const (
-	AuthorisationHeader       = "Authorisation"
-	AuthorisationHeaderPrefix = "Bearer"
-	UserUIDKey                = "UserUID"
+	AuthorisationHeader       = "Authorization"
+	AuthorizationBearerPrefix = "Bearer"
+	UserUUIDKey               = "UserUUID"
 )
 
 func unauthorisedError() dto.DefaultRes[any] {
 	return dto.DefaultRes[any]{
-		Message: "Request failed",
-		Error:   "Unauthorised request",
+		Message: "request failed: unauthorised",
+		Error:   "request not authorised: missing a valid token",
 		Code:    http.StatusUnauthorized,
 		Data:    nil,
 	}
@@ -28,22 +29,30 @@ func (m *Manager) Auth(ctx *gin.Context) {
 		return
 	}
 
-	unauthorisedResponse := unauthorisedError()
-	bearerToken := ctx.GetHeader(AuthorisationHeader)
-	bearerToken = strings.TrimPrefix(AuthorisationHeaderPrefix, bearerToken)
-	if bearerToken == "" {
-		ctx.JSON(http.StatusUnauthorized, unauthorisedResponse)
-		ctx.Abort()
-		return
-	}
+	if _, exists := ctx.Get(handlers.BearerScopes); exists {
+		// generate default error when unauthorised
+		unauthorisedResponse := unauthorisedError()
 
-	userId, err := tokens.VerifyToken(bearerToken, m.config.Jwt.Secret)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, unauthorisedResponse)
-		ctx.Abort()
-		return
-	}
+		// get token from header
+		bearerToken := ctx.GetHeader(AuthorisationHeader)
+		bearerToken = strings.TrimPrefix(bearerToken, AuthorizationBearerPrefix)
+		bearerToken = strings.TrimSpace(bearerToken)
 
-	ctx.Set(UserUIDKey, userId)
+		// if token is missing, abort
+		if bearerToken == "" {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, unauthorisedResponse)
+			return
+		}
+
+		// validate token
+		userId, err := m.authUC.VerifyAccessToken(bearerToken)
+		if err != nil {
+			log.Error(err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, unauthorisedResponse)
+			return
+		}
+
+		ctx.Set(UserUUIDKey, userId)
+	}
 	ctx.Next()
 }

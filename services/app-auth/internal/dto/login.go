@@ -3,8 +3,8 @@ package dto
 import "github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/entity"
 
 type LoginInitReq struct {
-	Phone    string `json:"phone"`
-	Password string `json:"password"`
+	PhoneNumber string `json:"phone_number" binding:"required"`
+	Password    string `json:"password" binding:"required"`
 }
 
 type LoginInitRes struct {
@@ -14,7 +14,7 @@ type LoginInitRes struct {
 }
 
 type LoginOTPBody struct {
-	OtpCode string `json:"otp_code"`
+	OtpCode string `json:"otp_code" binding:"required"`
 }
 
 type ResendOTPReq struct {
@@ -28,10 +28,11 @@ type ResendOTPRes struct {
 }
 
 type LoginRes struct {
-	StatusCode int32        `json:"-"`
-	Message    string       `json:"message,omitempty"`
-	Token      string       `json:"token"`
-	User       *entity.User `json:"user"`
+	StatusCode   int32        `json:"-"`
+	Message      string       `json:"message,omitempty"`
+	Token        string       `json:"bearer_token,omitempty"`
+	User         *entity.User `json:"user"`
+	RefreshToken string       `json:"refresh_token"`
 }
 
 type UserLoginRes struct {
