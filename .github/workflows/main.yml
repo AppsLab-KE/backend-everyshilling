@@ -16,5 +16,5 @@ jobs:
         sudo apt-get install -y make
     - name: Deploy to EC2
       run: |
-       ssh-keyscan <EC2_INSTANCE_IP_ADDRESS> | tee -a ~/.ssh/known_hosts
+       ssh-keyscan <EC2_INSTANCE_IP_ADDRESS> >> ~/.ssh/known_hosts 2>/dev/null
         ssh -i ~/.ssh/<YOUR_PRIVATE_KEY> <EC2_USERNAME>@<EC2_INSTANCE_IP_ADDRESS> 'cd /backend-everyshilling && make deploy'
