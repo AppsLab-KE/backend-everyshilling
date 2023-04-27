@@ -1,0 +1,20 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y make
+    - name: Deploy to EC2
+      run: |
+        ssh-keyscan <EC2_INSTANCE_IP_ADDRESS> >> ~/.ssh/known_hosts
+        ssh -i ~/.ssh/<YOUR_PRIVATE_KEY> <EC2_USERNAME>@<EC2_INSTANCE_IP_ADDRESS> 'cd /backend-everyshilling && make deploy'
