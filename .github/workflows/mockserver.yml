@@ -11,8 +11,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - run: cd backend-everyshilling
+    
+    - name: Install Docker Compose
+      run: |
+          sudo apt-get update
+          sudo apt-get -y install docker-compose
 
-    - name: Build the docker_compose
+    - name: Build the application
       run: sudo make build-dev
 
     - name: Buid the application
@@ -24,6 +30,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          
       - name: Deploy in EC2
         env:
             PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
