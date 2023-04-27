@@ -4,8 +4,6 @@ import hashlib
 import struct
 from Crypto.PublicKey import RSA
 import os
-
-
 import africastalking
 
 africastalking_username =os.getenv("AFR_USERNAME")

@@ -1,7 +1,7 @@
 import uuid
 import grpc
 import logging
-from . import otp
+from otp import otp
 from everyshillingsproto.otp import otp_pb2
 from everyshillingsproto.otp import otpserver_pb2_grpc
 from everyshillingsproto.otp import otpserver_pb2
@@ -10,7 +10,7 @@ from everyshillingsproto.otp import otpserver_pb2
 class OtpService(otpserver_pb2_grpc.OtpServiceServicer):
     def HealthCheck(self, request, context):
         health = otpserver_pb2.DefaultResponse()
-        return health
+        return healthx
 
     def CreateAndSendOtp(self, request, context):
         message = "otp generated successfully"
