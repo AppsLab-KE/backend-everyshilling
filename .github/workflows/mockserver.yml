@@ -19,7 +19,7 @@ jobs:
     - name: Clone repository
       uses: actions/checkout@v2
 
-    - name: Build and Deploy
+    - name: Build and Deploy microservice
       run: sudo make run-dev
    
  
