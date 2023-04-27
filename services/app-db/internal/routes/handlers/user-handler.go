@@ -27,9 +27,11 @@ func (s *Handler) CreateUser(context context.Context, userReq *db.CreateUserReq)
 		Name:        createdUser.Name,
 		Email:       createdUser.Email,
 		PhoneNumber: createdUser.Phone,
+		Verified:    createdUser.Verified,
+		UserID:      user.ID.String(),
 		CreatedAt:   timestamppb.New(createdUser.CreatedAt),
 		UpdatedAt:   timestamppb.New(createdUser.UpdatedAt),
-		DeletedAd:   timestamppb.New(createdUser.DeletedAt.Time),
+		DeletedAt:   timestamppb.New(createdUser.DeletedAt.Time),
 	}
 
 	return res, nil
@@ -43,6 +45,7 @@ func (s *Handler) UpdateUser(context context.Context, userReq *db.UpdateUserReq)
 		Name:     userReq.Name,
 		Email:    userReq.Email,
 		Phone:    userReq.PhoneNumber,
+		Verified: userReq.Verified,
 		Password: userReq.PasswordHash,
 	}
 
@@ -52,12 +55,14 @@ func (s *Handler) UpdateUser(context context.Context, userReq *db.UpdateUserReq)
 	}
 
 	res := &db.UpdateUserRes{
+		UserID:      createdUser.ID.String(),
 		Name:        createdUser.Name,
 		Email:       createdUser.Email,
 		PhoneNumber: createdUser.Phone,
+		Verified:    createdUser.Verified,
 		CreatedAt:   timestamppb.New(createdUser.CreatedAt),
 		UpdatedAt:   timestamppb.New(createdUser.UpdatedAt),
-		DeletedAd:   timestamppb.New(createdUser.DeletedAt.Time),
+		DeletedAt:   timestamppb.New(createdUser.DeletedAt.Time),
 	}
 
 	return res, nil
@@ -81,12 +86,14 @@ func (s *Handler) GetPagedUsers(ctx context.Context, page *db.GetPagedUsersReq) 
 	res := &db.GetPagedUsersRes{Offset: page.Offset, Limit: page.Limit, Users: make([]*db.User, 0)}
 	for _, usr := range pagedUsers {
 		res.Users = append(res.Users, &db.User{
+			UserID:      usr.ID.String(),
+			Verified:    usr.Verified,
 			Name:        usr.Name,
 			Email:       usr.Email,
 			PhoneNumber: usr.Phone,
 			CreatedAt:   timestamppb.New(usr.CreatedAt),
 			UpdatedAt:   timestamppb.New(usr.UpdatedAt),
-			DeletedAd:   timestamppb.New(usr.DeletedAt.Time),
+			DeletedAt:   timestamppb.New(usr.DeletedAt.Time),
 		})
 	}
 
@@ -97,6 +104,36 @@ func (s *Handler) GetUserByField(ctx context.Context, filter *db.GetByfieldReq) 
 	if filter == nil {
 		return nil, ErrEmptyRequest
 	}
+	var filterMap map[string]interface{} = make(map[string]interface{})
+	// fill the filterMap with the filter values
+	for k, f := range filter.Filter {
+		filterMap[k] = f.Value
+	}
 
-	return nil, ErrEmptyRequest
+	// page of a single user
+	page := models.Paging{
+		Offset: 0,
+		Limit:  1,
+	}
+
+	pagedUsers, err := s.userRepo.GetUserByField(ctx, &filterMap, page)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &db.GetPagedUsersRes{Offset: 0, Limit: 1, Users: make([]*db.User, 0)}
+	for _, usr := range pagedUsers {
+		res.Users = append(res.Users, &db.User{
+			UserID:      usr.ID.String(),
+			Verified:    usr.Verified,
+			Name:        usr.Name,
+			Email:       usr.Email,
+			PhoneNumber: usr.Phone,
+			Hash:        usr.Password,
+			CreatedAt:   timestamppb.New(usr.CreatedAt),
+			UpdatedAt:   timestamppb.New(usr.UpdatedAt),
+			DeletedAt:   timestamppb.New(usr.DeletedAt.Time),
+		})
+	}
+	return &db.GetByfieldRes{Users: res.Users}, nil
 }

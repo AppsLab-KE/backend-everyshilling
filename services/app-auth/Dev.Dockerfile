@@ -1,37 +1,35 @@
-# # Initial stage: download modules
-# FROM golang:1.19-alpine as golang-builder
+# Initial stage: download modules
+FROM golang:1.18-alpine as golang-builder
 
-# RUN apk add  --update build-base git ca-certificates
-# RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64;
-# FROM golang-builder AS app-builder
-# # Specify working directory
-# WORKDIR /usr/src/app
-# # Copy go mod files
-# COPY  go.mod go.sum ./
-# # Pull packages
-# RUN go mod download && go mod verify
-# # Copy all files
-# COPY . .
-# # Create binary
-# # RUN mkdir -p "build/dev" && go build -o build/dev/auth-app
-
-# RUN go build -o dev/auth-app
-# FROM app-builder as entrypoint
-# ENTRYPOINT ["/usr/src/app/build/dev/auth-app"]
+RUN apk add build-base openssl
+RUN apk --update add git ca-certificates
+RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64;
 
 
-# Stage 1: Build the application
-FROM golang:1.19-alpine  AS builder
-WORKDIR /usr/src/app
-COPY . .
+FROM golang-builder AS app-builder
+WORKDIR /app/auth
+
+# Copy go mod files
+COPY go.mod go.sum \
+     /app/auth/
+
 RUN go mod download
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app-auth .
-RUN go build -o dev/auth-app
+
+COPY .  /app/auth
 
 
-# Stage 2: Run the application
-FROM gcr.io/distroless/base-debian10
+RUN go build -o /tmp/app-auth
 
-#path to the file to be copied
-COPY --from=builder /usr/src/app .
-ENTRYPOINT ["/app-auth"]
+# Generate private and public keys
+RUN mkdir -p /etc/auth-service
+
+RUN if [ ! -e "/etc/auth-service/public.pem" ]; then \
+       openssl genrsa -out /etc/auth-service/private.pem 2048; \
+       openssl rsa -in /etc/auth-service/private.pem -pubout -out /etc/auth-service/public.pem; \
+    fi;
+
+FROM app-builder AS prepare-bin
+
+COPY --from=app-builder /tmp/app-auth /usr/bin/auth-service
+
+ENTRYPOINT ["/usr/bin/auth-service"]

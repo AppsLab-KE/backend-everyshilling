@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type Model struct {
+type BaseModel struct {
 	ID          uuid.UUID `gorm:"primaryKey;size:36"`
 	ActivatedAt sql.NullTime
 	CreatedAt   time.Time
@@ -15,7 +15,7 @@ type Model struct {
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }
 
-func (b *Model) BeforeCreate(db *gorm.DB) error {
+func (b *BaseModel) BeforeCreate(db *gorm.DB) error {
 	b.ID = uuid.New()
 	return nil
 }

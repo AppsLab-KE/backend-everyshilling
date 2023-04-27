@@ -10,9 +10,12 @@ message User {
     string name = 1;
     string email = 2;
     string phone_number = 3;
+    string userID = 4;
     google.protobuf.Timestamp created_at = 6;
     google.protobuf.Timestamp updated_at = 7;
-    google.protobuf.Timestamp deleted_ad = 8;
+    google.protobuf.Timestamp deleted_at = 8;
+    string hash = 9;
+    bool verified = 10;
 }
 
 
@@ -29,9 +32,12 @@ message CreateUserRes {
     string name = 1;
     string email = 2;
     string phone_number = 3;
+    string userID = 7;
+    bool verified = 8;
     google.protobuf.Timestamp created_at = 4;
     google.protobuf.Timestamp updated_at = 5;
-    google.protobuf.Timestamp deleted_ad = 6;
+    google.protobuf.Timestamp deleted_at = 6;
+    string hash = 9;
 }
 
 
@@ -41,15 +47,19 @@ message UpdateUserReq {
      string email = 2;
      string phone_number = 3;
      string password_hash = 4;
+     bool verified = 8;
+     string userID = 5;
 }
 
 message UpdateUserRes {
     string name = 1;
     string email = 2;
     string phone_number = 3;
+    string userID = 7;
+    bool verified = 8;
     google.protobuf.Timestamp created_at = 4;
     google.protobuf.Timestamp updated_at = 5;
-    google.protobuf.Timestamp deleted_ad = 6;
+    google.protobuf.Timestamp deleted_at = 6;
 }
 
 // READ

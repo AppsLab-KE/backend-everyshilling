@@ -1,9 +1,10 @@
 package models
 
 type User struct {
-	Model
+	BaseModel
 	Name     string
 	Email    string
 	Phone    string
 	Password string
+	Verified bool
 }

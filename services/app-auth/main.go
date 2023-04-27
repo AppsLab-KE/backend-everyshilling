@@ -2,6 +2,10 @@ package main
 
 import (
 	"context"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/config"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/repository"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/service"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/storage"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/usecase"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/routes/server"
 	"github.com/sirupsen/logrus"
@@ -21,19 +25,37 @@ func main() {
 	log := logrus.New()
 	// Dependency initialisation
 
-	// TODO Connect to infrastructure
+	// Load config
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Fatal("Loading config failed", err)
+	}
 
-	// TODO Initialise repositories & services
+	// initilise storage
+	dbStorage, err := storage.NewDbStorage(cfg.Database)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	otpStorage, err := storage.NewOtpStorage(cfg.OTP)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cacheStorage, err := storage.NewCacheStorage(cfg.Redis)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Repos
+	authRepo := repository.NewAuthRepo(cacheStorage, dbStorage, otpStorage)
+	// services
+	authService := service.NewDefaultAuthService(cfg.Jwt, authRepo)
 
 	// Initialise usecases
-	authUC := usecase.NewAuthUsecase(nil, nil)
+	authUC := usecase.NewAuthUsecase(authService, nil)
 
 	// server config
-	serverConfig := server.Config{
-		AuthUsecase: authUC,
-		Logger:      log,
-	}
-	handler := server.NewServer(serverConfig)
+	handler := server.NewServer(authUC, *cfg)
 
 	port := ":" + os.Getenv("PORT")
 	srv := &http.Server{

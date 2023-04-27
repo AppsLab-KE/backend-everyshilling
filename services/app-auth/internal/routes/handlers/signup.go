@@ -2,25 +2,25 @@ package handlers
 
 import (
 	"context"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/entity"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
-	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/errors"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func (h Handler) Register(c *gin.Context) {
-	// get request body
-	var requestBody dto.RegisterRequest
-	var responseBody dto.DefaultRes[*dto.UserRegistrationRes]
+	if c.IsAborted() {
+		return
+	}
 
-	responseBody.Message = "Registration failed"
+	// get request body
+	var requestBody dto.RegisterReq
+	var responseBody dto.DefaultRes[*dto.UserRegistrationRes]
 
 	// parse request body
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
-		responseBody.Code = 400
-		responseBody.Data = nil
-		responseBody.Error = "Invalid request."
-		c.JSON(400, responseBody)
+		err = entity.NewValidationError(err.Error())
+		responseBody = handleError[*dto.UserRegistrationRes](err)
+		c.JSON(responseBody.Code, responseBody)
 		return
 	}
 
@@ -29,24 +29,11 @@ func (h Handler) Register(c *gin.Context) {
 	defer cancel()
 
 	usr, err := h.AuthUC.RegisterUser(ctx, requestBody)
-	if err == nil {
-		responseBody.Message = "Registration success"
-		responseBody.Code = 200
-		responseBody.Data = usr
-		responseBody.Error = ""
-		c.JSON(200, responseBody)
+	if err != nil {
+		responseBody = handleError[*dto.UserRegistrationRes](err)
+		c.JSON(responseBody.Code, responseBody)
 		return
 	}
-	switch err {
-	case errors.ErrUserExists:
-		responseBody.Code = http.StatusConflict
-	case errors.ErrUserCreation:
-		responseBody.Code = http.StatusInternalServerError
-	case errors.ErrRequestValidation:
-		responseBody.Code = http.StatusBadRequest
-	default:
-		responseBody.Error = ""
-	}
-
+	responseBody = okResponse[*dto.UserRegistrationRes](usr, "registration success")
 	c.JSON(responseBody.Code, responseBody)
 }
