@@ -28,10 +28,11 @@ type ResendOTPRes struct {
 }
 
 type LoginRes struct {
-	StatusCode int32        `json:"-"`
-	Message    string       `json:"message,omitempty"`
-	Token      string       `json:"token"`
-	User       *entity.User `json:"user"`
+	StatusCode   int32        `json:"-"`
+	Message      string       `json:"message,omitempty"`
+	Token        string       `json:"bearer_token,omitempty"`
+	User         *entity.User `json:"user"`
+	RefreshToken string       `json:"refresh_token"`
 }
 
 type UserLoginRes struct {

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	log "github.com/sirupsen/logrus"
 	"io"
 	"os"
 	"time"
@@ -14,11 +15,11 @@ const (
 	privateKeyPath = "/etc/auth-service/private.pem"
 )
 
-func GenerateToken(userId string, expiryMinutes int) (string, error) {
+func GenerateToken(userId string, expiryMinutes, refreshExpiryDays int) (string, string, error) {
 	// open private key
 	file, err := os.Open(privateKeyPath)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	defer file.Close()
@@ -26,30 +27,39 @@ func GenerateToken(userId string, expiryMinutes int) (string, error) {
 	// read public key
 	privateKey, err := io.ReadAll(file)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	// parse pub
 	rsaPrivateKey, err := jwt.ParseRSAPrivateKeyFromPEM(privateKey)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	claims := jwt.MapClaims{}
 	claims["uuid"] = userId
 	claims["exp"] = time.Now().Add(time.Minute * time.Duration(expiryMinutes)).UnixNano()
+	claims["type"] = "access"
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 
 	tokenString, err := token.SignedString(rsaPrivateKey)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	return tokenString, nil
+	claims["exp"] = time.Now().Add(time.Hour * 24 * time.Duration(refreshExpiryDays)).UnixNano()
+	claims["type"] = "refresh"
+
+	refreshTokenString, err := token.SignedString(rsaPrivateKey)
+	if err != nil {
+		return "", "", err
+	}
+
+	return tokenString, refreshTokenString, nil
 }
 
-func VerifyToken(jwtToken string) (userId string, err error) {
+func VerifyToken(jwtToken string, isTypeRefreshToken bool) (userId string, err error) {
 
 	// open public key
 	file, err := os.Open(publicKeyPath)
@@ -80,11 +90,12 @@ func VerifyToken(jwtToken string) (userId string, err error) {
 	})
 
 	if err != nil {
-		return "", errors.New("invalid parsedToken")
+		log.Errorf("failed to parse token: %v", err)
+		return "", errors.New("invalid token")
 	}
 
 	if !parsedToken.Valid {
-		return "", errors.New("invalid parsedToken")
+		return "", errors.New("invalid token")
 	}
 
 	mapClaims := parsedToken.Claims.(jwt.MapClaims)
@@ -92,6 +103,26 @@ func VerifyToken(jwtToken string) (userId string, err error) {
 
 	if !ok {
 		return "", errors.New("invalid token")
+	}
+
+	if isTypeRefreshToken {
+		tokenType, ok := mapClaims["type"].(string)
+		if !ok {
+			return "", errors.New("invalid token type")
+		}
+
+		if tokenType != "refresh" {
+			return "", errors.New("invalid token type")
+		}
+	} else {
+		tokenType, ok := mapClaims["type"].(string)
+		if !ok {
+			return "", errors.New("invalid token type")
+		}
+
+		if tokenType != "access" {
+			return "", errors.New("invalid token type")
+		}
 	}
 
 	expiryTime, ok := mapClaims["exp"].(float64)

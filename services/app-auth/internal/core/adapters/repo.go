@@ -16,13 +16,20 @@ type AuthRepo interface {
 	UpdateUser(ctx context.Context, user entity.User) (*entity.User, error)
 
 	SavePhoneFromLoginOTP(ctx context.Context, trackerUUID, phone string) error
+	InvalidateLoginTracker(ctx context.Context, trackerUUID string) error
 	GetPhoneFromLoginOTP(ctx context.Context, trackerUUID string) (string, error)
 
 	SavePhoneFromResetOTP(ctx context.Context, trackerUUID, phone string) error
+	InvalidateResetTracker(ctx context.Context, trackerUID string) error
 	GetPhoneFromResetOTP(ctx context.Context, trackerUUID string) (string, error)
 
 	SavePhoneFromVerificationOTP(ctx context.Context, trackerUUID, phone string) error
+	InvalidateVerificationTracker(ctx context.Context, trackerUUID string) error
 	GetPhoneFromVerificationOTP(ctx context.Context, trackerUUID string) (string, error)
+
+	BlacklistToken(ctx context.Context, userUUID string) error
+	IsTokenBlacklisted(ctx context.Context, userUUID string) (bool, error)
+	UnBlacklistToken(ctx context.Context, userUUID string) error
 
 	InvalidateSession() error
 }

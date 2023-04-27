@@ -223,6 +223,30 @@ func (a authRepo) GetPhoneFromVerificationOTP(ctx context.Context, trackerUUID s
 	return a.cacheStorage.GetPhoneFromVerificationOTP(ctx, trackerUUID)
 }
 
+func (a authRepo) InvalidateLoginTracker(ctx context.Context, trackerUUID string) error {
+	return a.cacheStorage.InvalidateLoginTracker(ctx, trackerUUID)
+}
+
+func (a authRepo) InvalidateResetTracker(ctx context.Context, trackerUID string) error {
+	return a.cacheStorage.InvalidateResetTracker(ctx, trackerUID)
+}
+
+func (a authRepo) InvalidateVerificationTracker(ctx context.Context, trackerUUID string) error {
+	return a.cacheStorage.InvalidateVerificationTracker(ctx, trackerUUID)
+}
+
+func (a authRepo) BlacklistToken(ctx context.Context, userUUID string) error {
+	return a.cacheStorage.BlacklistToken(ctx, userUUID)
+}
+
+func (a authRepo) IsTokenBlacklisted(ctx context.Context, userUUID string) (bool, error) {
+	return a.cacheStorage.IsTokenBlacklisted(ctx, userUUID)
+}
+
+func (a authRepo) UnBlacklistToken(ctx context.Context, userUUID string) error {
+	return a.cacheStorage.UnBlacklistToken(ctx, userUUID)
+}
+
 func NewAuthRepo(cacheStorage adapters.CacheStorage, dbStorage adapters.DBStorage, otpStorage adapters.OTPStorage) adapters.AuthRepo {
 	return &authRepo{
 		dbStorage:    dbStorage,

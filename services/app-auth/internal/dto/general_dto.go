@@ -11,5 +11,6 @@ type DefaultRes[T any] struct {
 
 type UserRegistrationRes struct {
 	entity.User
-	Token string
+	Token        string `json:"bearer_token"`
+	RefreshToken string `json:"refresh_token"`
 }

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/service"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"github.com/gin-gonic/gin"
 )
@@ -11,6 +12,7 @@ func (h Handler) VerifyPhone(c *gin.Context) {
 	}
 	//get the request body
 	var requestBody dto.OtpGenReq
+	var verificationRequestBody dto.AccountVerificationOTPGenReq
 	var responseBody dto.DefaultRes[*dto.OtpGenRes]
 
 	//parse the request body
@@ -20,8 +22,21 @@ func (h Handler) VerifyPhone(c *gin.Context) {
 		return
 	}
 
+	userID, exists := c.Get("UserUUID")
+	if !exists {
+		err := service.ErrTokenInvalid
+		responseBody = handleError[*dto.OtpGenRes](err)
+		c.JSON(responseBody.Code, responseBody)
+		return
+	}
+
+	verificationRequestBody = dto.AccountVerificationOTPGenReq{
+		UserUUID: userID.(string),
+		Phone:    requestBody.Phone,
+	}
+
 	// check if the user exists and generate a reset request ID
-	res, err := h.AuthUC.SendVerifyPhoneOTP(requestBody)
+	res, err := h.AuthUC.SendVerifyPhoneOTP(verificationRequestBody)
 
 	if err != nil {
 		responseBody = handleError[*dto.OtpGenRes](err)
