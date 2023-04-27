@@ -10,44 +10,22 @@ jobs:
     runs-on: self-hosted
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Clone repository
+      uses: actions/checkout@v2
+    
     - run: cd backend-everyshilling
     
-    - name: Install Docker Compose
+    - name: Install Dependencies
       run: |
           sudo apt-get update
+          sudo apt-get install -y make
           sudo apt-get -y install docker-compose
 
-    - name: Build the application
-      run: sudo make build-dev
+    - name: Build and Deploy
+      run: |
+            make build-dev
 
     - name: Buid the application
       run: sudo make run-dev
-
-  Deploy:
-    needs: build
-    runs-on: self-hosted
-
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.head_ref }}
-          
-      - name: Deploy in EC2
-        env:
-            PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
-            HOSTNAME : ${{ secrets.HOSTNAME  }}
-            USER_NAME : ${{ secrets.USER_NAME  }}
-
-        run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
-
-            #EC2 to start the deployment .
-            cd /home/ubuntu/everyshilling &&
-            git checkout develop &&
-            git fetch --all &&
-            git reset --hard origin/main &&
-            git pull origin develop &&
-            make run-dev
-          '
+   
+ 
