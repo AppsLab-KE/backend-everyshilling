@@ -48,5 +48,4 @@ docker ps
 docker image tag <service_name>:<tag> <your_dockerhub_username>/<repository_name>:<tag>
 docker image push <your_dockerhub_username>/<repository_name>:<tag>
 
-
 #Dummy writing to see if my mckserver autodeployment works
