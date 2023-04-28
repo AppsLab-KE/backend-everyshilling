@@ -41,8 +41,4 @@ jobs:
             git reset --hard origin/main &&
             git pull origin develop &&
             make run-dev
-<<<<<<< HEAD
-          '
-=======
-          '
->>>>>>> a5a7472c681a69fafc63e0033e43b431862e09a0
+
