@@ -1,10 +1,18 @@
 
 cluster_name: everyshilling
+<<<<<<< HEAD
 repository_name: twala
 image_name: everyshilling_backend-authapp
 repositoryUri: 540828511394.dkr.ecr.us-east-1.amazonaws.com/twala
 image_version: latest
 ecr_repo_url: 540828511394.dkr.ecr.us-east-1.amazonaws.com/twala
+=======
+repository_name: backend_everyshilling
+ecr_repository_url: "540828511394.dkr.ecr.us-east-1.amazonaws.com"
+ecr_repo: twala
+image_name : backend_everyshilling_app-auth
+image_version : redis
+>>>>>>> a5a7472c681a69fafc63e0033e43b431862e09a0
 region: us-east-1
 size_of_cluster: 4
 
@@ -19,7 +27,11 @@ cloud_config:
   internet_gateway: true                                           # Only set to false if using local repos (node will be without Internet access)
   admin_username: ec2-user
   security_groups:
+<<<<<<< HEAD
     - name: reverseapi-http
+=======
+    - name: everyshilling
+>>>>>>> a5a7472c681a69fafc63e0033e43b431862e09a0
       rules:
         - {"proto":"tcp", "from_port":"80", "to_port":"80", "cidr_ip":"0.0.0.0/0"}
         - {"proto":"tcp", "from_port":"443", "to_port":"443", "cidr_ip":"0.0.0.0/0"}

@@ -71,6 +71,7 @@
       with_items: "{{ cloud_config.security_groups }}"
       register: cluster_security_groups
 
+<<<<<<< HEAD
 
     # - name: Build Docker image
     #   docker_image:
@@ -98,6 +99,30 @@
     #   docker_image:
     #     name: "{{ ecr_repo.repository_name.repositoryUri }}:{{ image_version }}"
     #     push: yes
+=======
+    # - name: Docker login (must `--no-include-email`)
+    #   shell: "{{ lookup('env','HOME') }}/.local/bin/aws ecr get-login-password
+    #     --region {{ cloud_config.region }} | docker login --username AWS
+    #     --password-stdin {{ cloud_config.registry }}"
+    #   args:
+    #     executable: /bin/bash
+
+    # - name: Docker login (must `--no-include-email`)
+    #   shell: "$(aws ecr get-login --region {{ cloud_config.region }} --no-include-email)"
+    #   args:
+    #     executable: /bin/bash
+
+    - name: Tag local image to push to ecr
+      docker_image:
+        name: "{{ image_name }}:{{ image_version }}"
+        repository: "{{ ecr_repo.repository.repositoryUri }}"
+        tag: "{{ ecr_repo.repository.repositoryUri }}:{{ image_version }}"
+
+    - name: Push image to ecr
+      docker_image:
+        name: "{{ ecr_repo.repository.repositoryUri }}:{{ image_version }}"
+        push: yes
+>>>>>>> a5a7472c681a69fafc63e0033e43b431862e09a0
 
     - name: Setup ECS cluster
       ecs_cluster:
@@ -188,3 +213,7 @@
 
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> a5a7472c681a69fafc63e0033e43b431862e09a0
