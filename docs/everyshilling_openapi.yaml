@@ -9,9 +9,9 @@ info:
     email: everyshilling@co.ke
     url: https://everyshilling.ke
 servers:
-  - url: ''
+  - url: 'http://localhost:4010'
     description: 'Mock server'
-  - url: ''
+  - url: 'http://localhost:3002/api'
     description: 'Local'
   - url: ''
     description: 'Staging'
@@ -124,7 +124,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response"
 
-# Registration endpoint
+  # Registration endpoint
   /auth/register:
     summary: Register new users to the system
     description:  User account registration
@@ -168,7 +168,7 @@ paths:
         content:
           application/json:
             schema:
-               $ref: "#/components/schemas/Phone"
+              $ref: "#/components/schemas/Phone"
 
       responses:
         '200':
@@ -183,7 +183,7 @@ paths:
           content:
             application/json:
               schema:
-                 $ref: "#/components/schemas/ResponseError"
+                $ref: "#/components/schemas/ResponseError"
   /auth/reset/otp/{tracking-uuid}/verify:
     post:
       operationId: "VerifyResetOTP"
@@ -198,6 +198,7 @@ paths:
           schema:
             type: string
             example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+
       requestBody:
         description: "The 6 Digit OTP code sent to the user's email"
         content:
@@ -240,6 +241,7 @@ paths:
           schema:
             type: string
             example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+
       requestBody:
         description: "The user's new passwords"
         content:
@@ -288,6 +290,7 @@ paths:
           schema:
             type: string
             example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+
       responses:
         '200':
           description: OTP generated and sent successfully
@@ -314,6 +317,8 @@ paths:
       summary: Verify phone number
       description: resend the OTP to the server for verification.
       tags: [ Phone Verification ]
+      security:
+        - Bearer: [ ]
       requestBody:
         content:
           application/json:
@@ -344,6 +349,8 @@ paths:
       tags: [ Phone Verification ]
       summary: "Verify OTP"
       description: "Once a user has sent their email, they receive an OTP code for verifying if indeed they are the owners of the account"
+      security:
+        - Bearer: [ ]
       parameters:
         - name: tracking-uuid
           description: "Verificatiion request UUID"
@@ -352,6 +359,7 @@ paths:
           schema:
             type: string
             example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+
       requestBody:
         description: "The 6 Digit OTP code sent to the user's phone"
         content:
@@ -386,6 +394,8 @@ paths:
       summary: Resend verification OTP
       description: resend the OTP to the user's phone
       tags: [ Phone Verification ]
+      security:
+        - Bearer: []
       parameters:
         - name: tracking-uuid
           description: " request UUID"
@@ -394,6 +404,7 @@ paths:
           schema:
             type: string
             example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+
       responses:
         '200':
           description: OTP generated and sent successfully
@@ -413,6 +424,47 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Response"
+  #LogOut Endpoint
+  /auth/logout:
+    get:
+      summary: Invalidatation to access token and logout user
+      description: Endpoint to invalidate access token and log out the user.
+      tags: [ Login ]
+      operationId: "Logout"
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          description: User logged out successfully
+        '401':
+          description: "Unauthorized: Invalid or expired token"
+        '500':
+          description: Internal server error
+
+  #Refresh Token
+  /auth/refresh-token:
+    post:
+      summary: Refresh access token using refresh token
+      description: Endpoint to refresh access token using refresh token.
+      tags: [ Login ]
+      operationId: "RefreshToken"
+      requestBody:
+        description: User's refresh token
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenReq"
+      responses:
+        '200':
+          description: Access token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefreshTokenRes"
+        '400':
+          description: "Bad request: missing or invalid refresh token"
+        '500':
+          description: Internal server error
 tags:
   - name: Register
     description: Registration description
@@ -427,6 +479,12 @@ tags:
 
 
 components:
+  securitySchemes:
+    Bearer:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     RequestOTP:
       type: object
@@ -540,3 +598,25 @@ components:
           type: string
           description: valid phone
           example: +254702998282
+
+    RefreshTokenReq:
+      type: object
+      properties:
+        refresh_token:
+          type: string
+          description: User's refresh token
+      required:
+        - refresh_token
+
+    RefreshTokenRes:
+      type: object
+      properties:
+        refresh_token:
+          type: string
+          description: New Refresh token
+        bearer_token:
+          type: string
+          description: New Bearer token
+      required:
+        - refresh_token
+        - bearer_token

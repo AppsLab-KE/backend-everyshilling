@@ -2,17 +2,22 @@ package handlers
 
 import (
 	"context"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/entity"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"github.com/gin-gonic/gin"
 )
 
 func (h Handler) Reset(c *gin.Context) {
+	if c.IsAborted() {
+		return
+	}
 	//get the request body
 	var requestBody dto.OtpGenReq
 	var responseBody dto.DefaultRes[*dto.OtpGenRes]
 
 	//parse the request body
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		err = entity.NewValidationError(err.Error())
 		responseBody = handleError[*dto.OtpGenRes](err)
 		c.JSON(responseBody.Code, responseBody)
 		return
@@ -34,12 +39,16 @@ func (h Handler) Reset(c *gin.Context) {
 }
 
 func (h Handler) VerifyResetOTP(c *gin.Context, trackingUuid string) {
+	if c.IsAborted() {
+		return
+	}
 	//get the request body
 	var requestBody dto.RequestOTP
 	var responseBody dto.DefaultRes[*dto.OtpVerificationRes]
 
 	//parse the request body
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		err = entity.NewValidationError(err.Error())
 		responseBody = handleError[*dto.OtpVerificationRes](err)
 		c.JSON(responseBody.Code, responseBody)
 		return
@@ -64,6 +73,9 @@ func (h Handler) VerifyResetOTP(c *gin.Context, trackingUuid string) {
 }
 
 func (h Handler) ResendResetOTP(c *gin.Context, trackingUuid string) {
+	if c.IsAborted() {
+		return
+	}
 	var responseBody dto.DefaultRes[*dto.ResendOTPRes]
 	var resendOTPReq dto.ResendOTPReq = dto.ResendOTPReq{
 		TrackingUID: trackingUuid,
@@ -79,12 +91,16 @@ func (h Handler) ResendResetOTP(c *gin.Context, trackingUuid string) {
 }
 
 func (h Handler) ChangePassword(c *gin.Context, trackingUuid string) {
+	if c.IsAborted() {
+		return
+	}
 	// get the request body
 	var requestBody dto.ChangePasswordJSONRequestBody
 	var responseBody dto.DefaultRes[*dto.ResetRes]
 
 	//parse the request body
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		err = entity.NewValidationError(err.Error())
 		responseBody = handleError[*dto.ResetRes](err)
 		c.JSON(responseBody.Code, responseBody)
 		return

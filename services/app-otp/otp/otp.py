@@ -8,19 +8,18 @@ import os
 
 # import africastalking
 
-# Generating RSA keys
-secret = os.getenv("OTP_SECRET")
 
 def generate_otp() -> str:
+    # Generating RSA keys
+    secret = os.getenv("OTP_SECRET")
 
-    if len(secret) == 0:
+    if not secret:
         raise Exception("otp key missing")
 
     key = RSA.generate(2048)
     public_key = key.publickey()
     private_key = key
     # Generate a random secret key as a bite string
-
 
     # Set the steps and get the unix time
     time_step = 120
@@ -31,6 +30,8 @@ def generate_otp() -> str:
 
     # Pack the time steps as a big-endian byte string
     time_bytes = struct.pack('>Q', time_steps)
+
+    secret = str.encode(secret)
 
     # Calculate the HMAC-SHA1 hash of the time steps using the secret key
     hash = hmac.new(secret, time_bytes, hashlib.sha1).digest()

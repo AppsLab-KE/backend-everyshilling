@@ -1,12 +1,12 @@
 package entity
 
 type User struct {
-	UserId      string
-	Name        string
-	Email       string
-	PhoneNumber string
+	UserId      string `json:"user_id"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	PhoneNumber string `json:"phone_number"`
 	Hash        string `json:"-"`
-	Verified    bool
+	Verified    bool   `json:"verified"`
 }
 
 type Otp struct {

@@ -3,5 +3,5 @@ import asyncio
 import logging
 
 if __name__ == '__main__':
-    otp_server = server.otp_service()
+    otp_server = server.OtpService()
     asyncio.run(otp_server.run(3008))

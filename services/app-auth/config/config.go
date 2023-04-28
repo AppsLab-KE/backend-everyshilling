@@ -3,11 +3,13 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 )
 
 type Jwt struct {
-	Secret        string
-	ExpiryMinutes int
+	Secret            string
+	ExpiryMinutes     int
+	RefreshExpiryDays int
 }
 
 type DatabaseService struct {
@@ -67,6 +69,28 @@ func LoadConfig() (*Config, error) {
 		return nil, fmt.Errorf("missing required environment variable JWT_SECRET")
 	}
 
+	jwtExpiry, ok := os.LookupEnv("JWT_EXPIRY")
+	if !ok {
+		return nil, fmt.Errorf("missing required environment variable JWT_EXPIRY")
+	}
+
+	// convert string to int
+	jwtExpiryInt, err := strconv.Atoi(jwtExpiry)
+	if err != nil {
+		return nil, fmt.Errorf("invalid JWT_EXPIRY")
+	}
+
+	jwtRefreshExpiry, ok := os.LookupEnv("JWT_REFRESH_EXPIRY")
+	if !ok {
+		return nil, fmt.Errorf("missing required environment variable JWT_REFRESH_EXPIRY")
+	}
+
+	// convert string to int
+	jwtRefreshExpiryInt, err := strconv.Atoi(jwtRefreshExpiry)
+	if err != nil {
+		return nil, fmt.Errorf("invalid JWT_REFRESH_EXPIRY")
+	}
+
 	dbPort, ok := os.LookupEnv("DB_PORT")
 	if !ok {
 		return nil, fmt.Errorf("missing required environment variable DB_PORT")
@@ -115,8 +139,9 @@ func LoadConfig() (*Config, error) {
 			Password: rabbitPassword,
 		},
 		Jwt: Jwt{
-			Secret:        jwtSecret,
-			ExpiryMinutes: 60,
+			Secret:            jwtSecret,
+			ExpiryMinutes:     jwtExpiryInt,
+			RefreshExpiryDays: jwtRefreshExpiryInt,
 		},
 		Database: DatabaseService{
 			Port: dbPort,

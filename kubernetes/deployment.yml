@@ -14,9 +14,11 @@ spec:
         app: grpcserver
     spec:
       containers:
+
       - name: grpc-demo
-        image: 540828511394.dkr.ecr.us-east-1.amazonaws.com/app-auth:latest   #<------- Change to the URI that the Docker image is pushed to
+        image: accountid.dkr.ecr.us-east-1.amazonaws.com/app-auth:latest   #<------- Change to the URI that the Docker image is pushed to
         imagePullPolicy: Always
+
         ports:
         - name: grpc-api
           containerPort: 9000
