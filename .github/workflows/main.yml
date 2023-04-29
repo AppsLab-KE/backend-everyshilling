@@ -9,9 +9,18 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
+      - name: Setting up Docker
+        run: docker/setup-docker@v1
+        
       - name: Build an image from Dockerfile
         run: |
           docker build -t docs -f docs/Dockerfile docs/
+          
+      - name: Install make
+        run: |
+          sudo apt-get update && \
+          sudo apt-get install -y make
+          
       - name: Build the application
         run: sudo make run-dev
 
