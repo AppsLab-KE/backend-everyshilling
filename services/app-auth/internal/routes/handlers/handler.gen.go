@@ -22,6 +22,12 @@ type ServerInterface interface {
 	// Verify the OTP
 	// (POST /auth/login/otp/{tracking-uuid}/verify)
 	VerifyLoginOTP(c *gin.Context, trackingUuid string)
+	// Invalidatation to access token and logout user
+	// (GET /auth/logout)
+	Logout(c *gin.Context)
+	// Refresh access token using refresh token
+	// (POST /auth/refresh-token)
+	RefreshToken(c *gin.Context)
 	// A POST request to registering new users
 	// (POST /auth/register)
 	Register(c *gin.Context)
@@ -107,6 +113,28 @@ func (siw *ServerInterfaceWrapper) VerifyLoginOTP(c *gin.Context) {
 	}
 
 	siw.Handler.VerifyLoginOTP(c, trackingUuid)
+}
+
+// Logout operation middleware
+func (siw *ServerInterfaceWrapper) Logout(c *gin.Context) {
+
+	c.Set(BearerScopes, []string{""})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+	}
+
+	siw.Handler.Logout(c)
+}
+
+// RefreshToken operation middleware
+func (siw *ServerInterfaceWrapper) RefreshToken(c *gin.Context) {
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+	}
+
+	siw.Handler.RefreshToken(c)
 }
 
 // Register operation middleware
@@ -195,6 +223,8 @@ func (siw *ServerInterfaceWrapper) ChangePassword(c *gin.Context) {
 // VerifyPhone operation middleware
 func (siw *ServerInterfaceWrapper) VerifyPhone(c *gin.Context) {
 
+	c.Set(BearerScopes, []string{""})
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 	}
@@ -216,6 +246,8 @@ func (siw *ServerInterfaceWrapper) ResendVerificationOTP(c *gin.Context) {
 		return
 	}
 
+	c.Set(BearerScopes, []string{""})
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 	}
@@ -236,6 +268,8 @@ func (siw *ServerInterfaceWrapper) VerifyVerificationOTP(c *gin.Context) {
 		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter tracking-uuid: %s", err), http.StatusBadRequest)
 		return
 	}
+
+	c.Set(BearerScopes, []string{""})
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
@@ -278,6 +312,10 @@ func RegisterHandlersWithOptions(router *gin.Engine, si ServerInterface, options
 	router.GET(options.BaseURL+"/auth/login/otp/:tracking-uuid/resend", wrapper.ResendLoginOTP)
 
 	router.POST(options.BaseURL+"/auth/login/otp/:tracking-uuid/verify", wrapper.VerifyLoginOTP)
+
+	router.GET(options.BaseURL+"/auth/logout", wrapper.Logout)
+
+	router.POST(options.BaseURL+"/auth/refresh-token", wrapper.RefreshToken)
 
 	router.POST(options.BaseURL+"/auth/register", wrapper.Register)
 
