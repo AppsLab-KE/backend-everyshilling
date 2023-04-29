@@ -1,0 +1,56 @@
+name: CI/CD Everyshilling
+
+on:
+  push:
+    branches: [ develop ]
+
+jobs:
+#First we will see the application build or not , then we will deploy in EC2
+  build:
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build the docker_compose
+      run: sudo make build-dev
+
+    - name: Buid the application
+      run: sudo make run-dev
+
+  Deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy in EC2
+        env:
+            PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
+            HOSTNAME : ${{ secrets.HOSTNAME  }}
+            USER_NAME : ${{ secrets.USER_NAME  }}
+
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+
+            #EC2 to start the deployment .
+            cd /home/ubuntu/everyshilling &&
+            git checkout develop &&
+            git fetch --all &&
+            git reset --hard origin/main &&
+            git pull origin develop &&
+            make run-dev
+
+    - name: Install Dependencies
+      run: |
+          sudo apt-get update
+          sudo apt-get install -y make
+          sudo apt-get -y install docker-compose
+
+    - name: Clone repository
+      uses: actions/checkout@v2
+
+    - name: Build and Deploy microservice
+      run: sudo make run-dev
+
