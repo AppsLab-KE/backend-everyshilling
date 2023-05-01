@@ -2,7 +2,6 @@ import uuid
 from datetime import datetime
 
 import grpc
-import logging
 from . import otp
 from everyshillingsproto.otp import otp_pb2
 from everyshillingsproto.otp import otpserver_pb2_grpc
@@ -133,6 +132,5 @@ class OtpService(otpserver_pb2_grpc.OtpServiceServicer):
         otpserver_pb2_grpc.add_OtpServiceServicer_to_server(self, server)
         listen_addr = f"[::]:{port}"
         server.add_insecure_port(listen_addr)
-        logging.info("starting server")
         await server.start()
         await server.wait_for_termination()

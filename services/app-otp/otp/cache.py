@@ -33,7 +33,7 @@ def save_otp(phone_number, tracking_uuid, otp):
     }
 
     r.hset(tracking_key, mapping=phone_otp_dict)
-    r.hset(phone_key, otp_time_stamp_dict)
+    r.hset(phone_key, mapping=otp_time_stamp_dict)
     r.expire(phone_key, 300)
     r.expire(tracking_key, 60 * 10)
 

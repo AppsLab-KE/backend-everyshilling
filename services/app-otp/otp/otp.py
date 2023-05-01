@@ -21,11 +21,6 @@ def generate_otp() -> str:
     if not secret:
         raise Exception("otp key missing")
 
-    key = RSA.generate(2048)
-    public_key = key.publickey()
-    private_key = key
-    # Generate a random secret key as a bite string
-
     # Set the steps and get the unix time
     time_step = 120
     current_time = int(time.time())
@@ -65,9 +60,14 @@ def send_otp(phone_number, otp):
     try:
         response = sms.send(message, [phone_number])
         if response['SMSMessageData']['Recipients'][0]['status'] == 'Success':
+            os.write(2, b"OTP sent successfully\n")
+            os.write(2, str(response).encode()+b"\n")
             return True
         else:
+            # print response to stderr to avoid buffering
+            os.write(2, str(response).encode()+b"\n")
             return False
     except Exception as e:
-        print(f"Encountered an error while sending SMS: {str(e)}")
+        # print errror to stderr to avoid buffering
+        os.write(2, str(e).encode()+b"\n")
         return False

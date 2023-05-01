@@ -55,7 +55,9 @@ func handleError[T any](err error) dto.DefaultRes[T] {
 
 	// custom error types
 	switch err.(type) {
-	case *entity.ValidationError:
+	case entity.ValidationError:
+		responseCode = http.StatusBadRequest
+	case entity.OTPError:
 		responseCode = http.StatusBadRequest
 	}
 
