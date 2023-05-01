@@ -4,22 +4,22 @@ import hashlib
 import struct
 from Crypto.PublicKey import RSA
 import os
+import africastalking
+import redis
 
+africastalking_username = os.getenv("AFR_USERNAME")
+africastalking_api_key = os.getenv('AFRICASTALKING_API_KEY')
 
-# import africastalking
+africastalking.initialize(africastalking_username, africastalking_api_key)
+sms = africastalking.SMS
 
 
 def generate_otp() -> str:
     # Generating RSA keys
-    secret = os.getenv("OTP_SECRET")
+    secret = os.getenv('OTP_SECRET')
 
     if not secret:
         raise Exception("otp key missing")
-
-    key = RSA.generate(2048)
-    public_key = key.publickey()
-    private_key = key
-    # Generate a random secret key as a bite string
 
     # Set the steps and get the unix time
     time_step = 120
@@ -50,3 +50,24 @@ def generate_otp() -> str:
     otp = '{:06d}'.format(otp_raw)
 
     return otp
+
+
+def send_otp(phone_number, otp):
+    # Compose the message
+    message = f"Your OTP is: {otp}. It expires in 5 minutes. Please do not share it with anyone."
+
+    # Send the message
+    try:
+        response = sms.send(message, [phone_number])
+        if response['SMSMessageData']['Recipients'][0]['status'] == 'Success':
+            os.write(2, b"OTP sent successfully\n")
+            os.write(2, str(response).encode()+b"\n")
+            return True
+        else:
+            # print response to stderr to avoid buffering
+            os.write(2, str(response).encode()+b"\n")
+            return False
+    except Exception as e:
+        # print errror to stderr to avoid buffering
+        os.write(2, str(e).encode()+b"\n")
+        return False

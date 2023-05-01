@@ -1,5 +1,14 @@
+africastalking==1.2.5
+certifi==2022.12.7
+charset-normalizer==3.1.0
+contextlib2==21.6.0
+everyshillings-proto @ git+https://github.com/AppsLab-KE/be-python-gen-grpc@b7116138d7144fe07d5712438454f5ff25c09413
+grpcio==1.54.0
+grpcio-tools==1.54.0
+idna==3.4
+protobuf==4.22.3
 pycryptodome==3.17
-everyshillings-proto @ git+https://github.com/AppsLab-KE/be-python-gen-grpc.git@main
-grpcio
-grpcio-tools
-protobuf
+requests==2.28.2
+schema==0.7.5
+urllib3==1.26.15
+redis==3.5.3

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/config"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/adapters"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/entity"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/pkg/hash"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/pkg/tokens"
@@ -37,6 +38,7 @@ var (
 	ErrTokenInvalid             = errors.New("token invalid or expired")
 	ErrVerificationOnWrongPhone = errors.New("verification on wrong phone number")
 	ErrUserLoggedOut            = errors.New("user logged out")
+	ErrOTPGeneration            = errors.New("error while generating otp")
 )
 
 func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
@@ -56,7 +58,7 @@ func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error)
 	}
 
 	if otpRes.StatusCode != http.StatusOK {
-		return nil, ErrHashGeneration
+		return nil, entity.NewOTPError(otpRes.Message)
 	}
 	// save trackerID
 	err = d.repo.SavePhoneFromResetOTP(ctx, otpRes.TrackingUuid, request.Phone)
