@@ -1,0 +1,124 @@
+---
+version: "3.8"
+services:
+  app-auth:
+    image: 540828511394.dkr.ecr.us-east-1.amazonaws.com/twala:auth
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    environment:
+      - RABBIT_PORT=5672
+      - RABBIT_HOST=localhost
+      - RABBIT_USER=myuser
+      - RABBIT_PASSWORD=mypassword
+      - JWT_SECRET=myjwtsecret
+      - JWT_EXPIRY=1440
+      - JWT_REFRESH_EXPIRY=30
+      - DB_PORT=3001
+      - DB_HOST=app-db
+      - OTP_PORT=3008
+      - OTP_HOST=app-otp
+      - REDIS_HOST=redis-db
+      - REDIS_PORT=3007
+      - REDIS_USER=myredisuser
+      - REDIS_PASSWORD=myredispassword
+      - PORT=3002
+    ports:
+      - 3002:3002
+    restart: always
+    healthcheck:
+      test: sh -c "ping -c3 app-auth:3002"
+      interval: 10s
+      retries: 10
+    secrets:
+      - ecr-login
+    depends_on:
+      - app-db
+      - app-otp
+      - redis-db
+  postgres-db:
+    image: postgres:9.4
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=everyshilling
+
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+    secrets:
+      - ecr-login
+  redis-db:
+    image: 540828511394.dkr.ecr.us-east-1.amazonaws.com/twala:redis
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    ports:
+      - "3007:3007"
+    restart: always
+    command: --port 3007
+    healthcheck:
+      test: ping -c3 redis-db:3007
+      interval: 10s
+      retries: 10
+    secrets:
+      - ecr-login
+  app-otp:
+    image: 540828511394.dkr.ecr.us-east-1.amazonaws.com/twala:otp
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    environment:
+      OTP_SECRET: "eadceca662254eadaceddcae76aeadb789eac32a"
+      GRPC_PORT: 3007
+    ports:
+      - "3008:3008"
+    restart: always
+    healthcheck:
+      test: sh -c "ping -c3 app-otp:3008"
+      interval: 10s
+      retries: 10
+    secrets:
+      - ecr-login
+    depends_on:
+      - redis-db
+      - app-db
+  app-db:
+    image: 540828511394.dkr.ecr.us-east-1.amazonaws.com/twala:db
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    environment:
+      - SERVER_PORT=3001
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=postgres-db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DATABASE=everyshillings
+      - POSTGRES_TIMEZONE=UTC
+    ports:
+      - "stem prune3001:3001"
+    healthcheck:
+      test: sh -c "ping -c3 app-db:3001"
+      interval: 10s
+      retries: 10
+    secrets:
+      - ecr-login
+    depends_on:
+      - postgres-db
+volumes:
+  db:
+    driver: local
+secrets:
+  ecr-login:
+    external: true
