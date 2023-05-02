@@ -15,9 +15,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build an image from Dockerfile
         run: |
-          cd /home/ubuntu/backend-everyshilling && docker build -t docs -f docs/Dockerfile docs/
+          cd /home/ubuntu/actions-runner/_work/backend-everyshilling/backend-everyshilling
+          && docker build -t docs -f docs/Dockerfile docs/
       - name: Run Make
-        run: cd /home/ubuntu/backend-everyshilling && make run-dev
+        run: cd /home/ubuntu/actions-runner/_work/backend-everyshilling/backend-everyshilling && make run-dev
         
         
   deploy:
@@ -34,4 +35,4 @@ jobs:
           instance-id:  ${{ secrets.INSTANCE_ID  }}
       - name: Deployment script
         run: |            
-          cd /home/ubuntu/backend-everyshilling && /bin/sh ./deploy.sh
+          cd /home/ubuntu/actions-runner/_work/backend-everyshilling/backend-everyshilling && /bin/sh ./deploy.sh
