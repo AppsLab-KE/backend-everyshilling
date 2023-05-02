@@ -11,13 +11,13 @@ jobs:
         run: |
           sudo apt-get update && \
           sudo apt-get install -y make && \
-          sudo apt-get install -y docker
+          sudo apt-get install -y docker.io
       - uses: actions/checkout@v2
       - name: Build an image from Dockerfile
         run: |
           docker build -t docs -f docs/Dockerfile docs/
       - name: Build the application
-        run: sudo make run-dev
+        run:  make run-dev
   deploy:
     needs: build
     runs-on: ubuntu-latest
