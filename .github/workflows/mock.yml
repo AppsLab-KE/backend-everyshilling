@@ -1,56 +1,59 @@
+---
 name: CI/CD Everyshilling
-
 on:
   push:
-    branches: [ develop ]
-
+    branches:
+      - develop
 jobs:
-#First we will see the application build or not , then we will deploy in EC2
   build:
     runs-on: self-hosted
-
     steps:
-    - uses: actions/checkout@v2
+     - name: Install make and docker
+       run: |
+          sudo apt-get update && \
+          sudo apt-get install -y make
+          sudo apt-get install docker
 
-    - name: Build the docker_compose
-      run: sudo make build-dev
+          - uses: actions/checkout@v2
+            - name: Build an image from Dockerfile
+               run: |
+                docker build -t docs -f docs/Dockerfile docs/
 
-    - name: Buid the application
-      run: sudo make run-dev
+          - name: Build the application
+           run: sudo make run-dev
+  # deploy:
+  #   needs: build
+  #   runs-on: self-hosted
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Deploy in EC2
+  #     - name: AWS SSM Send Command
+  #       env:
+  #         PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
+  #         HOSTNAME: ${{ secrets.HOSTNAME  }}
+  #         USER_NAME: ${{ secrets.USER_NAME  }}
+  #       run: >
+  #         echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+  #         ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+  #           #EC2 to start the deployment .
+  #           cd /home/ubuntu/everyshilling &&
+  #           git checkout develop &&
+  #           git fetch --all &&
+  #           git reset --hard origain/main &&
+  #           git pull origin develop &&
+  #           make run-dev
 
-  Deploy:
+  deploy:
     needs: build
-    runs-on: ubuntu-latest
-
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
-      - name: Deploy in EC2
-        env:
-            PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY  }}
-            HOSTNAME : ${{ secrets.HOSTNAME  }}
-            USER_NAME : ${{ secrets.USER_NAME  }}
-
-        run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
-
-            #EC2 to start the deployment .
-            cd /home/ubuntu/everyshilling &&
-            git checkout develop &&
-            git fetch --all &&
-            git reset --hard origin/main &&
-            git pull origin develop &&
-            make run-dev
-
-    - name: Install Dependencies
-      run: |
-          sudo apt-get update
-          sudo apt-get install -y make
-          sudo apt-get -y install docker-compose
-
-    - name: Clone repository
-      uses: actions/checkout@v2
-
-    - name: Build and Deploy microservice
-      run: sudo make run-dev
-
+      - name: AWS SSM Send Command
+        uses: elsiedev/aws-ssm-send-command-action@develop
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{  secrets.AWS_SECRET_ACCESS_KEY  }}
+          aws-region: us-east-1
+          instance-id:  ${{ secrets.INSTANCE_ID  }}
+        working-directory: /home/ubuntu/backend-everyshilling
+        command: /bin/sh ./deploy.sh
