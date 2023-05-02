@@ -52,7 +52,7 @@ def generate_otp() -> str:
     return otp
 
 
-def send_otp(phone_number, otp):
+def send_otp(phone_number:str, otp):
     # Compose the message
     message = f"Your OTP is: {otp}. It expires in 5 minutes. Please do not share it with anyone."
 
