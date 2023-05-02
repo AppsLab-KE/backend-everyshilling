@@ -12,8 +12,6 @@ jobs:
           sudo apt-get update && \
           sudo apt-get install -y make && \
           sudo apt-get install -y docker
-      - name: Add Docker to PATH
-        run: echo 'PATH="$PATH:/usr/local/bin"' >> $GITHUB_ENV
       - uses: actions/checkout@v2
       - name: Build an image from Dockerfile
         run: |
