@@ -18,7 +18,10 @@ jobs:
         run: |
           cd /home/ubuntu/actions-runner/_work/backend-everyshilling/backend-everyshilling && docker build -t docs -f docs/Dockerfile docs/      
       - name: Run Make
-        run: cd /home/ubuntu/actions-runner/_work/backend-everyshilling/backend-everyshilling && make run-dev
+        run: |
+          cd /home/ubuntu/actions-runner/_work/backend-everyshilling/backend-everyshilling &&\
+          make run-build \
+          make run-dev
         
         
   deploy:
