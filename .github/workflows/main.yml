@@ -1,6 +1,6 @@
 ---
 name: Mockserver Autodeployment
-
+on:
   push:
     branches:
       - develop
