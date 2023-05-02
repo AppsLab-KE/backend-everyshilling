@@ -6,7 +6,7 @@ on:
       - develop
 jobs:
   build:
-     runs-on: self-hosted
+     runs-on: ubuntu-latest
      steps:
        - name: Install make and docker
          run: |
@@ -24,7 +24,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: AWS SSM Send Command
