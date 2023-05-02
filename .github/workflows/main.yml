@@ -16,8 +16,9 @@ jobs:
       - name: Build an image from Dockerfile
         run: |
           cd /home/ubuntu/backend-everyshilling && docker build -t docs -f docs/Dockerfile docs/
-      - name: Build the application
+      - name: Run Make
         run: cd /home/ubuntu/backend-everyshilling && make run-dev
+        
         
   deploy:
     needs: build
