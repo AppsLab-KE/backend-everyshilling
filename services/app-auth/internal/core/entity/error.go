@@ -1,15 +1,15 @@
 package entity
 
-func NewValidationError(err string) *ValidationError {
-	return &ValidationError{
-		msg: err,
-	}
+import "errors"
+
+type ValidationError error
+
+func NewValidationError(err string) ValidationError {
+	return errors.New(err)
 }
 
-type ValidationError struct {
-	msg string
-}
+type OTPError error
 
-func (v *ValidationError) Error() string {
-	return v.msg
+func NewOTPError(err string) OTPError {
+	return errors.New(err)
 }

@@ -31,7 +31,6 @@ func (h Handler) Reset(c *gin.Context) {
 	if err != nil {
 		responseBody = handleError[*dto.OtpGenRes](err)
 		c.JSON(responseBody.Code, responseBody)
-		c.JSON(400, responseBody)
 		return
 	}
 	responseBody = okResponse[*dto.OtpGenRes](res, res.Message)

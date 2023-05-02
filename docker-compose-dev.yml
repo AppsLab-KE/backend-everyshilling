@@ -80,6 +80,7 @@ services:
        dockerfile: Dockerfile
      env_file:
        - services/app-otp/.env.example
+       - services/app-otp/.env.local
      ports:
        - "3008:3008"
      restart: always
