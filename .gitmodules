@@ -1,0 +1,6 @@
+[submodule "sdk/go-proto-gen"]
+	path = sdk/go-proto-gen
+	url = https://github.com/AppsLab-KE/be-go-gen-grpc
+[submodule "sdk/python-proto-gen"]
+	path = sdk/python-proto-gen
+	url = https://github.com/AppsLab-KE/be-python-gen-grpc

@@ -1,0 +1,2 @@
+setuptools~=65.5.0
+africastalking~=1.2.5

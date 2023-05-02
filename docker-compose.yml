@@ -1,0 +1,29 @@
+
+version: '3'
+services:
+
+  prism:
+    build: ./mockapi
+    ports:
+      - "4010:4010"
+
+
+  postgres:
+    build: ./db
+    ports:
+      - "5432:5432"
+
+  app-auth:
+    build: ./services/app-auth
+    ports:
+      - "8080:8080"
+
+  app-otp:
+    build: ./services/app-otp
+    ports:
+      - "50051:50051"
+
+
+
+
+

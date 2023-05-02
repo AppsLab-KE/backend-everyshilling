@@ -1,0 +1,7 @@
+.env
+/.env
+/build
+build
+.vscode
+.idea
+/.vscode

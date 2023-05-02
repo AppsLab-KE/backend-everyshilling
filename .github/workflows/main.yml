@@ -1,6 +1,6 @@
 ---
 name: Mockserver Autodeployment
-on:
+
   push:
     branches:
       - develop
@@ -21,6 +21,7 @@ jobs:
 
             - name: Build the application
              run: sudo make run-dev
+
   deploy:
     needs: build
     runs-on: self-hosted
