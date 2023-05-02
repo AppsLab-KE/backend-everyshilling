@@ -18,6 +18,7 @@ jobs:
           docker build -t docs -f docs/Dockerfile docs/
       - name: Build the application
         run:  make run-dev
+        
   deploy:
     needs: build
     runs-on: ubuntu-latest
