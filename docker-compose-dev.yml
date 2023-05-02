@@ -111,6 +111,7 @@ services:
      depends_on:
        - postgres-db
 
+
 #to be changed once handlers is set
 networks:
   internal_network:
