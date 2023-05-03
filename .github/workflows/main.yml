@@ -2,17 +2,23 @@ name: Mockserver Autodeployment
 on:
   push:
     branches:
-      - oyamo-dev
+      - develop
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Build Docker image
+      - name: Install make and docker
         run: |
-          docker version
+          sudo apt-get update && \
+          sudo apt-get install -y make && \
+          sudo apt-get install -y docker
+      - uses: actions/checkout@v2
+      - name: Build an image from Dockerfile
+        run: |
+          cd /home/ubuntu/backend-everyshilling && docker build -t docs -f docs/Dockerfile docs/
+      - name: Run Make
+        run: cd /home/ubuntu/backend-everyshilling && make run-dev
+
 
   deploy:
     needs: build
