@@ -2,7 +2,7 @@ name: Mockserver Autodeployment
 on:
   push:
     branches:
-      - develop
+      - oyamo-dev
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,7 +11,7 @@ jobs:
         run: |
           sudo apt-get update && \
           sudo apt-get install -y make && \
-          sudo apt-get install -y docker
+          sudo apt-get install -y docker && docker version
       - uses: actions/checkout@v2
       - name: Build an image from Dockerfile
         run: |
