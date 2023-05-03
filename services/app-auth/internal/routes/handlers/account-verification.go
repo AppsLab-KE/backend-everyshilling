@@ -36,7 +36,7 @@ func (h Handler) VerifyPhone(c *gin.Context) {
 	}
 
 	// check if the user exists and generate a reset request ID
-	res, err := h.AuthUC.SendVerifyPhoneOTP(verificationRequestBody)
+	res, err := h.AuthUC.SendVerifyAccountOTP(verificationRequestBody)
 
 	if err != nil {
 		responseBody = handleError[*dto.OtpGenRes](err)
@@ -71,11 +71,11 @@ func (h Handler) VerifyVerificationOTP(c *gin.Context, trackingUuid string) {
 		return
 	}
 	// Body otpCode
-	var responseBody dto.DefaultRes[*dto.OtpVerificationRes]
+	var responseBody dto.DefaultRes[*dto.AccountVerificationRes]
 	var otpBody dto.RequestOTP
 
 	if err := c.ShouldBindJSON(&otpBody); err != nil {
-		responseBody = handleError[*dto.OtpVerificationRes](err)
+		responseBody = handleError[*dto.AccountVerificationRes](err)
 		c.JSON(responseBody.Code, responseBody)
 		return
 	}
@@ -85,13 +85,13 @@ func (h Handler) VerifyVerificationOTP(c *gin.Context, trackingUuid string) {
 		OtpCode:     otpBody.OtpCode,
 	}
 
-	res, err := h.AuthUC.VerifyPhoneOTP(requestBody)
+	res, err := h.AuthUC.VerifyAccountOTP(requestBody)
 	if err != nil {
-		responseBody = handleError[*dto.OtpVerificationRes](err)
+		responseBody = handleError[*dto.AccountVerificationRes](err)
 		c.JSON(responseBody.Code, responseBody)
 		return
 	}
 
-	responseBody = okResponse[*dto.OtpVerificationRes](res, res.Message)
+	responseBody = okResponse[*dto.AccountVerificationRes](res, "Account verified successfully")
 	c.JSON(responseBody.Code, responseBody)
 }

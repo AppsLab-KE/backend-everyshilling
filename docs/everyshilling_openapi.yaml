@@ -317,8 +317,6 @@ paths:
       summary: Verify phone number
       description: resend the OTP to the server for verification.
       tags: [ Phone Verification ]
-      security:
-        - Bearer: [ ]
       requestBody:
         content:
           application/json:
@@ -349,8 +347,6 @@ paths:
       tags: [ Phone Verification ]
       summary: "Verify OTP"
       description: "Once a user has sent their email, they receive an OTP code for verifying if indeed they are the owners of the account"
-      security:
-        - Bearer: [ ]
       parameters:
         - name: tracking-uuid
           description: "Verificatiion request UUID"
@@ -394,8 +390,6 @@ paths:
       summary: Resend verification OTP
       description: resend the OTP to the user's phone
       tags: [ Phone Verification ]
-      security:
-        - Bearer: []
       parameters:
         - name: tracking-uuid
           description: " request UUID"

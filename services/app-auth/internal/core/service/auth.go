@@ -101,17 +101,8 @@ func (d AuthService) CreateUser(registerRequest dto.RegisterReq) (*dto.UserRegis
 		return nil, ErrDatabaseWrite
 	}
 
-	// generate jwt
-	jwtToken, refreshToken, err := tokens.GenerateToken(createdUser.UserId, d.config.ExpiryMinutes, d.config.RefreshExpiryDays)
-	if err != nil {
-		log.Errorf("jwt generation error: %s", err)
-		return nil, ErrTokenGeneration
-	}
-
 	res := dto.UserRegistrationRes{
-		User:         *createdUser,
-		Token:        jwtToken,
-		RefreshToken: refreshToken,
+		User: *createdUser,
 	}
 
 	return &res, nil
@@ -333,7 +324,7 @@ func (d AuthService) ResendLoginOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 	return resendOTPRes, nil
 }
 
-func (d AuthService) SendVerifyPhoneOTP(request dto.AccountVerificationOTPGenReq) (*dto.OtpGenRes, error) {
+func (d AuthService) SendVerifyAccountOTP(request dto.AccountVerificationOTPGenReq) (*dto.OtpGenRes, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -372,7 +363,7 @@ func (d AuthService) SendVerifyPhoneOTP(request dto.AccountVerificationOTPGenReq
 	return otpRes, nil
 }
 
-func (d AuthService) VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) (*dto.OtpVerificationRes, error) {
+func (d AuthService) VerifyAccount(verificationRequest dto.OtpVerificationReq) (*dto.AccountVerificationRes, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -418,11 +409,25 @@ func (d AuthService) VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) 
 		return nil, ErrCacheSave
 	}
 
+	// generate jwt
+	jwtToken, refreshToken, err := tokens.GenerateToken(user.UserId, d.config.ExpiryMinutes, d.config.RefreshExpiryDays)
+	if err != nil {
+		log.Errorf("jwt generation error: %s", err)
+		return nil, ErrTokenGeneration
+	}
+
+	// generate response
+	accountVerificationRes := &dto.AccountVerificationRes{
+		User:         *user,
+		Token:        jwtToken,
+		RefreshToken: refreshToken,
+	}
+
 	// return response
-	return otpVerificationRes, nil
+	return accountVerificationRes, nil
 }
 
-func (d AuthService) ResendVerifyPhoneOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error) {
+func (d AuthService) ResendVerifyAccountOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

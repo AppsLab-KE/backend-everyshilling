@@ -13,8 +13,8 @@ type AuthUseCase interface {
 	VerifyResetOTP(ctx context.Context, uuid string, body dto.OtpVerificationReq) (*dto.OtpVerificationRes, error)
 	ChangePassword(ctx context.Context, uuid string, body dto.RequestResetCredentials) (*dto.ResetRes, error)
 
-	VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) (*dto.OtpVerificationRes, error)
-	SendVerifyPhoneOTP(request dto.AccountVerificationOTPGenReq) (*dto.OtpGenRes, error)
+	VerifyAccountOTP(verificationRequest dto.OtpVerificationReq) (*dto.AccountVerificationRes, error)
+	SendVerifyAccountOTP(request dto.AccountVerificationOTPGenReq) (*dto.OtpGenRes, error)
 
 	ResendVerifyPhoneOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error)
 	ResendLoginOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error)
