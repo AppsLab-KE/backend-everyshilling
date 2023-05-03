@@ -1,3 +1,5 @@
+import os
+import sys
 import uuid
 from datetime import datetime
 
@@ -51,29 +53,38 @@ class OtpService(otpserver_pb2_grpc.OtpServiceServicer):
         tracking_uuid = request.tracking_uuid
 
         phone_number = cache.get_phone_number(tracking_uuid)
-        if not phone_number:
+        print(type(phone_number), file=sys.stderr)
+        print(phone_number.keys(), file=sys.stderr)
+        os.write(2, f"phone number: {phone_number}".encode()+b"\n")
+
+        if phone_number is None:
+            os.write(2, f"Phone number not found for tracking uuid {tracking_uuid}".encode()+b"\n")
             return otp_pb2.VerifyOTPRes(
                 message="Incorrect/expired otp. Please generate a new one",
                 status_code=401
             )
-
-        cached_otp = cache.get_otp(phone_number)
-        if not cached_otp:
+        phone = phone_number[b"phone_number"]
+        os.write(2, f"phone number: {phone}".encode()+b"\n")
+        cached_otp = cache.get_otp(phone.decode())
+        if cached_otp is None:
+            os.write(2, f"Otp not found for phone number {phone_number}".encode()+b"\n")
             return otp_pb2.VerifyOTPRes(
                 message="This otp has expired. Please generate a new one",
                 status_code=401
             )
 
+        os.write(2, f"cached otp: {cached_otp}".encode()+b"\n")
         time_stamp = datetime.now().timestamp()
-        time_diff = time_stamp - float(cached_otp["time_stamp_unix"])
+        time_diff = time_stamp - float(cached_otp[b"time_stamp_unix"].decode())
 
         if time_diff > 300:
+            os.write(2, f"Otp expired for phone number {phone_number}".encode()+b"\n")
             return otp_pb2.VerifyOTPRes(
                 message="This otp has expired. Please generate a new one",
                 status_code=401
             )
 
-        if otp != cached_otp["otp"]:
+        if otp != cached_otp[b"otp"].decode():
             return otp_pb2.VerifyOTPRes(
                 message="Incorrect otp. Please try again",
                 status_code=401
@@ -89,17 +100,16 @@ class OtpService(otpserver_pb2_grpc.OtpServiceServicer):
         tracking_uuid = request.tracking_id
 
         user = cache.get_phone_number(tracking_uuid)
-        if not user:
+        if user is None:
             return otp_pb2.ResendOTPRes(
                 message="Otp session expired. Please start again",
                 status_code=401,
                 tracking_uuid=""
             )
 
-        phone_number = user["phone_number"]
-        cached_otp =  user["otp"]
-
-        time_diff = time_stamp - float(user["time_stamp_unix"])
+        phone_number = user[b"phone_number"].decode()
+        cached_otp =  user[b"otp"].decode()
+        time_diff = time_stamp - float(user[b"time_stamp_unix"].decode())
 
         if time_diff > 600:
             return otp_pb2.ResendOTPRes(
