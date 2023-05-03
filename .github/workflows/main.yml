@@ -13,6 +13,7 @@ jobs:
           sudo apt-get install -y make && \
           sudo apt-get install -y docker
           sudo usermod -aG docker $USER
+          export PATH="/usr/bin:$PATH"
       - uses: actions/checkout@v2
       - name: Build an image from Dockerfile
         run: |
