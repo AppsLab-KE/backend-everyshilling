@@ -13,13 +13,15 @@ jobs:
           sudo apt-get install -y make && \
           sudo apt-get install -y docker
           sudo usermod -aG docker $USER
+          export PATH="/usr/bin:$PATH"
       - uses: actions/checkout@v2
       - name: Build an image from Dockerfile
         run: |
-          cd /home/ubuntu/backend-everyshilling && docker build -t docs -f docs/Dockerfile docs/      
+          #cd /home/ubuntu/backend-everyshilling/docs && docker build -t docs -f docs/Dockerfile docs/
+           docker build -t docs -f docs/Dockerfile docs/ 
       - name: Run Make
         run: |
-          cd /home/ubuntu/backend-everyshilling && make run-build \
+          make run-build \
           make run-dev
         
         

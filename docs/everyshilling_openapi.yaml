@@ -488,7 +488,7 @@ components:
       description: Return register response
       content:
         application/json:
-          schema:
+          schema: 
             $ref: "#/components/schemas/RegisterResponseData"
   schemas:
     RequestOTP:
@@ -593,14 +593,11 @@ components:
       properties:
         message:
           type: string
-          example: user register successfully
         error:
           type: string
-          example: ""
         code:
           type: number
-          example: 200
-        data:
+        data: 
           $ref: "#/components/schemas/RegisterResponseObj"
 
     Response:
