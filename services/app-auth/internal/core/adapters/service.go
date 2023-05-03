@@ -35,16 +35,16 @@ type AuthService interface {
 	// CreateUser creates a new user account with the details provided in the dto.RegisterRequest.
 	// It returns a dto.UserRegistrationRes and an error as output.
 	CreateUser(registerRequest dto.RegisterReq) (*dto.UserRegistrationRes, error)
-	// SendVerifyPhoneOTP sends an OTP to the user's registered phone number or email to initiate the phone number verification process.
+	// SendVerifyAccountOTP SendVerifyAccountOTP sends an OTP to the user's registered phone number or email to initiate the phone number verification process.
 	// It takes in a dto.OtpVerificationReq as input and returns a dto.OtpVerificationRes and an error as output.
-	SendVerifyPhoneOTP(request dto.AccountVerificationOTPGenReq) (*dto.OtpGenRes, error)
-	// VerifyPhoneOTP verifies the OTP entered by the user to complete the phone number verification process.
+	SendVerifyAccountOTP(request dto.AccountVerificationOTPGenReq) (*dto.OtpGenRes, error)
+	// VerifyAccount VerifyAccountOTP verifies the OTP entered by the user to complete the phone number verification process.
 	// It takes in a dto.OtpVerificationReq as input and returns a dto.OtpVerificationRes and an error as output.
-	VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) (*dto.OtpVerificationRes, error)
+	VerifyAccount(verificationRequest dto.OtpVerificationReq) (*dto.AccountVerificationRes, error)
 
-	// ResendVerifyPhoneOTP sends a new OTP to the user's registered phone number in case the previous OTP expired or the user did not receive it.
+	// ResendVerifyAccountOTP ResendVerifyPhoneOTP sends a new OTP to the user's registered phone number in case the previous OTP expired or the user did not receive it.
 	// It takes in a dto.ResendOTPReq as input and returns a dto.ResendOTPRes and an error as output.
-	ResendVerifyPhoneOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error)
+	ResendVerifyAccountOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error)
 
 	ResendResetOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error)
 
