@@ -7,19 +7,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Install make and docker
-        run: |
-          sudo apt-get update && \
-          sudo apt-get install -y make && \
-          sudo apt-get install -y docker && docker version
       - uses: actions/checkout@v2
-      - name: Build an image from Dockerfile
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build Docker image
         run: |
-          cd /home/ubuntu/backend-everyshilling && docker build -t docs -f docs/Dockerfile docs/
-      - name: Run Make
-        run: cd /home/ubuntu/backend-everyshilling && make run-dev
-        
-        
+          docker version
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
