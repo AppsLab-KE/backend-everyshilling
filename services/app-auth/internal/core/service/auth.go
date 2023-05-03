@@ -22,7 +22,7 @@ type AuthService struct {
 var (
 	ErrUserNotFound             = errors.New("user not found")
 	ErrUserExists               = errors.New("user exists")
-	ErrDatabaseWrite            = errors.New("io error while creating user. see server logs")
+	ErrDatabaseWrite            = errors.New("error occured while writing to database")
 	ErrValidationError          = errors.New("validation error")
 	ErrRequestValidation        = errors.New("validation  error")
 	ErrCacheSave                = errors.New("error occured while saving cache")
@@ -30,15 +30,16 @@ var (
 	ErrCacheDelete              = errors.New("error occured while deleting cache")
 	ErrPasswordNotMatch         = errors.New("passwords dont match")
 	ErrIncorrectPassword        = errors.New("incorrect password/username")
-	ErrIncorrectOTP             = errors.New("incorrect otp")
+	ErrIncorrectOTP             = errors.New("OTP does not match. Please try again")
 	ErrTokenGeneration          = errors.New("io error while generating token")
-	ErrHashGeneration           = errors.New("io error in generating password hash")
-	ErrOTPNotInitialied         = errors.New("otp tracking uuid missing from cache")
+	ErrHashGeneration           = errors.New("error while hashing password")
+	ErrOTPNotInitialied         = errors.New("invalid otp session. Please request for a new otp")
 	ErrTokenBlacklisted         = errors.New("token expired/invalid")
 	ErrTokenInvalid             = errors.New("token invalid or expired")
 	ErrVerificationOnWrongPhone = errors.New("verification on wrong phone number")
 	ErrUserLoggedOut            = errors.New("user logged out")
 	ErrOTPGeneration            = errors.New("error while generating otp")
+	ErrUserAlreadyVerified      = errors.New("user already verified")
 )
 
 func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
@@ -239,6 +240,7 @@ func (d AuthService) VerifyLoginOtp(request dto.OtpVerificationReq) (*dto.LoginR
 	// check if user with phone number exists
 	user, err := d.repo.GetUserByPhone(ctx, phone)
 	if user == nil || err != nil {
+		log.Info("user not found")
 		return nil, ErrIncorrectOTP
 	}
 
@@ -337,8 +339,8 @@ func (d AuthService) SendVerifyAccountOTP(request dto.AccountVerificationOTPGenR
 		return nil, ErrUserNotFound
 	}
 
-	if user.UserId != request.UserUUID {
-		return nil, ErrVerificationOnWrongPhone
+	if user.Verified {
+		return nil, ErrUserAlreadyVerified
 	}
 
 	// if user exists, send otp
@@ -369,6 +371,7 @@ func (d AuthService) VerifyAccount(verificationRequest dto.OtpVerificationReq) (
 
 	// get phone from DB
 	phone, err := d.repo.GetPhoneFromVerificationOTP(ctx, verificationRequest.TrackingUID)
+	log.Infof("phone: %s", phone)
 	if err != nil {
 		if err == redis.Nil {
 			return nil, ErrOTPNotInitialied
@@ -379,14 +382,16 @@ func (d AuthService) VerifyAccount(verificationRequest dto.OtpVerificationReq) (
 
 	// check if user with phone number exists
 	user, err := d.repo.GetUserByPhone(ctx, phone)
-	if user != nil || err != nil {
-		return nil, ErrIncorrectOTP
+	log.Info(user)
+	if user == nil || err != nil {
+		log.Infof("user not found: %v", err)
+		return nil, ErrOTPNotInitialied
 	}
 
 	// compare with the otp service
 	otpVerificationRes, err := d.repo.VerifyOtpCode(ctx, verificationRequest)
 	if err != nil {
-		log.Errorf("error while verifying: %v", err)
+		log.Infof("error while verifying: %v", err)
 		return nil, ErrIncorrectOTP
 	}
 
@@ -399,7 +404,8 @@ func (d AuthService) VerifyAccount(verificationRequest dto.OtpVerificationReq) (
 
 	_, err = d.repo.UpdateUser(ctx, *user)
 	if err != nil {
-		return nil, ErrIncorrectOTP
+		log.Errorf("error while updating user: %v", err)
+		return nil, ErrDatabaseWrite
 	}
 
 	// invalidate cache

@@ -61,7 +61,6 @@ def send_otp(phone_number:str, otp):
         response = sms.send(message, [phone_number])
         if response['SMSMessageData']['Recipients'][0]['status'] == 'Success':
             os.write(2, b"OTP sent successfully\n")
-            os.write(2, str(response).encode()+b"\n")
             return True
         else:
             # print response to stderr to avoid buffering
