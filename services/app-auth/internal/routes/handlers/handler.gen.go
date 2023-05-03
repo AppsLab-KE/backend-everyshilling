@@ -14,23 +14,44 @@ import (
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Generate OTP and send it to email and phone number
-	// (POST /login/)
+	// (POST /auth/login/)
 	Login(c *gin.Context)
+	// Resend login OTP
+	// (GET /auth/login/otp/{tracking-uuid}/resend)
+	ResendLoginOTP(c *gin.Context, trackingUuid string)
 	// Verify the OTP
-	// (POST /login/{tracking-uuid}/verify)
+	// (POST /auth/login/otp/{tracking-uuid}/verify)
 	VerifyLoginOTP(c *gin.Context, trackingUuid string)
+	// Invalidatation to access token and logout user
+	// (GET /auth/logout)
+	Logout(c *gin.Context)
+	// Refresh access token using refresh token
+	// (POST /auth/refresh-token)
+	RefreshToken(c *gin.Context)
 	// A POST request to registering new users
-	// (POST /register)
+	// (POST /auth/register)
 	Register(c *gin.Context)
 	// Send password reset OTP
-	// (POST /reset)
+	// (POST /auth/reset)
 	Reset(c *gin.Context)
-	// Change Password
-	// (POST /reset/{tracking-uuid}/change)
-	ChangePassword(c *gin.Context, trackingUuid string)
+	// Resend reset OTP
+	// (GET /auth/reset/otp/{tracking-uuid}/resend)
+	ResendResetOTP(c *gin.Context, trackingUuid string)
 	// Verify OTP
-	// (POST /reset/{tracking-uuid}/verify)
+	// (POST /auth/reset/otp/{tracking-uuid}/verify)
 	VerifyResetOTP(c *gin.Context, trackingUuid string)
+	// Change Password
+	// (POST /auth/reset/{tracking-uuid}/change)
+	ChangePassword(c *gin.Context, trackingUuid string)
+	// Verify phone number
+	// (POST /auth/verify/)
+	VerifyPhone(c *gin.Context)
+	// Resend verification OTP
+	// (GET /auth/verify/otp/{tracking-uuid}/resend)
+	ResendVerificationOTP(c *gin.Context, trackingUuid string)
+	// Verify OTP
+	// (POST /auth/verify/otp/{tracking-uuid}/verify)
+	VerifyVerificationOTP(c *gin.Context, trackingUuid string)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -50,6 +71,27 @@ func (siw *ServerInterfaceWrapper) Login(c *gin.Context) {
 	}
 
 	siw.Handler.Login(c)
+}
+
+// ResendLoginOTP operation middleware
+func (siw *ServerInterfaceWrapper) ResendLoginOTP(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "tracking-uuid" -------------
+	var trackingUuid string
+
+	err = runtime.BindStyledParameter("simple", false, "tracking-uuid", c.Param("tracking-uuid"), &trackingUuid)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter tracking-uuid: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+	}
+
+	siw.Handler.ResendLoginOTP(c, trackingUuid)
 }
 
 // VerifyLoginOTP operation middleware
@@ -73,6 +115,28 @@ func (siw *ServerInterfaceWrapper) VerifyLoginOTP(c *gin.Context) {
 	siw.Handler.VerifyLoginOTP(c, trackingUuid)
 }
 
+// Logout operation middleware
+func (siw *ServerInterfaceWrapper) Logout(c *gin.Context) {
+
+	c.Set(BearerScopes, []string{""})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+	}
+
+	siw.Handler.Logout(c)
+}
+
+// RefreshToken operation middleware
+func (siw *ServerInterfaceWrapper) RefreshToken(c *gin.Context) {
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+	}
+
+	siw.Handler.RefreshToken(c)
+}
+
 // Register operation middleware
 func (siw *ServerInterfaceWrapper) Register(c *gin.Context) {
 
@@ -91,6 +155,48 @@ func (siw *ServerInterfaceWrapper) Reset(c *gin.Context) {
 	}
 
 	siw.Handler.Reset(c)
+}
+
+// ResendResetOTP operation middleware
+func (siw *ServerInterfaceWrapper) ResendResetOTP(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "tracking-uuid" -------------
+	var trackingUuid string
+
+	err = runtime.BindStyledParameter("simple", false, "tracking-uuid", c.Param("tracking-uuid"), &trackingUuid)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter tracking-uuid: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+	}
+
+	siw.Handler.ResendResetOTP(c, trackingUuid)
+}
+
+// VerifyResetOTP operation middleware
+func (siw *ServerInterfaceWrapper) VerifyResetOTP(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "tracking-uuid" -------------
+	var trackingUuid string
+
+	err = runtime.BindStyledParameter("simple", false, "tracking-uuid", c.Param("tracking-uuid"), &trackingUuid)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter tracking-uuid: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+	}
+
+	siw.Handler.VerifyResetOTP(c, trackingUuid)
 }
 
 // ChangePassword operation middleware
@@ -114,8 +220,20 @@ func (siw *ServerInterfaceWrapper) ChangePassword(c *gin.Context) {
 	siw.Handler.ChangePassword(c, trackingUuid)
 }
 
-// VerifyResetOTP operation middleware
-func (siw *ServerInterfaceWrapper) VerifyResetOTP(c *gin.Context) {
+// VerifyPhone operation middleware
+func (siw *ServerInterfaceWrapper) VerifyPhone(c *gin.Context) {
+
+	c.Set(BearerScopes, []string{""})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+	}
+
+	siw.Handler.VerifyPhone(c)
+}
+
+// ResendVerificationOTP operation middleware
+func (siw *ServerInterfaceWrapper) ResendVerificationOTP(c *gin.Context) {
 
 	var err error
 
@@ -128,11 +246,36 @@ func (siw *ServerInterfaceWrapper) VerifyResetOTP(c *gin.Context) {
 		return
 	}
 
+	c.Set(BearerScopes, []string{""})
+
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 	}
 
-	siw.Handler.VerifyResetOTP(c, trackingUuid)
+	siw.Handler.ResendVerificationOTP(c, trackingUuid)
+}
+
+// VerifyVerificationOTP operation middleware
+func (siw *ServerInterfaceWrapper) VerifyVerificationOTP(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "tracking-uuid" -------------
+	var trackingUuid string
+
+	err = runtime.BindStyledParameter("simple", false, "tracking-uuid", c.Param("tracking-uuid"), &trackingUuid)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter tracking-uuid: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	c.Set(BearerScopes, []string{""})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+	}
+
+	siw.Handler.VerifyVerificationOTP(c, trackingUuid)
 }
 
 // GinServerOptions provides options for the Gin server.
@@ -164,17 +307,31 @@ func RegisterHandlersWithOptions(router *gin.Engine, si ServerInterface, options
 		ErrorHandler:       errorHandler,
 	}
 
-	router.POST(options.BaseURL+"/login/", wrapper.Login)
+	router.POST(options.BaseURL+"/auth/login/", wrapper.Login)
 
-	router.POST(options.BaseURL+"/login/:tracking-uuid/verify", wrapper.VerifyLoginOTP)
+	router.GET(options.BaseURL+"/auth/login/otp/:tracking-uuid/resend", wrapper.ResendLoginOTP)
 
-	router.POST(options.BaseURL+"/register", wrapper.Register)
+	router.POST(options.BaseURL+"/auth/login/otp/:tracking-uuid/verify", wrapper.VerifyLoginOTP)
 
-	router.POST(options.BaseURL+"/reset", wrapper.Reset)
+	router.GET(options.BaseURL+"/auth/logout", wrapper.Logout)
 
-	router.POST(options.BaseURL+"/reset/:tracking-uuid/change", wrapper.ChangePassword)
+	router.POST(options.BaseURL+"/auth/refresh-token", wrapper.RefreshToken)
 
-	router.POST(options.BaseURL+"/reset/:tracking-uuid/verify", wrapper.VerifyResetOTP)
+	router.POST(options.BaseURL+"/auth/register", wrapper.Register)
+
+	router.POST(options.BaseURL+"/auth/reset", wrapper.Reset)
+
+	router.GET(options.BaseURL+"/auth/reset/otp/:tracking-uuid/resend", wrapper.ResendResetOTP)
+
+	router.POST(options.BaseURL+"/auth/reset/otp/:tracking-uuid/verify", wrapper.VerifyResetOTP)
+
+	router.POST(options.BaseURL+"/auth/reset/:tracking-uuid/change", wrapper.ChangePassword)
+
+	router.POST(options.BaseURL+"/auth/verify/", wrapper.VerifyPhone)
+
+	router.GET(options.BaseURL+"/auth/verify/otp/:tracking-uuid/resend", wrapper.ResendVerificationOTP)
+
+	router.POST(options.BaseURL+"/auth/verify/otp/:tracking-uuid/verify", wrapper.VerifyVerificationOTP)
 
 	return router
 }

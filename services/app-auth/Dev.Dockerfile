@@ -1,29 +1,35 @@
 # Initial stage: download modules
-FROM golang:1.19-alpine as golang-builder
+FROM golang:1.18-alpine as golang-builder
 
-RUN apk add  --update build-base git ca-certificates
+RUN apk add build-base openssl
+RUN apk --update add git ca-certificates
 RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64;
 
 
 FROM golang-builder AS app-builder
-
-# Specify working directory
-WORKDIR /usr/src/app
+WORKDIR /app/auth
 
 # Copy go mod files
-COPY  go.mod go.sum ./
+COPY go.mod go.sum \
+     /app/auth/
 
-# Pull packages
-RUN go mod download && go mod verify
+RUN go mod download
 
-# Copy all files
-COPY . .
+COPY .  /app/auth
 
-# Create binary
-# RUN mkdir -p "build/dev" && go build -o build/dev/auth-app
 
-RUN go build -o dev/auth-app
+RUN go build -o /tmp/app-auth
 
-FROM app-builder as entrypoint
+# Generate private and public keys
+RUN mkdir -p /etc/auth-service
 
-ENTRYPOINT ["/usr/src/app/build/dev/auth-app"]
+RUN if [ ! -e "/etc/auth-service/public.pem" ]; then \
+       openssl genrsa -out /etc/auth-service/private.pem 2048; \
+       openssl rsa -in /etc/auth-service/private.pem -pubout -out /etc/auth-service/public.pem; \
+    fi;
+
+FROM app-builder AS prepare-bin
+
+COPY --from=app-builder /tmp/app-auth /usr/bin/auth-service
+
+ENTRYPOINT ["/usr/bin/auth-service"]

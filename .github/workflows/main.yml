@@ -1,0 +1,40 @@
+name: Mockserver Autodeployment
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install make and docker
+        run: |
+          sudo apt-get update && \
+          sudo apt-get install -y make && \
+          sudo apt-get install -y docker
+          sudo usermod -aG docker $USER
+      - uses: actions/checkout@v2
+      - name: Build an image from Dockerfile
+        run: |
+          cd /home/ubuntu/backend-everyshilling && docker build -t docs -f docs/Dockerfile docs/      
+      - name: Run Make
+        run: |
+          cd /home/ubuntu/backend-everyshilling && make run-build \
+          make run-dev
+        
+        
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: AWS SSM Send Command
+        uses: elsiedev/aws-ssm-send-command-action@develop
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{  secrets.AWS_SECRET_ACCESS_KEY  }}
+          aws-region: us-east-1
+          instance-id:  ${{ secrets.INSTANCE_ID  }}
+      - name: Deployment script
+        run: |            
+          cd /home/ubuntu/backend-everyshilling && /bin/sh ./deploy.sh

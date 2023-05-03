@@ -2,75 +2,28 @@
 version: '3'
 services:
 
-  #mocking API using prism http server
   prism:
-    image: stoplight/prism:4
-    # command: 'mock -h 0.0.0.0 /usr/src/prism/'
-
-    command: mock -p 4010 --host 0.0.0.0 everyshilling_openapi.yaml
+    build: ./mockapi
     ports:
       - "4010:4010"
 
-    volumes:
-      - ./docs/everyshilling_openapi.yaml:/usr/src/prism/packages/cli/everyshilling_openapi.yaml
-
-
-
-  # #backend services for both python and go
-  # app-auth:
-  #   container_name: app-auth
-  #   env_file: services/app-auth/.env.example
-  #   build:
-  #     context: services/app-auth
-  #     dockerfile: Dev.Dockerfile
-
-  #   restart: always
-  #   healthcheck:
-  #     test: sh -c "ping -c3 app-auth:$AUTH_GRPC_PORT"
-  #     interval: 10s
-  #     retries: 10
-
-
 
   postgres:
-    image: postgres:13-alpine
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
+    build: ./db
     ports:
-      - '5432:5432'
-    volumes:
-      - db:/var/lib/postgresql/data
-
-  # app-otp:
-  #   build:
-  #     context: services/app-otp
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "50051:50051"
-  #   # depends_on:
-  #   #   - go_service
-  #   networks:
-  #     - grpc_network
+      - "5432:5432"
 
   app-auth:
-    build:
-      context: services/app-auth
-      dockerfile: Dev.Dockerfile
+    build: ./services/app-auth
     ports:
-      - "50052:50052"
+      - "8080:8080"
 
-# networks:
-#   grpc_network:
-#     driver: bridge
-
-#to be changed once grpc is set
-networks:
-  internal_network:
-    driver: bridge
+  app-otp:
+    build: ./services/app-otp
+    ports:
+      - "50051:50051"
 
 
-volumes:
-  db:
-    driver: local
+
+
+

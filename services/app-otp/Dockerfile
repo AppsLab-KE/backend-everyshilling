@@ -1,10 +1,17 @@
 FROM python:3.9.7-alpine
 
-WORKDIR /app-otp
+WORKDIR /app
+RUN apk  add git gcc openssl-dev
 
-COPY requirements.txt /app-otp/
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -U \
+    pip \
+    setuptools \
+    wheel
 
-COPY . /app-otp/
+COPY requirements.txt .
 
-CMD ["python" , "apps.py"]
+RUN pip install -r requirements.txt
+
+COPY . .
+
+CMD ["python", "main.py"]
