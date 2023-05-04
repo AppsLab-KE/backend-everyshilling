@@ -119,7 +119,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResponseOTP"
+                $ref: "#/components/schemas/OTPResponseData"
         "400":
           description: "Bad request: missing email or phone number"
           content:
@@ -152,13 +152,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResponseOTP"
+                $ref: "#/components/schemas/OTPResponse"
         "400":
           description: "Bad request: invalid uuid"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Response"
+                $ref: "#/components/schemas/ResponseBadOTPRequest"
         "500":
           description: Internal server error
           content:
@@ -171,7 +171,6 @@ paths:
     description: User account registration
     post:
       summary: A POST request to registering new users
-      security: []
       operationId: register
       tags:
         - Register
@@ -191,13 +190,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RegisterResponseData"
-        default:
+        "400":
           description: Default error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Response"
-    # forget password
+
   /auth/reset:
     summary: Allow users to send forget password requests
     post:
@@ -253,7 +252,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Response"
+                $ref: "#/components/schemas/OTPResponseData"
 
         "401":
           description: "Verification failed"
@@ -338,7 +337,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResponseOTP"
+                $ref: "#/components/schemas/OTPResponse"
         "400":
           description: "Bad request: invalid uuid"
           content:
@@ -371,7 +370,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResponseOTP"
+                $ref: "#/components/schemas/OTPResponse"
         "400":
           description: "Bad request: invalid uuid"
           content:
@@ -474,9 +473,18 @@ paths:
       operationId: "Logout"
       security:
         - Bearer: []
+      requestBody:
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/LogoutRequest"
       responses:
         "200":
           description: User logged out successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogoutResponseData"
         "401":
           description: "Unauthorized: Invalid or expired token"
         "500":
@@ -644,6 +652,7 @@ components:
           type: string
           description: User's password
           example: "mike1234"
+
       required:
         - phone
         - password
@@ -665,6 +674,9 @@ components:
         phone:
           type: string
           example: "+254704407117"
+        password:
+          type: string
+          example: "mike1234"
 
     ResponseBadRequest :
       type: object
@@ -693,7 +705,8 @@ components:
        data:
          type: object
 
-    ResponseOTP :
+
+    OTPResponse :
       type: object
       properties:
         message:
@@ -706,6 +719,79 @@ components:
           example: 200
         data:
           type: object
+    OTPResponseData :
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+        code:
+          type: number
+        data:
+          $ref: "#/components/schemas/OTPResponseObj"
+    OTPResponseObj:
+      type: object
+      properties:
+        phone:
+          type: string
+          example: "1234"
+    ResponseBadOTPRequest:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+        code:
+          type: number
+        data:
+          $ref: "#/components/schemas/BadOTPResponseObj"
+    BadOTPResponseObj:
+      type: object
+      properties:
+        phone:
+          type: string
+          example: "1234444asd"
+    ResendOTP:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "OTP Resent succesfully"
+        error:
+          type: string
+        code:
+          type: number
+          example: 200
+        data:
+          type: object
+
+    LogoutRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+          description: name
+          example: "mike"
+    LogoutResponseData :
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+        code:
+          type: number
+        data:
+          $ref: "#/components/schemas/LogoutResponseData"
+        LogoutResponseObj:
+          type: object
+          properties:
+            phone:
+              type: string
+              example: "User Logged out succesfully"
+
 
     Response:
       type: object
