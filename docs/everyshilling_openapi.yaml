@@ -526,13 +526,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-#  responses:
-#    RegisterResponseData:
-#      description: Return register response
-#      content:
-#        application/json:
-#          schema:
-#            $ref: "#/components/schemas/RegisterResponseObj"
+
   schemas:
     RequestOTP:
       type: object
@@ -712,11 +706,6 @@ components:
           example: 200
         data:
           type: object
-
-
-
-
-
 
     Response:
       type: object
