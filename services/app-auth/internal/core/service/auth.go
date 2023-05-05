@@ -12,6 +12,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"time"
 )
 
 type AuthService struct {
@@ -40,6 +41,8 @@ var (
 	ErrUserLoggedOut            = errors.New("user logged out")
 	ErrOTPGeneration            = errors.New("error while generating otp")
 	ErrUserAlreadyVerified      = errors.New("user already verified")
+	ErrSMSServiceTimeout        = errors.New("our sms service is down. Please try again later")
+	OTPServiceTimeout           = 60 * time.Second
 )
 
 func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
@@ -52,8 +55,11 @@ func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error)
 		return nil, ErrUserNotFound
 	}
 
+	otpServiceContext, cancelCtx := context.WithTimeout(context.Background(), OTPServiceTimeout)
+	defer cancelCtx()
+
 	// if user exists, send otp
-	otpRes, err := d.repo.CreateOtpCode(ctx, request)
+	otpRes, err := d.repo.CreateOtpCode(otpServiceContext, request)
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +130,10 @@ func (d AuthService) VerifyResetOTP(request dto.OtpVerificationReq) (*dto.OtpVer
 		return nil, ErrCacheFetch
 	}
 
-	verificationRes, err := d.repo.VerifyOtpCode(ctx, request)
+	otpServiceContext, cancelCtx := context.WithTimeout(context.Background(), OTPServiceTimeout)
+	defer cancelCtx()
+
+	verificationRes, err := d.repo.VerifyOtpCode(otpServiceContext, request)
 	if err != nil {
 		return nil, err
 	}
@@ -196,8 +205,11 @@ func (d AuthService) SendLoginOtp(request dto.LoginInitReq) (*dto.LoginInitRes, 
 		return nil, ErrIncorrectPassword
 	}
 
+	otpServiceContext, cancelCtx := context.WithTimeout(context.Background(), OTPServiceTimeout)
+	defer cancelCtx()
+
 	// if user exists, send otp
-	otpRes, err := d.repo.CreateOtpCode(ctx, otpReq)
+	otpRes, err := d.repo.CreateOtpCode(otpServiceContext, otpReq)
 	if err != nil {
 		return nil, err
 	}
@@ -244,8 +256,11 @@ func (d AuthService) VerifyLoginOtp(request dto.OtpVerificationReq) (*dto.LoginR
 		return nil, ErrIncorrectOTP
 	}
 
+	otpServiceContext, cancelCtx := context.WithTimeout(context.Background(), OTPServiceTimeout)
+	defer cancelCtx()
+
 	// compare with the otp service
-	otpVerificationRes, err := d.repo.VerifyOtpCode(ctx, request)
+	otpVerificationRes, err := d.repo.VerifyOtpCode(otpServiceContext, request)
 	if err != nil {
 		return nil, ErrIncorrectOTP
 	}
@@ -301,7 +316,10 @@ func (d AuthService) ResendLoginOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 		return nil, ErrCacheFetch
 	}
 
-	resendOTPRes, err := d.repo.ResendOtpCode(ctx, request)
+	otpServiceContext, cancelCtx := context.WithTimeout(context.Background(), OTPServiceTimeout)
+	defer cancelCtx()
+
+	resendOTPRes, err := d.repo.ResendOtpCode(otpServiceContext, request)
 	if err != nil {
 		return nil, ErrHashGeneration
 	}
@@ -343,8 +361,11 @@ func (d AuthService) SendVerifyAccountOTP(request dto.AccountVerificationOTPGenR
 		return nil, ErrUserAlreadyVerified
 	}
 
+	otpServiceContext, cancelCtx := context.WithTimeout(context.Background(), OTPServiceTimeout)
+	defer cancelCtx()
+
 	// if user exists, send otp
-	otpRes, err := d.repo.CreateOtpCode(ctx, otpReq)
+	otpRes, err := d.repo.CreateOtpCode(otpServiceContext, otpReq)
 	if err != nil {
 		log.Errorf("otp creation error: %v", err)
 		return nil, ErrHashGeneration
@@ -388,8 +409,11 @@ func (d AuthService) VerifyAccount(verificationRequest dto.OtpVerificationReq) (
 		return nil, ErrOTPNotInitialied
 	}
 
+	otpServiceContext, cancelCtx := context.WithTimeout(context.Background(), OTPServiceTimeout)
+	defer cancelCtx()
+
 	// compare with the otp service
-	otpVerificationRes, err := d.repo.VerifyOtpCode(ctx, verificationRequest)
+	otpVerificationRes, err := d.repo.VerifyOtpCode(otpServiceContext, verificationRequest)
 	if err != nil {
 		log.Infof("error while verifying: %v", err)
 		return nil, ErrIncorrectOTP
@@ -447,7 +471,10 @@ func (d AuthService) ResendVerifyAccountOTP(request dto.ResendOTPReq) (*dto.Rese
 		return nil, ErrCacheFetch
 	}
 
-	resendOTPRes, err := d.repo.ResendOtpCode(ctx, request)
+	otpServiceContext, cancelCtx := context.WithTimeout(context.Background(), OTPServiceTimeout)
+	defer cancelCtx()
+
+	resendOTPRes, err := d.repo.ResendOtpCode(otpServiceContext, request)
 	if err != nil {
 		return nil, ErrCacheFetch
 	}
@@ -488,7 +515,10 @@ func (d AuthService) ResendResetOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 		return nil, ErrCacheFetch
 	}
 
-	resendOTPRes, err := d.repo.ResendOtpCode(ctx, request)
+	otpServiceContext, cancelCtx := context.WithTimeout(context.Background(), OTPServiceTimeout)
+	defer cancelCtx()
+
+	resendOTPRes, err := d.repo.ResendOtpCode(otpServiceContext, request)
 	if err != nil {
 		return nil, ErrCacheFetch
 	}
