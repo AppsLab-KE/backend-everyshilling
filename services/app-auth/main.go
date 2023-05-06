@@ -8,6 +8,8 @@ import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/storage"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/usecase"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/routes/server"
+	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/pkg/discovery/consul"
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"os"
@@ -25,26 +27,38 @@ func main() {
 	log := logrus.New()
 	// Dependency initialisation
 
+	// register service
+
 	// Load config
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal("Loading config failed", err)
 	}
 
+	// service discovery
+	consulRegistry, err := consul.NewRegistry(cfg.Consul.Address())
+	if err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
+
 	// initilise storage
 	dbStorage, err := storage.NewDbStorage(cfg.Database)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		os.Exit(1)
 	}
 
 	otpStorage, err := storage.NewOtpStorage(cfg.OTP)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		os.Exit(1)
 	}
 
 	cacheStorage, err := storage.NewCacheStorage(cfg.Redis)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		os.Exit(1)
 	}
 	// Repos
 	authRepo := repository.NewAuthRepo(cacheStorage, dbStorage, otpStorage)
@@ -57,16 +71,27 @@ func main() {
 	// server config
 	handler := server.NewServer(authUC, *cfg)
 
-	port := ":" + os.Getenv("PORT")
+	serviceAddress := ":" + os.Getenv("PORT")
 	srv := &http.Server{
-		Addr:    port,
+		Addr:    serviceAddress,
 		Handler: handler,
 	}
 
+	// register service
+	serviceId := uuid.NewString()
+
+	err = consulRegistry.Register(context.Background(), serviceId, ServiceName, ServiceName+serviceAddress)
+	if err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
+
 	go func() {
-		log.Println("Starting server on port", port)
+
+		log.Println("Starting server on Address ", serviceAddress)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalln("Failed to start server.")
+			log.Error(err)
+			os.Exit(1)
 		}
 	}()
 
@@ -75,10 +100,18 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
+	// deregister service
+	err = consulRegistry.Deregister(context.Background(), serviceId)
+	if err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	log.Println("Shutting down server")
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatalln("Forced to shutdown")
+		log.Error(err)
+		os.Exit(1)
 	}
 }

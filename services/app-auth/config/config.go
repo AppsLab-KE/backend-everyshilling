@@ -12,6 +12,15 @@ type Jwt struct {
 	RefreshExpiryDays int
 }
 
+type Consul struct {
+	Port string
+	Host string
+}
+
+func (c *Consul) Address() string {
+	return fmt.Sprintf("%s:%s", c.Host, c.Port)
+}
+
 type DatabaseService struct {
 	Port string
 	Host string
@@ -34,6 +43,7 @@ type Config struct {
 	Database DatabaseService
 	OTP      OtpService
 	Redis    Redis
+	Consul   Consul
 }
 
 func LoadConfig() (*Config, error) {
@@ -104,7 +114,21 @@ func LoadConfig() (*Config, error) {
 		return nil, fmt.Errorf("missing required environment variable REDIS_PASSWORD")
 	}
 
+	consulPort, ok := os.LookupEnv("CONSUL_PORT")
+	if !ok {
+		return nil, fmt.Errorf("missing required environment variable CONSUL_PORT")
+	}
+
+	consulHost, ok := os.LookupEnv("CONSUL_HOST")
+	if !ok {
+		return nil, fmt.Errorf("missing required environment variable CONSUL_HOST")
+	}
+
 	cfg := &Config{
+		Consul: Consul{
+			Port: consulPort,
+			Host: consulHost,
+		},
 		Jwt: Jwt{
 			Secret:            jwtSecret,
 			ExpiryMinutes:     jwtExpiryInt,
