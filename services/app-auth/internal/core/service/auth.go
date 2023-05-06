@@ -9,6 +9,7 @@ import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/dto"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/pkg/hash"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/pkg/tokens"
+	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -32,6 +33,7 @@ var (
 	ErrPasswordNotMatch         = errors.New("passwords dont match")
 	ErrIncorrectPassword        = errors.New("incorrect password/username")
 	ErrIncorrectOTP             = errors.New("OTP does not match. Please try again")
+	ErrOTPSent                  = errors.New("cannot generate new otp. Please wait for the current one to expire")
 	ErrTokenGeneration          = errors.New("io error while generating token")
 	ErrHashGeneration           = errors.New("error while hashing password")
 	ErrOTPNotInitialied         = errors.New("invalid otp session. Please request for a new otp")
@@ -43,6 +45,7 @@ var (
 	ErrUserAlreadyVerified      = errors.New("user already verified")
 	ErrSMSServiceTimeout        = errors.New("our sms service is down. Please try again later")
 	OTPServiceTimeout           = 60 * time.Second
+	ErrUserNotFoundReset        = errors.New("if the phone number is registered, a reset code will be sent to the phone")
 )
 
 func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error) {
@@ -52,7 +55,13 @@ func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error)
 	// check if user with phone number exists
 	user, err := d.repo.GetUserByPhone(ctx, request.Phone)
 	if user == nil || err != nil {
-		return nil, ErrUserNotFound
+		// return dummy response
+		res := &dto.OtpGenRes{
+			StatusCode:   http.StatusOK,
+			Message:      "if the phone number is registered, a reset code will be sent to the phone",
+			TrackingUuid: uuid.NewString(),
+		}
+		return res, nil
 	}
 
 	otpServiceContext, cancelCtx := context.WithTimeout(context.Background(), OTPServiceTimeout)
@@ -61,7 +70,7 @@ func (d AuthService) SendResetOTP(request dto.OtpGenReq) (*dto.OtpGenRes, error)
 	// if user exists, send otp
 	otpRes, err := d.repo.CreateOtpCode(otpServiceContext, request)
 	if err != nil {
-		return nil, err
+		return nil, ErrOTPGeneration
 	}
 
 	if otpRes.StatusCode != http.StatusOK {
@@ -215,7 +224,7 @@ func (d AuthService) SendLoginOtp(request dto.LoginInitReq) (*dto.LoginInitRes, 
 	}
 
 	if otpRes.StatusCode != http.StatusOK {
-		return nil, ErrHashGeneration
+		return nil, entity.NewOTPError(otpRes.Message)
 	}
 
 	// save trackerID
@@ -266,7 +275,7 @@ func (d AuthService) VerifyLoginOtp(request dto.OtpVerificationReq) (*dto.LoginR
 	}
 
 	if otpVerificationRes.StatusCode != http.StatusOK {
-		return nil, ErrIncorrectOTP
+		return nil, entity.NewOTPError(otpVerificationRes.Message)
 	}
 
 	// generate jwt
@@ -321,11 +330,11 @@ func (d AuthService) ResendLoginOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 
 	resendOTPRes, err := d.repo.ResendOtpCode(otpServiceContext, request)
 	if err != nil {
-		return nil, ErrHashGeneration
+		return nil, ErrTokenGeneration
 	}
 
 	if resendOTPRes.StatusCode != http.StatusOK {
-		return nil, ErrHashGeneration
+		return nil, entity.NewOTPError(resendOTPRes.Message)
 	}
 
 	// cache tracking uuid
@@ -368,11 +377,12 @@ func (d AuthService) SendVerifyAccountOTP(request dto.AccountVerificationOTPGenR
 	otpRes, err := d.repo.CreateOtpCode(otpServiceContext, otpReq)
 	if err != nil {
 		log.Errorf("otp creation error: %v", err)
-		return nil, ErrHashGeneration
+		return nil, ErrTokenGeneration
 	}
 
 	if otpRes.StatusCode != http.StatusOK {
-		return nil, ErrHashGeneration
+		log.Errorf("otp creation error: otp service returned %d", otpRes.StatusCode)
+		return nil, entity.NewOTPError(otpRes.Message)
 	}
 
 	// save trackerID
@@ -420,7 +430,7 @@ func (d AuthService) VerifyAccount(verificationRequest dto.OtpVerificationReq) (
 	}
 
 	if otpVerificationRes.StatusCode != http.StatusOK {
-		return nil, ErrIncorrectOTP
+		return nil, entity.NewOTPError(otpVerificationRes.Message)
 	}
 
 	// update user as verified
@@ -476,11 +486,11 @@ func (d AuthService) ResendVerifyAccountOTP(request dto.ResendOTPReq) (*dto.Rese
 
 	resendOTPRes, err := d.repo.ResendOtpCode(otpServiceContext, request)
 	if err != nil {
-		return nil, ErrCacheFetch
+		return nil, ErrOTPGeneration
 	}
 
-	if resendOTPRes.StatusCode != http.StatusOK {
-		return nil, ErrHashGeneration
+	if resendOTPRes.StatusCode == http.StatusConflict {
+		return nil, ErrOTPSent
 	}
 
 	// cache tracking uuid
@@ -523,8 +533,12 @@ func (d AuthService) ResendResetOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes
 		return nil, ErrCacheFetch
 	}
 
+	if resendOTPRes.StatusCode == http.StatusConflict {
+		return nil, ErrOTPSent
+	}
+
 	if resendOTPRes.StatusCode != http.StatusOK {
-		return nil, ErrHashGeneration
+		return nil, entity.NewOTPError(resendOTPRes.Message)
 	}
 
 	// cache tracking uuid
