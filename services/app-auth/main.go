@@ -64,6 +64,7 @@ func main() {
 	}
 
 	go func() {
+		log.Println("Starting server on port", port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalln("Failed to start server.")
 		}

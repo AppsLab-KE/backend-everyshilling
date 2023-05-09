@@ -48,6 +48,8 @@ func handleError[T any](err error) dto.DefaultRes[T] {
 		responseCode = http.StatusForbidden
 	case service.ErrUserLoggedOut:
 		responseCode = http.StatusUnauthorized
+	case service.ErrUserNotFoundReset:
+		responseCode = http.StatusOK
 	default:
 		responseCode = http.StatusInternalServerError
 
@@ -55,7 +57,9 @@ func handleError[T any](err error) dto.DefaultRes[T] {
 
 	// custom error types
 	switch err.(type) {
-	case *entity.ValidationError:
+	case entity.ValidationError:
+		responseCode = http.StatusBadRequest
+	case entity.OTPError:
 		responseCode = http.StatusBadRequest
 	}
 

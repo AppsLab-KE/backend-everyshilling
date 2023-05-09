@@ -51,7 +51,7 @@ services:
      ports:
        - '5432:5432'
      volumes:
-       - db:/var/lib/postgresql/data
+       - postgres:/var/lib/postgresql/data
      healthcheck:
         test: ping -c3 postgres-db:5432
         interval: 10s
@@ -63,11 +63,11 @@ services:
     image: redis:6-alpine
     container_name: redis-db
     ports:
-      - '3007:3007'
+      - '6379:6379'
     restart: always
-    command: --port 3007
+    command: --port 6379
     healthcheck:
-      test: ping -c3 redis-db:3007
+      test: ping -c3 redis-db:6379
       interval: 10s
       retries: 10
     networks:
@@ -80,6 +80,7 @@ services:
        dockerfile: Dockerfile
      env_file:
        - services/app-otp/.env.example
+       - services/app-otp/.env.local
      ports:
        - "3008:3008"
      restart: always
@@ -92,6 +93,20 @@ services:
        - app-db
      networks:
        - internal_network
+
+
+  liquibase:
+    image: liquibase/liquibase:latest
+    volumes:
+      - ./services/app-db/docs/liquibase/liquibase.properties:/liquibase/liquibase.properties
+    depends_on:
+      - postgres-db
+    command:
+      - update --changelog=/liquibase/changelog/db.changelog-master.xml generate-changelog && cat /liquibase/changelog/db.changelog-master.xml
+    environment:
+      LIQUIBASE_CHANGELOG: /liquibase/changelog/db.changelog-master.xml
+      LIQUIBASE_URL: jdbc:postgresql://db:5432/mydb
+
 
   app-db:
      container_name: app-db
@@ -110,6 +125,7 @@ services:
        - internal_network
      depends_on:
        - postgres-db
+       - liquibase
 
 #to be changed once handlers is set
 networks:
@@ -118,7 +134,7 @@ networks:
 
 
 volumes:
-  db:
+  postgres:
     driver: local
   auth:
     driver: local

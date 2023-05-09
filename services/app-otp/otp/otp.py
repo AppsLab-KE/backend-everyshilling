@@ -5,12 +5,14 @@ import struct
 from Crypto.PublicKey import RSA
 import os
 import africastalking
+import redis
 
-africastalking_username =os.getenv("AFR_USERNAME")
+africastalking_username = os.getenv("AFR_USERNAME")
 africastalking_api_key = os.getenv('AFRICASTALKING_API_KEY')
 
 africastalking.initialize(africastalking_username, africastalking_api_key)
 sms = africastalking.SMS
+
 
 def generate_otp() -> str:
     # Generating RSA keys
@@ -18,11 +20,6 @@ def generate_otp() -> str:
 
     if not secret:
         raise Exception("otp key missing")
-
-    key = RSA.generate(2048)
-    public_key = key.publickey()
-    private_key = key
-    # Generate a random secret key as a bite string
 
     # Set the steps and get the unix time
     time_step = 120
@@ -54,24 +51,22 @@ def generate_otp() -> str:
 
     return otp
 
-def send_otp(phone_number, otp):
+
+def send_otp(phone_number:str, otp):
     # Compose the message
-    message = f"Your OTP is: {otp}. Please don't share it with anyone."
+    message = f"Your OTP is: {otp}. It expires in 5 minutes. Please do not share it with anyone."
 
     # Send the message
     try:
         response = sms.send(message, [phone_number])
-        print(response)
+        if response['SMSMessageData']['Recipients'][0]['status'] == 'Success':
+            os.write(2, b"OTP sent successfully\n")
+            return True
+        else:
+            # print response to stderr to avoid buffering
+            os.write(2, str(response).encode()+b"\n")
+            return False
     except Exception as e:
-        print(f"Encountered an error while sending SMS: {str(e)}")
-        
-phone_number = '+254738847827'
-
-if not phone_number:
-    raise Exception("Phone number missing")
-
-# Generate the OTP
-otp = generate_otp()
-
-# Send the OTP via SMS
-send_otp(phone_number, otp)        
+        # print errror to stderr to avoid buffering
+        os.write(2, str(e).encode()+b"\n")
+        return False
