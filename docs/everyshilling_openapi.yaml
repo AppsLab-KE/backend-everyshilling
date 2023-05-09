@@ -132,6 +132,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseServerError"
+
+                #2.Resend the login OTP
   /auth/login/otp/{tracking-uuid}/resend:
     get:
       operationId: "ResendLoginOTP"
@@ -224,6 +226,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Response"
+
+                # 3.reset the otp
+
   /auth/reset/otp/{tracking-uuid}/verify:
     post:
       operationId: "VerifyResetOTP"
@@ -328,8 +333,7 @@ paths:
           required: true
           in: path
           schema:
-            type: string
-            example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+            $ref: "#/components/schemas/ResendNewOTP"
 
       responses:
         "200":
@@ -337,7 +341,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OTPResponse"
+                $ref: "#/components/schemas/ResendNewOTPData"
         "400":
           description: "Bad request: invalid uuid"
           content:
@@ -358,7 +362,7 @@ paths:
       description: resend the OTP to the server for verification.
       tags: [Phone Verification]
       security:
-        - Bearer: []
+        - BearerAuth: []
       requestBody:
         content:
           application/json:
@@ -370,7 +374,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OTPResponse"
+                $ref: "#/components/schemas/OTPVerifyResponseData"
         "400":
           description: "Bad request: invalid uuid"
           content:
@@ -530,7 +534,7 @@ tags:
 
 components:
   securitySchemes:
-    Bearer: # arbitrary name for the security scheme
+    BearerAuth: # arbitrary name for the security scheme
       type: http
       scheme: bearer
       bearerFormat: JWT
@@ -544,7 +548,7 @@ components:
           description: Generated OTP
       required:
         - otp_code
-        -
+
     RequestUser:
           type: object
           description: user object
@@ -612,6 +616,7 @@ components:
           type: string
         code:
           type: number
+          example: 200
         data:
           $ref: "#/components/schemas/RegisterResponseObj"
     RegisterResponseObj:
@@ -627,6 +632,33 @@ components:
             type: string
             example: "+254704407117"
 
+    ResendNewOTP :
+      type: object
+      properties:
+        name:
+          description: New OTP
+          type: string
+          example: "1234"
+
+    ResendNewOTPData :
+          type: object
+          properties:
+            message:
+              type: string
+
+            error:
+              type: string
+            code:
+              type: number
+              example: 200
+            data:
+              $ref: "#/components/schemas/ResendNewOTPObj"
+    ResendNewOTPObj :
+                type: object
+                properties:
+                  New OTP:
+                    type: string
+                    example: "1234"
 
     RequestResetCredentials:
       type: object
@@ -728,14 +760,15 @@ components:
           type: string
         code:
           type: number
+          example: 200
         data:
           $ref: "#/components/schemas/OTPResponseObj"
     OTPResponseObj:
       type: object
       properties:
-        phone:
+        OTPResponse:
           type: string
-          example: "1234"
+          example: "The OTP has been verified succesfully"
     ResponseBadOTPRequest:
       type: object
       properties:
@@ -783,15 +816,15 @@ components:
           type: string
         code:
           type: number
+          example: 200
         data:
-          $ref: "#/components/schemas/LogoutResponseData"
-        LogoutResponseObj:
+          $ref: "#/components/schemas/LogoutResponseObj"
+    LogoutResponseObj:
           type: object
           properties:
-            phone:
+            Response:
               type: string
               example: "User Logged out succesfully"
-
 
     Response:
       type: object
@@ -819,6 +852,24 @@ components:
           type: string
           description: valid phone
           example: "+254702998282"
+
+    OTPVerifyResponseData:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+        code:
+          type: number
+        data:
+          $ref: "#/components/schemas/OTPVerifyResponseObj"
+    OTPVerifyResponseObj:
+          type: object
+          properties:
+            phone_number:
+              type: string
+              example: "Your phone number has been succesfully verified"
 
     RefreshTokenReq:
       type: object
