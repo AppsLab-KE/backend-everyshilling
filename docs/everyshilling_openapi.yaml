@@ -19,47 +19,26 @@ servers:
     description: "Production"
 paths:
   /users/{userId}/show:
-    summary: this shows the profile of a single user
-    description: single user
     get:
-      security: [ ]
+      security:
+        - Bearer: []
       summary: A GET request to /users/{userId}
       operationId: getUserById
       description: get user by id
       tags: [Users]
-      requestBody:
-        description: User's login credentials
-        content:
-          application:
-            schema:
-              $ref: "#/components/schemas/RequestUser"
       parameters:
         - name: userId
           in: path
           required: true
           description: user id
-          schema:
-            type: string
-            example: dlfhlds-sdkfbkjsdbf-sdkfbjk
       responses:
         '200':
           description: user object response
           content:
-
             application/json:
               schema:
                 $ref: "#/components/schemas/UserResponseData"
 
-        default:
-          description: error
-          content:
-            application/json:
-              schema:
-                properties:
-                  message:
-                    type: string
-                  error:
-                    type: string
   /auth/login:
     post:
       operationId: login
@@ -69,7 +48,7 @@ paths:
       requestBody:
         description: User's login credentials
         content:
-          application:
+          application/json:
             schema:
               $ref: "#/components/schemas/RequestLogin"
       responses:
@@ -78,7 +57,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LoginResponseData"
+                $ref: "#/components/schemas/OTPResponseData"
         "400":
           description: "Bad request: eg invalid phone number"
           content:
@@ -110,18 +89,18 @@ paths:
       requestBody:
         description: OTP received via SMS
         content:
-          application:
+          application/json:
             schema:
-              $ref: "#/components/schemas/RequestOTP"
+              $ref: "#/components/schemas/OTPVerificationReq"
       responses:
         "200":
           description: OTP generated and sent successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OTPResponseData"
+                $ref: "#/components/schemas/PhoneVerificationResponse"
         "400":
-          description: "Bad request: missing email or phone number"
+          description: "Bad request: missing email or  phone number"
           content:
             application/json:
               schema:
@@ -133,7 +112,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ResponseServerError"
 
-                #2.Resend the login OTP
   /auth/login/otp/{tracking-uuid}/resend:
     get:
       operationId: "ResendLoginOTP"
@@ -149,19 +127,19 @@ paths:
             type: string
             example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
       responses:
-        "200":
+        '200':
           description: OTP generated and sent successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OTPResponse"
-        "400":
+                $ref: "#/components/schemas/ResendNewOTPResponse"
+        '400':
           description: "Bad request: invalid uuid"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResponseBadOTPRequest"
-        "500":
+        '500':
           description: Internal server error
           content:
             application/json:
@@ -198,7 +176,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Response"
-
   /auth/reset:
     summary: Allow users to send forget password requests
     post:
@@ -218,7 +195,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Response"
+                $ref: "#/components/schemas/OTPResponseData"
 
         "404":
           description: "Phone not found"
@@ -228,7 +205,6 @@ paths:
                 $ref: "#/components/schemas/Response"
 
                 # 3.reset the otp
-
   /auth/reset/otp/{tracking-uuid}/verify:
     post:
       operationId: "VerifyResetOTP"
@@ -249,7 +225,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RequestOTP"
+              $ref: "#/components/schemas/OTPVerificationReq"
 
       responses:
         "200":
@@ -257,7 +233,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OTPResponseData"
+                $ref: "#/components/schemas/Response"
 
         "401":
           description: "Verification failed"
@@ -271,7 +247,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Response"
-
   /auth/reset/{tracking-uuid}/change:
     post:
       operationId: "ChangePassword"
@@ -332,8 +307,6 @@ paths:
           description: "Password reset request UUID"
           required: true
           in: path
-          schema:
-            $ref: "#/components/schemas/ResendNewOTP"
 
       responses:
         "200":
@@ -341,7 +314,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ResendNewOTPData"
+                $ref: "#/components/schemas/ResendNewOTPResponse"
         "400":
           description: "Bad request: invalid uuid"
           content:
@@ -354,7 +327,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Response"
-
   /auth/verify:
     post:
       operationId: "VerifyPhone"
@@ -409,7 +381,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RequestOTP"
+              $ref: "#/components/schemas/OTPVerificationReq"
 
       responses:
         "200":
@@ -417,7 +389,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Response"
+                $ref: "#/components/schemas/PhoneVerificationResponse"
 
         "401":
           description: "Verification failed"
@@ -431,7 +403,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Response"
-
   /auth/verify/otp/{tracking-uuid}/resend:
     get:
       operationId: "ResendVerificationOTP"
@@ -455,7 +426,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Response"
+                $ref: "#/components/schemas/ResendNewOTPResponse"
         "400":
           description: "Bad request: invalid uuid"
           content:
@@ -468,7 +439,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Response"
-
   /auth/logout:
     get:
       summary: Invalidatation to access token and logout user
@@ -478,10 +448,10 @@ paths:
       security:
         - Bearer: []
       requestBody:
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/LogoutRequest"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LogoutRequest"
       responses:
         "200":
           description: User logged out successfully
@@ -493,8 +463,6 @@ paths:
           description: "Unauthorized: Invalid or expired token"
         "500":
           description: Internal server error
-
-
   /auth/refresh-token:
     post:
       summary: Refresh access token using refresh token
@@ -540,7 +508,7 @@ components:
       bearerFormat: JWT
 
   schemas:
-    RequestOTP:
+    OTPVerificationReq:
       type: object
       properties:
         otp_code:
@@ -550,15 +518,15 @@ components:
         - otp_code
 
     RequestUser:
-          type: object
-          description: user object
-          properties:
-            name:
-              type: string
-              example: John Doe
-            email:
-              type: string
-              example: john.doe@example.com
+      type: object
+      description: user object
+      properties:
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          example: john.doe@example.com
     UserResponseData :
       type: object
       properties:
@@ -618,47 +586,32 @@ components:
           type: number
           example: 200
         data:
-          $ref: "#/components/schemas/RegisterResponseObj"
-    RegisterResponseObj:
-        type: object
-        properties:
-          name:
-            type: string
-            example: john doe
-          email:
-            type: string
-            example: john@doe.com
-          phone_number:
-            type: string
-            example: "+254704407117"
+          type: object
+          properties:
+            name:
+              description: name
+              type: string
+              example: john doe
+            email:
+              type: string
+              description: valid email
+              example: john.doe@example.com
+            phone_number:
+              type: string
+              description: valid phone number
+              example: "+2541234567"
+          required:
+            - name
+            - email
+            - phone_number
 
     ResendNewOTP :
       type: object
       properties:
-        name:
+        phone:
           description: New OTP
           type: string
           example: "1234"
-
-    ResendNewOTPData :
-          type: object
-          properties:
-            message:
-              type: string
-
-            error:
-              type: string
-            code:
-              type: number
-              example: 200
-            data:
-              $ref: "#/components/schemas/ResendNewOTPObj"
-    ResendNewOTPObj :
-                type: object
-                properties:
-                  New OTP:
-                    type: string
-                    example: "1234"
 
     RequestResetCredentials:
       type: object
@@ -724,38 +677,25 @@ components:
         data:
           type: object
     ResponseServerError :
-     type: object
-     properties:
-       message:
-         type: string
-         example: "Internal server Error"
-       error:
-         type: string
-       code:
-         type: number
-         example: 500
-       data:
-         type: object
-
-
-    OTPResponse :
       type: object
       properties:
         message:
           type: string
-          example: "OTP generated and sent succesfully"
+          example: "Internal server Error"
         error:
           type: string
         code:
           type: number
-          example: 200
+          example: 500
         data:
           type: object
+
     OTPResponseData :
       type: object
       properties:
         message:
           type: string
+          example: "OTP sent succesfully"
         error:
           type: string
         code:
@@ -766,9 +706,9 @@ components:
     OTPResponseObj:
       type: object
       properties:
-        OTPResponse:
+        tracking_uuid:
           type: string
-          example: "The OTP has been verified succesfully"
+          example: "effaf-efaeaa-efaeaf"
     ResponseBadOTPRequest:
       type: object
       properties:
@@ -807,6 +747,7 @@ components:
           type: string
           description: name
           example: "mike"
+
     LogoutResponseData :
       type: object
       properties:
@@ -818,13 +759,7 @@ components:
           type: number
           example: 200
         data:
-          $ref: "#/components/schemas/LogoutResponseObj"
-    LogoutResponseObj:
-          type: object
-          properties:
-            Response:
-              type: string
-              example: "User Logged out succesfully"
+          type: null
 
     Response:
       type: object
@@ -863,13 +798,10 @@ components:
         code:
           type: number
         data:
-          $ref: "#/components/schemas/OTPVerifyResponseObj"
-    OTPVerifyResponseObj:
           type: object
           properties:
-            phone_number:
+            tracking_uuid:
               type: string
-              example: "Your phone number has been succesfully verified"
 
     RefreshTokenReq:
       type: object
@@ -883,12 +815,61 @@ components:
     RefreshTokenRes:
       type: object
       properties:
-        refresh_token:
+        message:
           type: string
-          description: New Refresh token
-        bearer_token:
+          description: "Message"
+        error:
           type: string
-          description: New Bearer token
-      required:
-        - refresh_token
-        - bearer_token
+          description: "Error"
+        status_code:
+          type: number
+          description: "Status code"
+
+        data:
+          type: object
+          properties:
+            refresh_token:
+              type: string
+              description: New Refresh token
+            bearer_token:
+              type: string
+              description: New Bearer token
+          required:
+            - refresh_token
+            - bearer_token
+    ResendNewOTPResponse:
+        type: object
+        properties:
+          message:
+            type: string
+            description: "Message"
+          error:
+            type: string
+            description: "Error"
+          status_code:
+            type: number
+            description: "Status code"
+          data:
+            $ref: "#/components/schemas/OTPResponseObj"
+
+    PhoneVerificationResponse:
+        type: object
+        properties:
+          message:
+            type: string
+            description: "Message"
+          error:
+            type: string
+            description: "Error"
+          status_code:
+            type: number
+            description: "Status code"
+          data:
+            type: object
+            properties:
+              bearer_token:
+                type: string
+                required: true
+              refresh_token:
+                type: string
+                required: true
