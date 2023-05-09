@@ -8,8 +8,6 @@ import (
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/storage"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/core/usecase"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/internal/routes/server"
-	"github.com/AppsLab-KE/backend-everyshilling/services/app-authentication/pkg/discovery/consul"
-	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"os"
@@ -33,13 +31,6 @@ func main() {
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal("Loading config failed", err)
-	}
-
-	// service discovery
-	consulRegistry, err := consul.NewRegistry(cfg.Consul.Address())
-	if err != nil {
-		log.Error(err)
-		os.Exit(1)
 	}
 
 	// initilise storage
@@ -77,15 +68,6 @@ func main() {
 		Handler: handler,
 	}
 
-	// register service
-	serviceId := uuid.NewString()
-
-	err = consulRegistry.Register(context.Background(), serviceId, ServiceName, ServiceName+serviceAddress)
-	if err != nil {
-		log.Error(err)
-		os.Exit(1)
-	}
-
 	go func() {
 
 		log.Println("Starting server on Address ", serviceAddress)
@@ -99,13 +81,6 @@ func main() {
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-
-	// deregister service
-	err = consulRegistry.Deregister(context.Background(), serviceId)
-	if err != nil {
-		log.Error(err)
-		os.Exit(1)
-	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
