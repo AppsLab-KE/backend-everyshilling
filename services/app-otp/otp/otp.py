@@ -3,8 +3,8 @@ import time
 import hmac
 import hashlib
 import struct
-# from Crypto.PublicKey import RSA
 import os
+
 import africastalking
 
 africastalking_username = os.getenv('AFR_USERNAME')
@@ -15,7 +15,6 @@ sms = africastalking.SMS
 
 
 def generate_otp() -> str:
-    # Generating RSA keys
     secret = os.getenv('OTP_SECRET')
 
     if not secret:
@@ -39,8 +38,8 @@ def generate_otp() -> str:
     hash_hex = binascii.hexlify(hash).decode('utf-8')
     # Get the last 4 bits of the hash
     last_char = hash_hex[-1]
-    if not last_char.isdigit() and not (last_char >= 'a' and last_char <= 'f') and not (
-            last_char >= 'A' and last_char <= 'F'):
+    if not last_char.isdigit() and not ('a' <= last_char <= 'f') and not (
+            'A' <= last_char <= 'F'):
         raise ValueError("Invalid hexadecimal digit: " + last_char)
 
     offset = int(last_char, 16) & 0x0F
@@ -66,8 +65,9 @@ def send_otp(phone_number: str, otp):
     try:
         response = sms.send(message, [phone_number])
         if response['SMSMessageData']['Recipients'][0]['status'] == 'Success':
-            os.write(2, b"OTP sent successfully\n")
+
             os.write(2, str(response).encode() + b"\n")
+
             return True
         else:
             # print response to stderr to avoid buffering

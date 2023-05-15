@@ -25,7 +25,7 @@ class OtpService(otpserver_pb2_grpc.OtpServiceServicer):
         phone_number = request.phone_number
         otp_code = cache.get_otp(phone_number)
 
-        if otp_code:
+        if b"otp" in otp_code or b"time_stamp_unix" in otp_code:
             return otp_pb2.CreateAndSendOtpRes(
                 message="Otp already exists. Please wait for 5 minutes before generating a new one",
                 status_code=409,
@@ -46,34 +46,31 @@ class OtpService(otpserver_pb2_grpc.OtpServiceServicer):
         )
 
     def VerifyOtp(self, request, context):
-        message = "Otp Validated Successfully"
+        message = "otp verified successfully"
         status_code = 200
 
         otp = request.otp_code
         tracking_uuid = request.tracking_uuid
 
         phone_number = cache.get_phone_number(tracking_uuid)
-        print(type(phone_number), file=sys.stderr)
-        print(phone_number.keys(), file=sys.stderr)
-        os.write(2, f"phone number: {phone_number}".encode()+b"\n")
-
-        if phone_number is None:
+        print(phone_number, file=sys.stderr)
+        if phone_number is None or b"phone_number" not in phone_number:
             os.write(2, f"Phone number not found for tracking uuid {tracking_uuid}".encode()+b"\n")
             return otp_pb2.VerifyOTPRes(
                 message="Incorrect/expired otp. Please generate a new one",
                 status_code=401
             )
         phone = phone_number[b"phone_number"]
-        os.write(2, f"phone number: {phone}".encode()+b"\n")
         cached_otp = cache.get_otp(phone.decode())
-        if cached_otp is None:
+        print(cached_otp, file=sys.stderr)
+        if cached_otp is None or b"time_stamp_unix" not in cached_otp:
             os.write(2, f"Otp not found for phone number {phone_number}".encode()+b"\n")
             return otp_pb2.VerifyOTPRes(
                 message="This otp has expired. Please generate a new one",
                 status_code=401
             )
 
-        os.write(2, f"cached otp: {cached_otp}".encode()+b"\n")
+
         time_stamp = datetime.now().timestamp()
         time_diff = time_stamp - float(cached_otp[b"time_stamp_unix"].decode())
 
@@ -86,7 +83,7 @@ class OtpService(otpserver_pb2_grpc.OtpServiceServicer):
 
         if otp != cached_otp[b"otp"].decode():
             return otp_pb2.VerifyOTPRes(
-                message="Incorrect otp. Please try again",
+                message="Code does not match. Please try again",
                 status_code=401
             )
 
