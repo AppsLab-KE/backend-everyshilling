@@ -4,7 +4,7 @@ from datetime import datetime
 import redis
 
 REDIS_HOST = os.getenv("REDIS_HOST")
-REDIS_PORT = int(os.getenv("REDIS_PORT"))
+REDIS_PORT = os.getenv("REDIS_PORT")
 
 r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
