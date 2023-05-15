@@ -7,8 +7,8 @@ import struct
 import os
 import africastalking
 
-africastalking_username = 'everyshilling'
-africastalking_api_key ='7104d6b473850dad25f79323a773a0764ac23838b7d95cf3bb61abbaf9c9adb7'
+africastalking_username = os.getenv('AFR_USERNAME')
+africastalking_api_key = os.getenv('AFRICASTALKING_API_KEY')
 
 africastalking.initialize(africastalking_username, africastalking_api_key)
 sms = africastalking.SMS
@@ -67,13 +67,13 @@ def send_otp(phone_number: str, otp):
         response = sms.send(message, [phone_number])
         if response['SMSMessageData']['Recipients'][0]['status'] == 'Success':
             os.write(2, b"OTP sent successfully\n")
-            os.write(2, str(response).encode()+b"\n")
+            os.write(2, str(response).encode() + b"\n")
             return True
         else:
             # print response to stderr to avoid buffering
-            os.write(2, str(response).encode()+b"\n")
+            os.write(2, str(response).encode() + b"\n")
             return False
     except Exception as e:
         # print error to stderr to avoid buffering
-        os.write(2, str(e).encode()+b"\n")
+        os.write(2, str(e).encode() + b"\n")
         return False
