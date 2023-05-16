@@ -4,7 +4,7 @@ from datetime import datetime
 import redis
 
 REDIS_HOST = os.getenv("REDIS_HOST")
-REDIS_PORT = os.getenv("REDIS_PORT")
+REDIS_PORT = 6379
 
 r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
 
@@ -24,12 +24,12 @@ def save_otp(phone_number, tracking_uuid, otp):
     phone_otp_dict = {
         "phone_number": phone_number,
         "otp": otp,
-        "time_stamp_unix": time_stamp
+        "time_stamp_unix": round(time_stamp, 2)
     }
 
     otp_time_stamp_dict = {
         "otp": otp,
-        "time_stamp_unix": time_stamp
+        "time_stamp_unix": round(time_stamp, 2)
     }
 
     r.hset(tracking_key, mapping=phone_otp_dict)
