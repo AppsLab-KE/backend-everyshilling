@@ -873,3 +873,61 @@ components:
               refresh_token:
                 type: string
                 required: true
+
+
+#New Endpoints for Dashboard (BUY AND SELL) 
+ /buy:
+    post:
+      summary: Buy Currency
+      description: Endpoint to buy a specified amount of currency.
+      requestBody:
+        description: Request parameters for buying currency.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency:
+                  type: string
+                  description: Currency code (USD, KES).
+                amount:
+                  type: number
+                  description: Amount of currency to buy.
+              required:
+                - currency
+                - amount
+      responses:
+        '200':
+          description: Currency Purchased successfully
+        '400':
+          description: Bad request: invalid currency or amount
+        '500':
+          description: Internal server error
+
+  /sell:
+    post:
+      summary: Sell Currency
+      description: Endpoint to sell a specified amount of currency.
+      requestBody:
+        description: Request parameters for selling currency.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency:
+                  type: string
+                  description: Currency code (USD, KES).
+                amount:
+                  type: number
+                  description: Amount of currency to sell.
+              required:
+                - currency
+                - amount
+      responses:
+        '200':
+          description: Currency sold successfully
+        '400':
+          description: Bad request: invalid currency or amount
+        '500':
+          description: Internal server error
