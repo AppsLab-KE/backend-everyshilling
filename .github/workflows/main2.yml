@@ -24,16 +24,18 @@ jobs:
 
       - name: Log in to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v1   540828511394.dkr.ecr.us-east-1.amazonaws.com
 
       - name: Tag and push Docker images
+        env:
+          ECR_ACCOUNT: ${{ secrets.ECR_ACCOUNT }}
         run: |
-          docker tag everyshilling_app-auth:latest 540828511394.dkr.ecr.us-east-1.amazonaws.com/twala:app-auth
-          docker tag everyshilling_app-db:latest 540828511394.dkr.ecr.us-east-1.amazonaws.com/twala:app-db
-          docker tag everyshilling_app-otp:latest 540828511394.dkr.ecr.us-east-1.amazonaws.com/twala:app-otp
-          docker push 540828511394.dkr.ecr.us-east-1.amazonaws.com/twala:app-auth
-          docker push 540828511394.dkr.ecr.us-east-1.amazonaws.com/twala:app-db
-          docker push 540828511394.dkr.ecr.us-east-1.amazonaws.com/twala:app-otp
+          docker tag everyshilling_app-auth:latest $ECR_ACCOUNT/twala:app-auth
+          docker tag everyshilling_app-db:latest $ECR_ACCOUNT/twala:app-db
+          docker tag everyshilling_app-otp:latest $ECR_ACCOUNT/twala:app-otp
+          docker push $ECR_ACCOUNT/twala:app-auth
+          docker push $ECR_ACCOUNT/twala:app-db
+          docker push $ECR_ACCOUNT/twala:app-otp
 
 
 # everyshilling is the stack name
