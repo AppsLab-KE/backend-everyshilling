@@ -30,17 +30,14 @@ type Redis struct {
 }
 
 type Config struct {
-	Jwt      Jwt
-	Database DatabaseService
-	OTP      OtpService
-	Redis    Redis
+	Jwt          Jwt
+	Database     DatabaseService
+	OTP          OtpService
+	Redis        Redis
+	MigrationUrl string
 }
 
 func LoadConfig() (*Config, error) {
-	jwtSecret, ok := os.LookupEnv("JWT_SECRET")
-	if !ok {
-		return nil, fmt.Errorf("missing required environment variable JWT_SECRET")
-	}
 
 	jwtExpiry, ok := os.LookupEnv("JWT_EXPIRY")
 	if !ok {
@@ -106,7 +103,6 @@ func LoadConfig() (*Config, error) {
 
 	cfg := &Config{
 		Jwt: Jwt{
-			Secret:            jwtSecret,
 			ExpiryMinutes:     jwtExpiryInt,
 			RefreshExpiryDays: jwtRefreshExpiryInt,
 		},
