@@ -18,24 +18,27 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Build Docker images
+
+      - name: Login to ECR
         run: |
-          make build-dev
-
-      - name: Log in to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Tag and push Docker images
+          echo "${{ secrets.AWS_ACCESS_KEY_ID }}" | aws configure set aws_access_key_id
+          echo "${{ secrets.AWS_SECRET_ACCESS_KEY }}" | aws configure set aws_secret_access_key
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_ACCOUNT }}
+      - name: Build,tag and push Docker images
         env:
           ECR_ACCOUNT: ${{ secrets.ECR_ACCOUNT }}
+          ECR_REPOSITORY: twala
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          docker tag everyshilling_app-auth:latest ${{ secrets.ECR_ACCOUNT }}/twala:app-auth
-          docker tag everyshilling_app-db:latest ${{ secrets.ECR_ACCOUNT }}/twala:app-db
-          docker tag everyshilling_app-otp:latest ${{ secrets.ECR_ACCOUNT }}/twala:app-otp
-          docker push ${{ secrets.ECR_ACCOUNT }}/twala:app-auth
-          docker push ${{ secrets.ECR_ACCOUNT }}/twala:app-db
-          docker push ${{ secrets.ECR_ACCOUNT }}/twala:app-otp
+          make build-dev
+          docker tag everyshilling_app-auth:latest ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-auth
+          docker tag everyshilling_app-db:latest ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-db
+          docker tag everyshilling_app-otp:latest ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-otp
+          docker push ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-auth
+          docker push ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-db
+          docker push ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-otp
 
 
 # # everyshilling is the stack name
