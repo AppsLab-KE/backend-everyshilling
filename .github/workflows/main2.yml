@@ -24,7 +24,7 @@ jobs:
 
       - name: Log in to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1   540828511394.dkr.ecr.us-east-1.amazonaws.com
+        uses: aws-actions/amazon-ecr-login@v1
 
       - name: Tag and push Docker images
         env:
@@ -38,10 +38,10 @@ jobs:
           docker push $ECR_ACCOUNT/twala:app-otp
 
 
-# everyshilling is the stack name
-      - name: Deploy Docker stack
-        run: |
-          echo ${{ secrets.AWS_ACCESS_KEY_ID }} > ~/.aws/credentials
-          echo ${{ secrets.AWS_SECRET_ACCESS_KEY }} >> ~/.aws/credentials
-          aws ecr get-login-password --region us-east-1 | docker secret create ecr-login -
-          docker stack deploy -c dockerswarm-compose.yml everyshilling
+# # everyshilling is the stack name
+#       - name: Deploy Docker stack
+#         run: |
+#           echo ${{ secrets.AWS_ACCESS_KEY_ID }} > ~/.aws/credentials
+#           echo ${{ secrets.AWS_SECRET_ACCESS_KEY }} >> ~/.aws/credentials
+#           aws ecr get-login-password --region us-east-1 | docker secret create ecr-login -
+#           docker stack deploy -c dockerswarm-compose.yml everyshilling
