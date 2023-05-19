@@ -1061,24 +1061,33 @@ components:
           data:
            $ref: "#/components/schemas/AccountOverviewResponseObj"
     AccountOverviewResponseObj:
-         type: object
-         properties:
-           balance:
-             type: number
-             description: Current account balance
-             example: 100,000
-           paymentDetails:
-             type: object
-             properties:
-               amountPaid:
-                 type: number
-                 description: Amount paid in the transaction
-                 example: 50,0000
-               remainingBalance:
-                 type: number
-                 description: Remaining balance after the transaction
-                 example: 40,000
-           transactionSummary:
-             type: object
-             description: Summary or details of the payment made
-             example: "Buy transaction of 400 dollars"
+      type: object
+      properties:
+        balance:
+          type: number
+          description: Current account balance
+          example: 100000
+        paymentDetails:
+          type: object
+          properties:
+            amountPaid:
+              type: number
+              description: Amount paid in the transaction
+              example: 50000
+            remainingBalance:
+              type: number
+              description: Remaining balance after the transaction
+              example: 40000
+        transactionSummary:
+          type: object
+          description: Summary or details of the payment made
+          properties:
+            description:
+              type: string
+              description: Description of the transaction
+              example: "Buy transaction of 400 dollars"
+            date:
+              type: string
+              format: date
+              description: Date of the transaction
+              example: "2023-05-19"
