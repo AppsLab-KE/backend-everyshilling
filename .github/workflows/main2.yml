@@ -30,12 +30,12 @@ jobs:
         env:
           ECR_ACCOUNT: ${{ secrets.ECR_ACCOUNT }}
         run: |
-          docker tag everyshilling_app-auth:latest $ECR_ACCOUNT/twala:app-auth
-          docker tag everyshilling_app-db:latest $ECR_ACCOUNT/twala:app-db
-          docker tag everyshilling_app-otp:latest $ECR_ACCOUNT/twala:app-otp
-          docker push $ECR_ACCOUNT/twala:app-auth
-          docker push $ECR_ACCOUNT/twala:app-db
-          docker push $ECR_ACCOUNT/twala:app-otp
+          docker tag everyshilling_app-auth:latest ${{ secrets.ECR_ACCOUNT }}/twala:app-auth
+          docker tag everyshilling_app-db:latest ${{ secrets.ECR_ACCOUNT }}/twala:app-db
+          docker tag everyshilling_app-otp:latest ${{ secrets.ECR_ACCOUNT }}/twala:app-otp
+          docker push ${{ secrets.ECR_ACCOUNT }}/twala:app-auth
+          docker push ${{ secrets.ECR_ACCOUNT }}/twala:app-db
+          docker push ${{ secrets.ECR_ACCOUNT }}/twala:app-otp
 
 
 # # everyshilling is the stack name
