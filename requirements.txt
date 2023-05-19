@@ -1,2 +1,10 @@
 setuptools~=65.5.0
 africastalking~=1.2.5
+redis~=4.5.5
+pip~=22.3.1
+wheel~=0.38.4
+requests~=2.30.0
+certifi~=2023.5.7
+idna~=3.4
+urllib3~=2.0.2
+schema~=0.7.5

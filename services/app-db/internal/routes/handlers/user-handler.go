@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-db/internal/core/models"
 	"github.com/AppsLab-KE/be-go-gen-grpc/db"
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -45,8 +46,14 @@ func (s *Handler) UpdateUser(context context.Context, userReq *db.UpdateUserReq)
 		Name:     userReq.Name,
 		Email:    userReq.Email,
 		Phone:    userReq.PhoneNumber,
-		Verified: userReq.Verified,
 		Password: userReq.PasswordHash,
+		Verified: userReq.Verified,
+	}
+
+	var err error
+	user.ID, err = uuid.Parse(userReq.UserID)
+	if err != nil {
+		return nil, err
 	}
 
 	createdUser, err := s.userRepo.UpdateUser(context, user)
