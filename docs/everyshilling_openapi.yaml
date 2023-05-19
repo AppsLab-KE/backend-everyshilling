@@ -487,8 +487,6 @@ paths:
         "500":
           description: Internal server error
 
-
-
   /buy-currency :
     post:
       summary: Buy Currencies
@@ -544,9 +542,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MarketplaceOffersResponse"
-
-
-
+        '400':
+          description: Invalid request payload
 
   /account-overview:
     get:
@@ -559,37 +556,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AccountOverviewResponse"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        '400':
+            description: Invalid request payload
 tags:
   - name: Register
     description: Registration description
@@ -1056,18 +1024,21 @@ components:
             KSH:
               type: number
               description: Conversion rate from US Dollar to Kenyan Shilling
-
-        offers:
+        data:
+            $ref: "#/components/schemas/MarketplaceOffersResponseObj"
+    MarketplaceOffersResponseObj:
           type: array
           items:
             type: object
             properties:
               currency:
                 type: string
-                description: Currency code (e.g., USD, KSH)
+                description: Currency code
+                example: "USD"
               rate:
                 type: number
                 description: Exchange rate for the currency
+                example: 110.0
 
     AccountOverviewResponse:
         type: object
@@ -1087,4 +1058,27 @@ components:
           transactionSummary:
             type: object
             description: Summary or details of the payment made
-
+          data:
+           $ref: "#/components/schemas/AccountOverviewResponseObj"
+    AccountOverviewResponseObj:
+         type: object
+         properties:
+           balance:
+             type: number
+             description: Current account balance
+             example: 100,000
+           paymentDetails:
+             type: object
+             properties:
+               amountPaid:
+                 type: number
+                 description: Amount paid in the transaction
+                 example: 50,0000
+               remainingBalance:
+                 type: number
+                 description: Remaining balance after the transaction
+                 example: 40,000
+           transactionSummary:
+             type: object
+             description: Summary or details of the payment made
+             example: "Buy transaction of 400 dollars"
