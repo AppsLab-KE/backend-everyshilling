@@ -67,6 +67,7 @@ func main() {
 		Addr:    serviceAddress,
 		Handler: handler,
 	}
+	//run db migrations
 
 	go func() {
 

@@ -24,4 +24,6 @@ FROM app-builder AS prepare-bin
 
 COPY --from=app-builder /tmp/app-db /usr/bin/database-service
 
+# Create the target folder and copy the contents
+
 ENTRYPOINT ["/usr/bin/database-service"]

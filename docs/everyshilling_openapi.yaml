@@ -441,7 +441,7 @@ paths:
                 $ref: "#/components/schemas/Response"
   /auth/logout:
     get:
-      summary: Invalidatation to access token and logout user
+      summary: Invalidation to access token and logout user
       description: Endpoint to invalidate access token and log out the user.
       tags: [Login]
       operationId: "Logout"
@@ -486,6 +486,78 @@ paths:
           description: "Bad request: missing or invalid refresh token"
         "500":
           description: Internal server error
+
+  /buy-currency :
+    post:
+      summary: Buy Currencies
+      description: Endpoint to buy currency
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BuyRequest"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BuyRequestData"
+        '400':
+          description: Invalid request payload
+
+
+
+  /top-up-account:
+      post:
+        summary: Top up Account
+        description: Endpoint to top up the account
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopUpRequest"
+        responses:
+          '200':
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/TopUpRequestData"
+
+          '400':
+            description: Invalid request payload
+
+
+  /marketplace-offers:
+    get:
+      summary: Marketplace Offers
+      description: Endpoint to get marketplace offers
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarketplaceOffersResponse"
+        '400':
+          description: Invalid request payload
+
+  /account-overview:
+    get:
+      summary: Account Overview
+      description: Endpoint to get account overview
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountOverviewResponse"
+        '400':
+            description: Invalid request payload
 tags:
   - name: Register
     description: Registration description
@@ -873,3 +945,149 @@ components:
               refresh_token:
                 type: string
                 required: true
+
+    BuyRequest:
+      type: object
+      properties:
+        youBuy:
+          type: string
+          description: "the currrency you want to buy in"
+          enum: [ KSH, Dollar ]
+        amount:
+          type: number
+          example: 45
+        payIn:
+          type: string
+          enum: [ Dollar, KSH ]
+        delivery:
+          type: string
+          enum: [ KSH, Dollar ]
+    BuyRequestData:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Your Buy has been initialized"
+        error:
+          type: string
+        code:
+          type: number
+          example: 200
+        data:
+          $ref: "#/components/schemas/BuyRequestObj"
+    BuyRequestObj:
+          type: object
+          properties:
+              buyId:
+                type: integer
+                description: "The unique identifier of the buy request"
+                example: 1234
+    TopUpRequest:
+      type: object
+      properties:
+        paymentMethod:
+          type: string
+          enum: [ Dollar, KSH ]
+        amount:
+          type: number
+
+    TopUpRequestData:
+        type: object
+        properties:
+          message:
+            type: string
+            example: "Your account has been topped up"
+          error:
+            type: string
+          code:
+            type: number
+            example: 200
+          data:
+            $ref: "#/components/schemas/TopUpResponseObj"
+    TopUpResponseObj:
+        type: object
+        properties:
+          topUpId:
+            type: integer
+            description: "The unique identifier of the top-up request"
+            example: 1234
+
+    MarketplaceOffersResponse:
+      type: object
+      properties:
+        currencies:
+          type: object
+          properties:
+            USD:
+              type: number
+              description: Conversion rate from Kenyan Shilling to US Dollar
+            KSH:
+              type: number
+              description: Conversion rate from US Dollar to Kenyan Shilling
+        data:
+            $ref: "#/components/schemas/MarketplaceOffersResponseObj"
+    MarketplaceOffersResponseObj:
+          type: array
+          items:
+            type: object
+            properties:
+              currency:
+                type: string
+                description: Currency code
+                example: "USD"
+              rate:
+                type: number
+                description: Exchange rate for the currency
+                example: 110.0
+
+    AccountOverviewResponse:
+        type: object
+        properties:
+          balance:
+            type: number
+            description: Current account balance
+          paymentDetails:
+            type: object
+            properties:
+              amountPaid:
+                type: number
+                description: Amount paid in the transaction
+              remainingBalance:
+                type: number
+                description: Remaining balance after the transaction
+          transactionSummary:
+            type: object
+            description: Summary or details of the payment made
+          data:
+           $ref: "#/components/schemas/AccountOverviewResponseObj"
+    AccountOverviewResponseObj:
+      type: object
+      properties:
+        balance:
+          type: number
+          description: Current account balance
+          example: 100000
+        paymentDetails:
+          type: object
+          properties:
+            amountPaid:
+              type: number
+              description: Amount paid in the transaction
+              example: 50000
+            remainingBalance:
+              type: number
+              description: Remaining balance after the transaction
+              example: 40000
+        transactionSummary:
+          type: object
+          description: Summary or details of the payment made
+          properties:
+            description:
+              type: string
+              description: Description of the transaction
+              example: "Buy transaction of 400 dollars"
+            date:
+              type: string
+              format: date
+              description: Date of the transaction
+              example: "2023-05-19"
