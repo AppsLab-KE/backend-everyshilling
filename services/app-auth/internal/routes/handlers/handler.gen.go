@@ -223,8 +223,6 @@ func (siw *ServerInterfaceWrapper) ChangePassword(c *gin.Context) {
 // VerifyPhone operation middleware
 func (siw *ServerInterfaceWrapper) VerifyPhone(c *gin.Context) {
 
-	c.Set(BearerScopes, []string{""})
-
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 	}
@@ -246,8 +244,6 @@ func (siw *ServerInterfaceWrapper) ResendVerificationOTP(c *gin.Context) {
 		return
 	}
 
-	c.Set(BearerScopes, []string{""})
-
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
 	}
@@ -268,8 +264,6 @@ func (siw *ServerInterfaceWrapper) VerifyVerificationOTP(c *gin.Context) {
 		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter tracking-uuid: %s", err), http.StatusBadRequest)
 		return
 	}
-
-	c.Set(BearerScopes, []string{""})
 
 	for _, middleware := range siw.HandlerMiddlewares {
 		middleware(c)
