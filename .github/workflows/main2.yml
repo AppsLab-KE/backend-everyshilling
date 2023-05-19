@@ -30,14 +30,33 @@ jobs:
           AWS_REGION: us-east-1
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        # run: |
+        #   make build-dev
+        #   docker tag everyshilling_app-auth:latest ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-auth
+        #   docker tag everyshilling_app-db:latest ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-db
+        #   docker tag everyshilling_app-otp:latest ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-otp
+        #   docker push ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-auth
+        #   docker push ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-db
+        #   docker push ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-otp
+
         run: |
           make build-dev
+
+          APP_AUTH_TAG=$(docker images --filter=reference='everyshilling_app-auth:latest' --format "{{.ID}}")
+          APP_DB_TAG=$(docker images --filter=reference='everyshilling_app-db:latest' --format "{{.ID}}")
+          APP_OTP_TAG=$(docker images --filter=reference='everyshilling_app-otp:latest' --format "{{.ID}}")
+
+          # Tag and push the Docker images
           docker tag everyshilling_app-auth:latest ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-auth
           docker tag everyshilling_app-db:latest ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-db
           docker tag everyshilling_app-otp:latest ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-otp
           docker push ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-auth
           docker push ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-db
           docker push ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-otp
+
+
+
+
 
 
 # # everyshilling is the stack name
