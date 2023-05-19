@@ -1,0 +1,107 @@
+---
+version: "3.8"
+services:
+  app-auth:
+    image: $ECR_ACCOUNT/twala:auth
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    environment:
+      - JWT_SECRET=myjwtsecret
+      - JWT_EXPIRY=1440
+      - JWT_REFRESH_EXPIRY=30
+      - DB_PORT=3001
+      - DB_HOST=app-db
+      - OTP_PORT=3008
+      - OTP_HOST=app-otp
+      - REDIS_HOST=redis-db
+      - REDIS_PORT=6379
+      - REDIS_USER=myredisuser
+      - REDIS_PASSWORD=myredispassword
+      - PORT=3002
+      - RABBIT_PORT=5672
+      - RABBIT_HOST= localhost
+      - RABBIT_USER=myuser
+      - RABBIT_PASSWORD=mypassword
+    ports:
+      - "3002:3002"
+    secrets:
+      - ecr-login
+  postgres-db:
+    image: postgres:9.4
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=everyshillings
+      - POSTGRES_TIMEZONE=UTC
+    ports:
+      - "5432:5432"
+    secrets:
+      - ecr-login
+  redis-db:
+    image: redis
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    ports:
+      - "6379:6379"
+    secrets:
+      - ecr-login
+
+  app-otp:
+    image: $ECR_ACCOUNT/twala:app-otp
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    environment:
+      - AFR_USERNAME=${{ secrets.AFR_USERNAME }}
+      - AFRICASTALKING_API_KEY=${{ secrets.AFRICASTALKING_API_KEY }}
+      - GRPC_PORT=3007
+      - REDIS_HOST=redis-db
+      - REDIS_PORT=3007
+      - REDIS_USER=myredisuser
+      - REDIS_PASSWORD=myredispassword
+      - OTP_SECRET=eadceca662254eadaceddcae76aeadb789eac32a
+    ports:
+      - "3008:3008"
+    secrets:
+      - ecr-login
+
+
+  app-db:
+    image: $ECR_ACCOUNT/twala:app-db
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    environment:
+      - SERVER_PORT=3001
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=postgres-db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DATABASE=everyshillings
+      - TZ=UTC
+      - POSTGRES_TIMEZONE=UTC
+      - RABBIT_PORT=5672
+      - DB_GRPC_PORT=9001
+    ports:
+      - "3001:3001"
+    secrets:
+      - ecr-login
+
+
+volumes:
+  db:
+    driver: local
+secrets:
+  ecr-login:
+    external: true
