@@ -16,9 +16,9 @@ WORKDIR /app/auth
 COPY  . /app/auth/
 
 # RUN go mod download
+# RUN go build -o /tmp/app-auth
 
-
-RUN go build -o /tmp/app-auth
+RUN go mod init
 
 # Generate private and public keys
 RUN mkdir -p /etc/auth-service
