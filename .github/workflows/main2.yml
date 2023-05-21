@@ -31,11 +31,10 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          docker build -t backend-everyshilling_app-auth:latest
-          docker build -t backend-everyshilling_app-db:latest
-          docker build -t backend-everyshilling_app-otp:latest
-          docker build -t backend-everyshilling_redis:latest
-          docker build -t backend-everyshilling_postgres:latest
+
+          docker build -t backend-everyshilling_app-auth:latest -f services/app-auth/Dev.Dockerfile .
+          docker build -t backend-everyshilling_app-db:latest -f services/app-db/Dev.Dockerfile .
+          docker build -t backend-everyshilling_app-otp:latest -f services/app-otp/Dockerfile .
           docker tag backend-everyshilling_app-auth:latest ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-auth
           docker tag backend-everyshilling_app-db:latest ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-db
           docker tag backend-everyshilling_app-otp:latest ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-otp

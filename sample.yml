@@ -1,0 +1,137 @@
+---
+version: "3.8"
+services:
+  app-auth:
+    image: 540828511394.dkr.ecr.us-east-1.amazonaws.com/twala:app-auth
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    environment:
+      - JWT_SECRET=myjwtsecret
+      - JWT_EXPIRY=1440
+      - JWT_REFRESH_EXPIRY=30
+      - DB_PORT=3001
+      - DB_HOST=app-db
+      - OTP_PORT=3008
+      - OTP_HOST=app-otp
+      - REDIS_HOST=redis-db
+      - REDIS_PORT=6379
+      - REDIS_USER=myredisuser
+      - REDIS_PASSWORD=myredispassword
+      - PORT=3002
+      - RABBIT_PORT=5672
+      - RABBIT_HOST= localhost
+      - RABBIT_USER=myuser
+      - RABBIT_PASSWORD=mypassword
+    ports:
+      - 3002:3002
+    secrets:
+      - ecr-login
+
+
+  app-otp:
+    image: 540828511394.dkr.ecr.us-east-1.amazonaws.com/twala:app-otp
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    environment:
+      - AFR_USERNAME=everyshilling
+      - AFRICASTALKING_API_KEY=7104d6b473850dad25f79323a773a0764ac23838b7d95cf3bb61abbaf9c9adb7
+      - GRPC_PORT=3007
+      - REDIS_HOST=redis-db
+      - REDIS_PORT=3007
+      - REDIS_USER=myredisuser
+      - REDIS_PASSWORD=myredispassword
+      - OTP_SECRET=eadceca662254eadaceddcae76aeadb789eac32a
+    ports:
+      - "3008:3008"
+    secrets:
+      - ecr-login
+
+  postgres-db:
+    image: postgres:13-alpine
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=everyshillings
+      - POSTGRES_TIMEZONE=UTC
+    ports:
+      - "5432:5432"
+    secrets:
+      - ecr-login
+  redis-db:
+    image: redis
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    ports:
+      - "6379:6379"
+    secrets:
+      - ecr-login
+  app-db:
+    image: 540828511394.dkr.ecr.us-east-1.amazonaws.com/twala:app-db
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+    environment:
+      - SERVER_PORT=3001
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=postgres-db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DATABASE=everyshillings
+      - TZ=UTC
+      - POSTGRES_TIMEZONE=UTC
+      - DB_GRPC_PORT=9001
+    ports:
+      - "3001:3001"
+    secrets:
+      - ecr-login
+
+  # nginx:
+  #   image: nginx:latest
+  #   deploy:
+  #      replicas: 2
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #   depends_on:
+  #     - app-db
+  #     - app-otp
+  #     - app-auth
+  #     - redis-db
+  #     - postgres-db
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+    deploy:
+      replicas: 2
+      placement:
+        constraints: [node.role == worker]
+    configs:
+      - source: nginx.conf
+        target: /etc/nginx/lbnginx.conf
+
+# configs:
+#   nginx.conf:
+#     file: ./nginx.conf
+
+
+volumes:
+  db:
+    driver: local
+secrets:
+  ecr-login:
+    external: true
