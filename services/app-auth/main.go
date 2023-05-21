@@ -25,6 +25,8 @@ func main() {
 	log := logrus.New()
 	// Dependency initialisation
 
+	// register service
+
 	// Load config
 	cfg, err := config.LoadConfig()
 	if err != nil {
@@ -34,17 +36,20 @@ func main() {
 	// initilise storage
 	dbStorage, err := storage.NewDbStorage(cfg.Database)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		os.Exit(1)
 	}
 
 	otpStorage, err := storage.NewOtpStorage(cfg.OTP)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		os.Exit(1)
 	}
 
 	cacheStorage, err := storage.NewCacheStorage(cfg.Redis)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		os.Exit(1)
 	}
 	// Repos
 	authRepo := repository.NewAuthRepo(cacheStorage, dbStorage, otpStorage)
@@ -57,15 +62,19 @@ func main() {
 	// server config
 	handler := server.NewServer(authUC, *cfg)
 
-	port := ":" + os.Getenv("PORT")
+	serviceAddress := ":" + os.Getenv("PORT")
 	srv := &http.Server{
-		Addr:    port,
+		Addr:    serviceAddress,
 		Handler: handler,
 	}
+	//run db migrations
 
 	go func() {
+
+		log.Println("Starting server on Address ", serviceAddress)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalln("Failed to start server.")
+			log.Error(err)
+			os.Exit(1)
 		}
 	}()
 
@@ -78,6 +87,7 @@ func main() {
 	defer cancel()
 	log.Println("Shutting down server")
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatalln("Forced to shutdown")
+		log.Error(err)
+		os.Exit(1)
 	}
 }

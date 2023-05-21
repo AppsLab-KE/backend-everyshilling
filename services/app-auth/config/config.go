@@ -29,45 +29,15 @@ type Redis struct {
 	Password string
 }
 
-type Rabbit struct {
-	Port     string
-	Host     string
-	User     string
-	Password string
-}
-
 type Config struct {
-	Rabbit   Rabbit
-	Jwt      Jwt
-	Database DatabaseService
-	OTP      OtpService
-	Redis    Redis
+	Jwt          Jwt
+	Database     DatabaseService
+	OTP          OtpService
+	Redis        Redis
+	MigrationUrl string
 }
 
 func LoadConfig() (*Config, error) {
-	rabbitPort, ok := os.LookupEnv("RABBIT_PORT")
-	if !ok {
-		return nil, fmt.Errorf("missing required environment variable RABBIT_PORT")
-	}
-
-	rabbitHost, ok := os.LookupEnv("RABBIT_HOST")
-	if !ok {
-		return nil, fmt.Errorf("missing required environment variable RABBIT_HOST")
-	}
-
-	rabbitUser, ok := os.LookupEnv("RABBIT_USER")
-	if !ok {
-		return nil, fmt.Errorf("missing required environment variable RABBIT_USER")
-	}
-
-	rabbitPassword, ok := os.LookupEnv("RABBIT_PASSWORD")
-	if !ok {
-		return nil, fmt.Errorf("missing required environment variable RABBIT_PASSWORD")
-	}
-	jwtSecret, ok := os.LookupEnv("JWT_SECRET")
-	if !ok {
-		return nil, fmt.Errorf("missing required environment variable JWT_SECRET")
-	}
 
 	jwtExpiry, ok := os.LookupEnv("JWT_EXPIRY")
 	if !ok {
@@ -132,14 +102,7 @@ func LoadConfig() (*Config, error) {
 	}
 
 	cfg := &Config{
-		Rabbit: Rabbit{
-			Port:     rabbitPort,
-			Host:     rabbitHost,
-			User:     rabbitUser,
-			Password: rabbitPassword,
-		},
 		Jwt: Jwt{
-			Secret:            jwtSecret,
 			ExpiryMinutes:     jwtExpiryInt,
 			RefreshExpiryDays: jwtRefreshExpiryInt,
 		},

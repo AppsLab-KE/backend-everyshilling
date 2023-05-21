@@ -37,8 +37,8 @@ services:
         constraints:
           - node.role == worker
     environment:
-      - AFR_USERNAME=everyshilling
-      - AFRICASTALKING_API_KEY=7104d6b473850dad25f79323a773a0764ac23838b7d95cf3bb61abbaf9c9adb7
+      - AFR_USERNAME=
+      - AFRICASTALKING_API_KEY=
       - GRPC_PORT=3007
       - REDIS_HOST=redis-db
       - REDIS_PORT=3007

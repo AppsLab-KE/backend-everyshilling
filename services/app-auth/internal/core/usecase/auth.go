@@ -101,20 +101,20 @@ func (a *AuthUseCase) RegisterUser(ctx context.Context, user dto.RegisterReq) (*
 	return res, nil
 }
 
-func (a *AuthUseCase) VerifyPhoneOTP(verificationRequest dto.OtpVerificationReq) (*dto.OtpVerificationRes, error) {
-	res, err := a.authService.VerifyPhoneOTP(verificationRequest)
+func (a *AuthUseCase) VerifyAccountOTP(verificationRequest dto.OtpVerificationReq) (*dto.AccountVerificationRes, error) {
+	res, err := a.authService.VerifyAccount(verificationRequest)
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
-func (a *AuthUseCase) SendVerifyPhoneOTP(request dto.AccountVerificationOTPGenReq) (*dto.OtpGenRes, error) {
+func (a *AuthUseCase) SendVerifyAccountOTP(request dto.AccountVerificationOTPGenReq) (*dto.OtpGenRes, error) {
 	// validate phone
 	if !validation.ValidatePhone(request.Phone) {
 		return nil, entity.NewValidationError("phone number should be in the format +2547XXXXXXXX")
 	}
-	res, err := a.authService.SendVerifyPhoneOTP(request)
+	res, err := a.authService.SendVerifyAccountOTP(request)
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func (a *AuthUseCase) SendVerifyPhoneOTP(request dto.AccountVerificationOTPGenRe
 }
 
 func (a *AuthUseCase) ResendVerifyPhoneOTP(request dto.ResendOTPReq) (*dto.ResendOTPRes, error) {
-	res, err := a.authService.ResendVerifyPhoneOTP(request)
+	res, err := a.authService.ResendVerifyAccountOTP(request)
 	if err != nil {
 		return nil, err
 	}
