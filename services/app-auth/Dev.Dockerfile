@@ -15,7 +15,7 @@ WORKDIR /app/auth
 
 COPY  . /app/auth/
 
-RUN go mod download
+# RUN go mod download
 
 
 RUN go build -o /tmp/app-auth
