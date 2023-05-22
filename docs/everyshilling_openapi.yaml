@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Every shillings Auth OpenAPI endpoint
+  title: Every shillings  OpenAPI File Description
   description: Every Shilling
   version: 2022-04-01
   termsOfService: https://everyshilling.ke/terms
@@ -31,6 +31,8 @@ paths:
           in: path
           required: true
           description: user id
+          schema:
+            type: string
       responses:
         '200':
           description: user object response
@@ -307,7 +309,8 @@ paths:
           description: "Password reset request UUID"
           required: true
           in: path
-
+          schema:
+            type: string
       responses:
         "200":
           description: OTP generated and sent successfully
@@ -454,11 +457,11 @@ paths:
               $ref: "#/components/schemas/LogoutRequest"
       responses:
         "200":
-          description: User logged out successfully
+          description: OTP generated and sent successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LogoutResponseData"
+                $ref: "#/components/schemas/PhoneVerificationResponse"
         "401":
           description: "Unauthorized: Invalid or expired token"
         "500":
@@ -491,6 +494,8 @@ paths:
     post:
       summary: Buy Currencies
       description: Endpoint to buy currency
+      operationId : buycurrency
+      tags: [BuyCurrency]
       requestBody:
         required: true
         content:
@@ -510,31 +515,36 @@ paths:
 
 
   /top-up-account:
-      post:
-        summary: Top up Account
-        description: Endpoint to top up the account
-        requestBody:
-          required: true
+    post:
+      summary: Top up Account
+      description: Endpoint to top up the account
+      operationId: TopUp
+      tags : [TopUP]
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TopUpRequest"
+      responses:
+        '200':
+          description: Successful operation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/TopUpRequest"
-        responses:
-          '200':
-            description: Successful operation
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/TopUpRequestData"
+                $ref: "#/components/schemas/TopUpRequestData"
 
-          '400':
-            description: Invalid request payload
+        '400':
+          description: Invalid request payload
 
 
   /marketplace-offers:
     get:
       summary: Marketplace Offers
+      operationId: Offers
       description: Endpoint to get marketplace offers
+      tags: [Offers]
       responses:
         '200':
           description: Successful operation
@@ -549,6 +559,8 @@ paths:
     get:
       summary: Account Overview
       description: Endpoint to get account overview
+      operationId : Accountoverview
+      tags : [AccountOverview]
       responses:
         '200':
           description: Successful operation
@@ -557,12 +569,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/AccountOverviewResponse"
         '400':
-            description: Invalid request payload
+          description: Invalid request payload
 tags:
   - name: Register
     description: Registration description
   - name: Users
     description: Users path
+
 
   - name: Login
     description: Login description
@@ -571,6 +584,16 @@ tags:
     description: Help the user gain access and reset password
   - name: Phone Verification
     description: Make sure the user's phone is valid inorder to activate the account
+  - name: Offers
+    description: Show the available offers
+
+  - name: BuyCurrency
+    description: Buy currency description
+
+  - name: TopUp
+    description: Top up Account
+  - name : AccountOverview
+    description: The account overview
 
 components:
   securitySchemes:
@@ -910,41 +933,42 @@ components:
             - refresh_token
             - bearer_token
     ResendNewOTPResponse:
-        type: object
-        properties:
-          message:
-            type: string
-            description: "Message"
-          error:
-            type: string
-            description: "Error"
-          status_code:
-            type: number
-            description: "Status code"
-          data:
-            $ref: "#/components/schemas/OTPResponseObj"
+      type: object
+      properties:
+        message:
+          type: string
+          description: "Message"
+        error:
+          type: string
+          description: "Error"
+        status_code:
+          type: number
+          description: "Status code"
+        data:
+          $ref: "#/components/schemas/OTPResponseObj"
 
     PhoneVerificationResponse:
-        type: object
-        properties:
-          message:
-            type: string
-            description: "Message"
-          error:
-            type: string
-            description: "Error"
-          status_code:
-            type: number
-            description: "Status code"
-          data:
-            type: object
-            properties:
-              bearer_token:
-                type: string
-                required: true
-              refresh_token:
-                type: string
-                required: true
+      type: object
+      properties:
+        message:
+          type: string
+          description: "Message"
+        error:
+          type: string
+          description: "Error"
+        status_code:
+          type: number
+          description: "Status code"
+        data:
+          type: object
+          properties:
+            bearer_token:
+              type: string
+            refresh_token:
+              type: string
+          required:
+            - bearer_token
+            - refresh_token
 
     BuyRequest:
       type: object
@@ -976,12 +1000,12 @@ components:
         data:
           $ref: "#/components/schemas/BuyRequestObj"
     BuyRequestObj:
-          type: object
-          properties:
-              buyId:
-                type: integer
-                description: "The unique identifier of the buy request"
-                example: 1234
+      type: object
+      properties:
+        buyId:
+          type: integer
+          description: "The unique identifier of the buy request"
+          example: 1234
     TopUpRequest:
       type: object
       properties:
@@ -992,25 +1016,25 @@ components:
           type: number
 
     TopUpRequestData:
-        type: object
-        properties:
-          message:
-            type: string
-            example: "Your account has been topped up"
-          error:
-            type: string
-          code:
-            type: number
-            example: 200
-          data:
-            $ref: "#/components/schemas/TopUpResponseObj"
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Your account has been topped up"
+        error:
+          type: string
+        code:
+          type: number
+          example: 200
+        data:
+          $ref: "#/components/schemas/TopUpResponseObj"
     TopUpResponseObj:
-        type: object
-        properties:
-          topUpId:
-            type: integer
-            description: "The unique identifier of the top-up request"
-            example: 1234
+      type: object
+      properties:
+        topUpId:
+          type: integer
+          description: "The unique identifier of the top-up request"
+          example: 1234
 
     MarketplaceOffersResponse:
       type: object
@@ -1025,41 +1049,41 @@ components:
               type: number
               description: Conversion rate from US Dollar to Kenyan Shilling
         data:
-            $ref: "#/components/schemas/MarketplaceOffersResponseObj"
+          $ref: "#/components/schemas/MarketplaceOffersResponseObj"
     MarketplaceOffersResponseObj:
-          type: array
-          items:
-            type: object
-            properties:
-              currency:
-                type: string
-                description: Currency code
-                example: "USD"
-              rate:
-                type: number
-                description: Exchange rate for the currency
-                example: 110.0
-
-    AccountOverviewResponse:
+      type: array
+      items:
         type: object
         properties:
-          balance:
+          currency:
+            type: string
+            description: Currency code
+            example: "USD"
+          rate:
             type: number
-            description: Current account balance
-          paymentDetails:
-            type: object
-            properties:
-              amountPaid:
-                type: number
-                description: Amount paid in the transaction
-              remainingBalance:
-                type: number
-                description: Remaining balance after the transaction
-          transactionSummary:
-            type: object
-            description: Summary or details of the payment made
-          data:
-           $ref: "#/components/schemas/AccountOverviewResponseObj"
+            description: Exchange rate for the currency
+            example: 110.0
+
+    AccountOverviewResponse:
+      type: object
+      properties:
+        balance:
+          type: number
+          description: Current account balance
+        paymentDetails:
+          type: object
+          properties:
+            amountPaid:
+              type: number
+              description: Amount paid in the transaction
+            remainingBalance:
+              type: number
+              description: Remaining balance after the transaction
+        transactionSummary:
+          type: object
+          description: Summary or details of the payment made
+        data:
+          $ref: "#/components/schemas/AccountOverviewResponseObj"
     AccountOverviewResponseObj:
       type: object
       properties:
