@@ -30,7 +30,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-
+          docker login https://github.com/AppsLab-KE/backend-everyshilling.git
           docker build -t backend-everyshilling_app-auth:latest -f services/app-auth/Dev.Dockerfile .
           docker build -t backend-everyshilling_app-db:latest -f services/app-db/Dev.Dockerfile .
           docker build -t backend-everyshilling_app-otp:latest -f services/app-otp/Dockerfile .
