@@ -50,7 +50,7 @@ jobs:
     #- name: Install Python dependencies
      # run: pip install -r ./services/app-otp/requirements.txt
 
-  
+
   Test:
     needs: Build
     runs-on: ubuntu-latest
