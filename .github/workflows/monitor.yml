@@ -1,0 +1,19 @@
+name: Prometheus and Grafana
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get install -y docker-compose
+          . /Monitoring/
+          sudo docker-compose up -d
