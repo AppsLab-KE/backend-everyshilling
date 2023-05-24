@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "user.proto";
+import "rate.proto";
 package db;
 option go_package = "github.com/AppsLab-KE/backend-everyshillings/db";
 
@@ -11,6 +12,11 @@ service DbService {
     rpc UpdateUser(UpdateUserReq) returns (UpdateUserRes) {}
     rpc GetPagedUsers(GetPagedUsersReq) returns (GetPagedUsersRes) {}
     rpc GetUserByField(GetByfieldReq) returns (GetByfieldRes) {}
+
+    rpc CreateConversionRate(CreateConversionRateRequest) returns (CreateConversionRateResponse) {}
+    rpc ReadConversionRate(ReadConversionRateRequest) returns (ReadConversionRateResponse) {}
+    rpc UpdateConversionRate(UpdateConversionRateRequest) returns (UpdateConversionRateResponse) {}
+    rpc DeleteConversionRate(DeleteConversionRateRequest) returns (DeleteConversionRateResponse) {}
 }
 
 message DefaultRequest {}

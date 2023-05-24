@@ -127,6 +127,18 @@ services:
        - postgres-db
        - liquibase
 
+  app-ratescron:
+    container_name: app-ratescron
+    build:
+      context: services/app-ratescron
+      dockerfile: Dockerfile
+    env_file:
+      - services/app-db/.env.example
+    networks:
+      - internal_network
+    depends_on:
+      - app-db
+
 #to be changed once handlers is set
 networks:
   internal_network:

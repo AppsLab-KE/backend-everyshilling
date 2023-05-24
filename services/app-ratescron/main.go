@@ -1,1 +1,7 @@
-package app_ratescron
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Hello, world!")
+}
