@@ -3,6 +3,7 @@ module github.com/AppsLab-KE/backend-everyshilling/services/app-authentication
 go 1.19
 
 require (
+	github.com/AppsLab-KE/be-go-gen-grpc v0.0.13
 	github.com/deepmap/oapi-codegen v1.12.4
 	github.com/gin-gonic/gin v1.9.0
 	github.com/golang-jwt/jwt/v5 v5.0.0-rc.2
@@ -16,7 +17,6 @@ require (
 )
 
 require (
-	github.com/AppsLab-KE/be-go-gen-grpc v0.0.12 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da // indirect
 	github.com/bytedance/sonic v1.8.0 // indirect
@@ -36,7 +36,6 @@ require (
 	github.com/hashicorp/go-rootcerts v1.0.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/serf v0.10.1 // indirect
-	github.com/inconshreveable/ngrok v0.0.0-20160531001041-a8e7fa486348 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
