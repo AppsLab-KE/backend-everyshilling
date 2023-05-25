@@ -18,3 +18,10 @@ type DBStorage interface {
 	UpdateConversionRate(ctx context.Context, in *db.UpdateConversionRateRequest, opts ...grpc.CallOption) (*db.UpdateConversionRateResponse, error)
 	DeleteConversionRate(ctx context.Context, in *db.DeleteConversionRateRequest, opts ...grpc.CallOption) (*db.DeleteConversionRateResponse, error)
 }
+
+type DBRepository interface {
+	CreateConversionRate(ctx context.Context, in *db.CreateConversionRateRequest) (*db.CreateConversionRateResponse, error)
+	ReadConversionRate(ctx context.Context, in *db.ReadConversionRateRequest) (*db.ReadConversionRateResponse, error)
+	UpdateConversionRate(ctx context.Context, in *db.UpdateConversionRateRequest) (*db.UpdateConversionRateResponse, error)
+	DeleteConversionRate(ctx context.Context, in *db.DeleteConversionRateRequest) (*db.DeleteConversionRateResponse, error)
+}

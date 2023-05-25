@@ -23,3 +23,7 @@ type RatesAPIRepository interface {
 	// GetRates returns the exchange rates for the given base currency
 	GetRates(baseCurrency string) ([]model.ConversionRate, error)
 }
+
+type RatesUsecase interface {
+	FetchAndStoreRates() error
+}
