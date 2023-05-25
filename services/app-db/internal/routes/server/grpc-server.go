@@ -32,11 +32,15 @@ func (s *Server) Run() {
 	userStorage := storage.NewUserStorage(postgresClient)
 	userCache := storage.NewUserCacheStorage()
 
+	// rates storage
+	ratesStorage := storage.NewRatesPostgresStorage(postgresClient)
+
 	// create  repository
 	userRepo := repository.NewUserRepo(userStorage, userCache)
+	ratesRepo := repository.NewRatesRepo(ratesStorage)
 
 	// create handler
-	grpcHandler := handlers.NewHandler(userRepo)
+	grpcHandler := handlers.NewHandler(userRepo, ratesRepo)
 
 	// run server
 	lis, err := net.Listen("tcp", ":"+s.cfg.Server.Port)
