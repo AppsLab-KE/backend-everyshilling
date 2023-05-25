@@ -86,23 +86,23 @@ type ResponseSuccess struct {
 	Message *string `json:"message,omitempty"`
 }
 
-// RefreshTokenJSONRequestBody defines body for RefreshToken for application/json ContentType.
+// RefreshTokenJSONRequestBody defines body for RefreshToken for core/json ContentType.
 type RefreshTokenJSONRequestBody = RefreshTokenReq
 
-// RegisterJSONRequestBody defines body for Register for application/json ContentType.
+// RegisterJSONRequestBody defines body for Register for core/json ContentType.
 type RegisterJSONRequestBody = RegisterRequest
 
-// ResetJSONRequestBody defines body for Reset for application/json ContentType.
+// ResetJSONRequestBody defines body for Reset for core/json ContentType.
 type ResetJSONRequestBody = Phone
 
-// VerifyResetOTPJSONRequestBody defines body for VerifyResetOTP for application/json ContentType.
+// VerifyResetOTPJSONRequestBody defines body for VerifyResetOTP for core/json ContentType.
 type VerifyResetOTPJSONRequestBody = RequestOTP
 
-// ChangePasswordJSONRequestBody defines body for ChangePassword for application/json ContentType.
+// ChangePasswordJSONRequestBody defines body for ChangePassword for core/json ContentType.
 type ChangePasswordJSONRequestBody = RequestResetCredentials
 
-// VerifyPhoneJSONRequestBody defines body for VerifyPhone for application/json ContentType.
+// VerifyPhoneJSONRequestBody defines body for VerifyPhone for core/json ContentType.
 type VerifyPhoneJSONRequestBody = Phone
 
-// VerifyVerificationOTPJSONRequestBody defines body for VerifyVerificationOTP for application/json ContentType.
+// VerifyVerificationOTPJSONRequestBody defines body for VerifyVerificationOTP for core/json ContentType.
 type VerifyVerificationOTPJSONRequestBody = RequestOTP
