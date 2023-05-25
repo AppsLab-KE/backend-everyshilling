@@ -15,13 +15,13 @@ type ratesPostgresStorage struct {
 }
 
 // SortConversionRatesByTimestamp sorts the ConversionRate slice in descending order based on TimeStampUTC
-func sortConversionRatesByTimestamp(rates []models.ConversionRate) {
+func sortConversionRatesByTimestamp(rates []*models.ConversionRate) {
 	sort.Slice(rates, func(i, j int) bool {
 		return rates[i].TimeStampUTC > rates[j].TimeStampUTC
 	})
 }
 
-func (r ratesPostgresStorage) CreateRate(ctx context.Context, rates []*models.ConversionRate) ([]models.ConversionRate, error) {
+func (r ratesPostgresStorage) CreateRate(ctx context.Context, rates []*models.ConversionRate) ([]*models.ConversionRate, error) {
 	// sort the rates by timestamp starting with the latest
 	sortConversionRatesByTimestamp(rates)
 

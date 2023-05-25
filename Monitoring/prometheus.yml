@@ -1,4 +1,4 @@
 scrape_configs:
   - job_name: 'myapp'
     static_configs:
-      - targets: ['app-auth:3002']  # Replace with your application's hostname and port
+      - targets: ['app-auth:3002']  # Replace with your core's hostname and port
