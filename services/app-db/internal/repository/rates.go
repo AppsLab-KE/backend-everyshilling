@@ -11,7 +11,7 @@ type ratesRepo struct {
 	ratesStorage ports.RatesStorage
 }
 
-func (r ratesRepo) CreateRate(ctx context.Context, rates []*models.ConversionRate) ([]models.ConversionRate, error) {
+func (r ratesRepo) CreateRate(ctx context.Context, rates []*models.ConversionRate) ([]*models.ConversionRate, error) {
 	return r.ratesStorage.CreateRate(ctx, rates)
 }
 

@@ -7,14 +7,14 @@ import (
 )
 
 type RatesRepo interface {
-	CreateRate(context.Context, []*models.ConversionRate) ([]models.ConversionRate, error)
+	CreateRate(context.Context, []*models.ConversionRate) ([]*models.ConversionRate, error)
 	UpdateRate(context.Context, *models.ConversionRate) (*models.ConversionRate, error)
 	FetchRates(context.Context, dto.FetchRatesRequest) ([]models.ConversionRate, error)
 	DeleteRate(context.Context, string) error
 }
 
 type RatesStorage interface {
-	CreateRate(context.Context, []*models.ConversionRate) ([]models.ConversionRate, error)
+	CreateRate(context.Context, []*models.ConversionRate) ([]*models.ConversionRate, error)
 	UpdateRate(context.Context, *models.ConversionRate) (*models.ConversionRate, error)
 	FetchRates(context.Context, dto.FetchRatesRequest) ([]models.ConversionRate, error)
 	DeleteRate(context.Context, string) error

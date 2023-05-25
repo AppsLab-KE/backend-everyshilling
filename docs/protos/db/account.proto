@@ -1,3 +1,45 @@
 syntax="proto3";
 package db;
 option go_package = "github.com/AppsLab-KE/backend-everyshillings/db";
+
+
+message Account {
+  string account_id = 1;
+  string user_id = 2;
+  int64 balance = 3;
+  string base_currency = 4;
+  int64 created_at = 5;
+  string parent_account_id = 6;
+}
+
+message CreateAccountRequest {
+  Account account = 1;
+}
+
+message CreateAccountResponse {
+  Account account = 1;
+}
+
+message DeleteAccountRequest {
+  string account_id = 1;
+}
+
+message DeleteAccountResponse {
+}
+
+message UpdateAccountRequest {
+  Account account = 1;
+}
+
+message UpdateAccountResponse {
+  Account account = 1;
+}
+
+message SearchAccountRequest {
+  string user_id = 1;
+  string account_id = 2;
+}
+
+message SearchAccountResponse {
+  repeated Account accounts = 1;
+}
