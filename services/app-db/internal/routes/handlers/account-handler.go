@@ -15,7 +15,7 @@ func (h *Handler) CreateAccount(ctx context.Context, req *db.CreateAccountReques
 	var accounts []*models.Account
 	for _, account := range req.Account {
 		accounts = append(accounts, &models.Account{
-			AccountId:       account.AccountId,
+			AccountId:       account,
 			UserId:          account.UserId,
 			Balance:         account.Balance,
 			BaseCurrency:    account.BaseCurrency,

@@ -11,6 +11,9 @@ type DB struct {
 	Port int
 }
 
+type Server struct {
+	Port string
+}
 type Config struct {
 	DB DB
 }
