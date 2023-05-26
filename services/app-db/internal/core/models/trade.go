@@ -9,4 +9,5 @@ type Trade struct {
 	ToCurrency   string `json:"to_currency"`
 	FromAmount   int64  `json:"from_amount"`
 	FinalAmount  int64  `json:"final_amount"`
+	TradeID      string `json:"trade_id"`
 }

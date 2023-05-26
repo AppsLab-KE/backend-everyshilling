@@ -7,4 +7,10 @@ type Account struct {
 	BaseCurrency    string `json:"base_currency"`
 	CreatedAt       int64  `json:"created_at"`
 	ParentAccountId string `json:"parent_account_id"`
+	AccountID       string `json:"account_id"`
+}
+
+func (a Account) Error() string {
+	//TODO implement me
+	panic("implement me")
 }
