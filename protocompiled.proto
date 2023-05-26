@@ -1,0 +1,195 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+
+message Trade {
+  string trade_id = 1;
+  string account_id = 2;
+  string trade_type = 3;
+  string trade_status = 4;
+  string from_currency = 5;
+  string to_currency = 6;
+  int64 from_amount = 7;
+  int64 final_amount = 8;
+}
+
+message CreateTradeRequest {
+  Trade trade = 1;
+}
+
+message CreateTradeResponse {
+  string trade_id = 1;
+}
+
+message DeleteTradeRequest {
+  string trade_id = 1;
+}
+
+message UpdateTradeRequest {
+  Trade trade = 1;
+}
+
+message GetTradeRequest {
+  string trade_id = 1;
+}
+
+message GetTradeByAccountRequest {
+  string account_id = 1;
+}
+
+message GetTradeByAccountResponse {
+  repeated Trade trades = 1;
+}
+
+
+
+message Account {
+  string account_id = 1;
+  string user_id = 2;
+  int64 balance = 3;
+  string base_currency = 4;
+  int64 created_at = 5;
+  string parent_account_id = 6;
+}
+
+message CreateAccountRequest {
+  Account account = 1;
+}
+
+message CreateAccountResponse {
+  Account account = 1;
+}
+
+message DeleteAccountRequest {
+  string account_id = 1;
+}
+
+message DeleteAccountResponse {
+}
+
+message UpdateAccountRequest {
+  Account account = 1;
+}
+
+message UpdateAccountResponse {
+  Account account = 1;
+}
+
+message SearchAccountRequest {
+  string user_id = 1;
+  string account_id = 2;
+}
+
+message SearchAccountResponse {
+  repeated Account accounts = 1;
+}
+    message ConversionRate {
+string from_currency = 1;
+    string to_currency = 2;
+double rate = 3;
+    int64 date_updated_unix_utc = 4;
+string uuid = 5;
+    }
+
+
+message CreateConversionRateRequest {
+  repeated ConversionRate conversion_rate = 1;
+}
+
+message CreateConversionRateResponse {
+  repeated ConversionRate conversion_rate = 1;
+}
+
+message ReadConversionRateRequest {
+  int64 from_unix_utc = 1;
+  int64 to_unix_utc = 2;
+}
+
+message ReadConversionRateResponse {
+  repeated ConversionRate conversion_rate = 1;
+}
+
+message UpdateConversionRateRequest {
+  ConversionRate conversion_rate = 1;
+}
+
+message UpdateConversionRateResponse {}
+
+message DeleteConversionRateRequest {
+  string uuid = 1;
+}
+
+message DeleteConversionRateResponse {}
+
+
+message Transaction {
+  string transaction_id = 1;
+  string account_id = 2;
+  int64 amount = 3;
+  string transaction_type = 4;
+  string transaction_status = 5;
+  string transaction_code = 6;
+  string transaction_description = 7;
+  int64 created_at = 8;
+}
+
+
+message CreateTransactionRequest {
+  Transaction transaction = 1;
+}
+
+message CreateTransactionResponse {
+  string transaction_id = 1;
+}
+
+message DeleteTransactionRequest {
+  string transaction_id = 1;
+}
+
+message UpdateTransactionRequest {
+  Transaction transaction = 1;
+}
+
+message GetTransactionRequest {
+  string transaction_id = 1;
+}
+
+message GetTransactionByAccountRequest {
+  string account_id = 1;
+}
+
+message GetTransactionByAccountResponse {
+  repeated Transaction transactions = 1;
+}
+
+
+
+
+service ExchangeService {
+  // RATES
+  rpc CreateConversionRate(CreateConversionRateRequest) returns (CreateConversionRateResponse) {}
+  rpc ReadConversionRate(ReadConversionRateRequest) returns (ReadConversionRateResponse) {}
+  rpc UpdateConversionRate(UpdateConversionRateRequest) returns (UpdateConversionRateResponse) {}
+  rpc DeleteConversionRate(DeleteConversionRateRequest) returns (DeleteConversionRateResponse) {}
+
+  // ACCOUNT
+  rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse);
+  rpc DeleteAccount(DeleteAccountRequest) returns (DeleteAccountResponse);
+  rpc UpdateAccount(UpdateAccountRequest) returns (UpdateAccountResponse);
+  rpc SearchAccount(SearchAccountRequest) returns (SearchAccountResponse);
+
+  // TRANSACTION
+  rpc CreateTransaction(CreateTransactionRequest) returns (CreateTransactionResponse);
+  rpc DeleteTransaction(DeleteTransactionRequest) returns (google.protobuf.Empty);
+  rpc UpdateTransaction(UpdateTransactionRequest) returns (google.protobuf.Empty);
+  rpc GetTransaction(GetTransactionRequest) returns (Transaction);
+  rpc GetTransactionByAccount(GetTransactionByAccountRequest) returns (GetTransactionByAccountResponse);
+
+  // TRADING
+  rpc CreateTrade(CreateTradeRequest) returns (CreateTradeResponse);
+  rpc DeleteTrade(DeleteTradeRequest) returns (google.protobuf.Empty);
+  rpc UpdateTrade(UpdateTradeRequest) returns (google.protobuf.Empty);
+  rpc GetTrade(GetTradeRequest) returns (Trade);
+  rpc GetTradeByAccount(GetTradeByAccountRequest) returns (GetTradeByAccountResponse);
+}
