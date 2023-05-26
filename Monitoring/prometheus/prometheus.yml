@@ -1,13 +1,12 @@
 # my global config
 global:
-  scrape_interval:     15s # By default, scrape targets every 15 seconds.
-  evaluation_interval: 15s # By default, scrape targets every 15 seconds.
+  scrape_interval:     15s
+  evaluation_interval: 15s
   # scrape_timeout is set to the global default (10s).
 
-  # Attach these labels to any time series or alerts when communicating with
-  # external systems (federation, remote storage, Alertmanager).
+
   external_labels:
-      monitor: 'my-project'
+      monitor: 'everyshilling'
 
 # Load and evaluate rules in this file every 'evaluation_interval' seconds.
 rule_files:
@@ -15,7 +14,6 @@ rule_files:
   # - "first.rules"
   # - "second.rules"
 
-# alert
 alerting:
   alertmanagers:
   - scheme: http
@@ -43,7 +41,6 @@ scrape_configs:
 
 
   - job_name: 'cadvisor'
-
     # Override the global default and scrape targets from this job every 5 seconds.
     scrape_interval: 5s
 
@@ -77,3 +74,33 @@ scrape_configs:
 
 #     static_configs:
 #          - targets: ['node-exporter:9100']
+
+# config.file: ./Monitoring/prometheus.yml
+
+# global:
+#   scrape_interval: 15s
+#   evaluation_interval: 15s
+
+# rule_files:
+#   # - "first.rules"
+#   # - "second.rules"
+
+# scrape_configs:
+#   - job_name: prometheus
+#     static_configs:
+#       - targets: ['localhost:9090']
+
+  - job_name: app-auth
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['app-auth:3002']
+
+  - job_name: app-db
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['app-db:3001']
+
+  - job_name: app-otp
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['app-otp:3008']
