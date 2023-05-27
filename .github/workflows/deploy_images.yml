@@ -1,0 +1,51 @@
+name: Build and Deploy Docker Images
+on:
+  pull_request:
+    branches:
+      - develop
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_ACCOUNT }}
+
+      - name: Build,tag and push Docker images
+        env:
+          ECR_ACCOUNT: ${{ secrets.ECR_ACCOUNT }}
+          ECR_REPOSITORY: twala
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+
+          docker build -t backend-everyshilling_app-auth:latest -f services/app-auth/Dev.Dockerfile services/app-auth
+          docker build -t backend-everyshilling_app-db:latest -f services/app-db/Dev.Dockerfile services/app-db
+          docker build -t backend-everyshilling_app-otp:latest -f services/app-otp/Dockerfile services/app-otp
+          docker tag backend-everyshilling_app-auth:latest ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-auth
+          docker tag backend-everyshilling_app-db:latest ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-db
+          docker tag backend-everyshilling_app-otp:latest ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-otp
+          docker push ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-auth
+          docker push ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-db
+          docker push ${{ secrets.ECR_ACCOUNT }}/$ECR_REPOSITORY:app-otp
+
+
+ # everyshilling is the stack name
+      - name: Deploy Docker stack
+        run: |
+         echo ${{ secrets.AWS_ACCESS_KEY_ID }} > ~/.aws/credentials
+         echo ${{ secrets.AWS_SECRET_ACCESS_KEY }} >> ~/.aws/credentials
+         aws ecr get-login-password --region us-east-1 | docker secret create ecr-login -
+         docker stack deploy -c dockerswarm-compose.yml everyshilling

@@ -1,0 +1,152 @@
+version: '3'
+services:
+
+  prism:
+    image: stoplight/prism:4
+    command: mock -p 4010 --host 0.0.0.0 everyshilling_openapi.yaml
+    ports:
+      - "4010:4010"
+    restart: always
+    healthcheck:
+      test: sh -c "ping -c3 prism:4010"
+      interval: 10s
+      retries: 10
+    volumes:
+      - ./docs/everyshilling_openapi.yaml:/usr/src/prism/packages/cli/everyshilling_openapi.yaml
+
+
+
+   #backend services for both python and go
+  app-auth:
+     container_name: app-auth
+     env_file: services/app-auth/.env.example
+     build:
+       context: services/app-auth
+       dockerfile: Dev.Dockerfile
+     environment:
+       - PORT=3002
+     ports:
+       - "3002:3002"
+
+     restart: always
+     healthcheck:
+       test: sh -c "ping -c3 app-auth:3002"
+       interval: 10s
+       retries: 10
+     networks:
+        - internal_network
+     depends_on:
+       - app-db
+       - app-otp
+       - redis-db
+
+  postgres-db:
+     image: postgres:13-alpine
+     restart: always
+     container_name: postgres-db
+     environment:
+       - POSTGRES_USER=postgres
+       - POSTGRES_PASSWORD=password
+       - POSTGRES_DB=everyshillings
+     ports:
+       - '5432:5432'
+     volumes:
+       - postgres:/var/lib/postgresql/data
+     healthcheck:
+        test: ping -c3 postgres-db:5432
+        interval: 10s
+        retries: 10
+     networks:
+       - internal_network
+
+  redis-db:
+    image: redis:6-alpine
+    container_name: redis-db
+    ports:
+      - '6379:6379'
+    restart: always
+    command: --port 6379
+    healthcheck:
+      test: ping -c3 redis-db:6379
+      interval: 10s
+      retries: 10
+    networks:
+      - internal_network
+
+
+  app-otp:
+     build:
+       context: services/app-otp
+       dockerfile: Dockerfile
+     env_file:
+       - services/app-otp/.env.example
+       - services/app-otp/.env.local
+     ports:
+       - "3008:3008"
+     restart: always
+     healthcheck:
+       test: sh -c "ping -c3 app-otp:3008"
+       interval: 10s
+       retries: 10
+     depends_on:
+       - redis-db
+       - app-db
+     networks:
+       - internal_network
+
+
+  liquibase:
+    image: liquibase/liquibase:latest
+    volumes:
+      - ./services/app-db/docs/liquibase/liquibase.properties:/liquibase/liquibase.properties
+    depends_on:
+      - postgres-db
+    command:
+      - update --changelog=/liquibase/changelog/db.changelog-master.xml generate-changelog && cat /liquibase/changelog/db.changelog-master.xml
+    environment:
+      LIQUIBASE_CHANGELOG: /liquibase/changelog/db.changelog-master.xml
+      LIQUIBASE_URL: jdbc:postgresql://db:5432/mydb
+
+
+  app-db:
+     container_name: app-db
+     build:
+       context: services/app-db
+       dockerfile: Dev.Dockerfile
+     env_file:
+       - services/app-db/.env.example
+     ports:
+       - "3001:3001"
+     healthcheck:
+       test: sh -c "ping -c3 app-db:3001"
+       interval: 10s
+       retries: 10
+     networks:
+       - internal_network
+     depends_on:
+       - postgres-db
+       - liquibase
+
+  app-ratescron:
+    container_name: app-ratescron
+    build:
+      context: services/app-ratescron
+      dockerfile: Dockerfile
+    env_file:
+      - services/app-ratescron/.env.example
+    networks:
+      - internal_network
+    depends_on:
+      - app-db
+
+#to be changed once handlers is set
+networks:
+  internal_network:
+    driver: bridge
+
+
+volumes:
+  postgres:
+    driver: local
+  auth:
+    driver: local

@@ -2,10 +2,13 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+./
+./.idea
+/.idea
 # C extensions
 *.so
-
+.idea
+*/.idea
 # Distribution / packaging
 .Python
 build/
@@ -103,6 +106,8 @@ celerybeat.pid
 
 # Environments
 .env
+.env.docker
+.env.local
 .venv
 env/
 venv/

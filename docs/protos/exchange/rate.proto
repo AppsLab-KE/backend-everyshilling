@@ -1,0 +1,43 @@
+syntax="proto3";
+package db;
+option go_package = "github.com/AppsLab-KE/backend-everyshillings/exchange";
+
+message ConversionRate {
+  string from_currency = 1;
+  string to_currency = 2;
+  double rate = 3;
+  int64 date_updated_unix_utc = 4;
+  string uuid = 5;
+}
+
+
+message CreateConversionRateRequest {
+  repeated ConversionRate conversion_rate = 1;
+}
+
+message CreateConversionRateResponse {
+  repeated ConversionRate conversion_rate = 1;
+}
+
+message ReadConversionRateRequest {
+  int64 from_unix_utc = 1;
+  int64 to_unix_utc = 2;
+}
+
+message ReadConversionRateResponse {
+  repeated ConversionRate conversion_rate = 1;
+}
+
+message UpdateConversionRateRequest {
+  ConversionRate conversion_rate = 1;
+}
+
+message UpdateConversionRateResponse {}
+
+message DeleteConversionRateRequest {
+  string uuid = 1;
+}
+
+message DeleteConversionRateResponse {}
+
+

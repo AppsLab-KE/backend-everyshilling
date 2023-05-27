@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+import "otp.proto";
+package otp;
+option go_package = "github.com/AppsLab-KE/backend-everyshillings/otp";
+
+service OtpService {
+    rpc HealthCheck(DefaultRequest) returns (HealthResponse);
+    rpc CreateAndSendOtp(CreateAndSendOtpReq) returns (CreateAndSendOtpRes);
+    rpc VerifyOtp(VerifyOTPReq) returns (VerifyOTPRes) {}
+    rpc ResendOTP(ResendOTPReq) returns (ResendOTPRes) {}
+}
+
+message DefaultRequest {}
+
+message HealthResponse {
+    string message = 1;
+}
+
+message DefaultResponse {
+    string message = 1;
+    bool error = 2;
+}

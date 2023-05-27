@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package otp;
+option go_package = "github.com/AppsLab-KE/backend-everyshillings/otp";
+
+
+message CreateAndSendOtpReq {
+  string phone_number = 1;
+}
+
+message CreateAndSendOtpRes {
+  int32 status_code = 1;
+  string message = 2;
+  string tracking_uuid = 3;
+}
+
+
+message VerifyOTPReq {
+  string otp_code = 1;
+  string tracking_uuid = 2;
+}
+
+
+message VerifyOTPRes {
+  int32 status_code = 1;
+  string message = 2;
+}
+
+message ResendOTPReq {
+  string tracking_id = 1;
+}
+
+message ResendOTPRes {
+  int32 status_code = 1;
+  string message = 2;
+  string tracking_uuid = 3;
+}
