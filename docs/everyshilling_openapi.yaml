@@ -1,0 +1,1117 @@
+openapi: 3.0.3
+info:
+  title: Every shillings  OpenAPI File Description
+  description: Every Shilling
+  version: 2022-04-01
+  termsOfService: https://everyshilling.ke/terms
+  contact:
+    name: Everyshilling
+    email: everyshilling@co.ke
+    url: https://everyshilling.ke
+servers:
+  - url: "http://localhost:4010"
+    description: "Mock server"
+  - url: "http://localhost:3002/api"
+    description: "Local"
+  - url: ""
+    description: "Staging"
+  - url: ""
+    description: "Production"
+paths:
+  /users/{userId}/show:
+    get:
+      security:
+        - Bearer: []
+      summary: A GET request to /users/{userId}
+      operationId: getUserById
+      description: get user by id
+      tags: [Users]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: user id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: user object response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponseData"
+
+  /auth/login:
+    post:
+      operationId: login
+      summary: Generate OTP and send it to email and phone number
+      description: Endpoint to generate OTP and send it to user's email and phone number. The user needs to enter the OTP to complete the login process.
+      tags: [Login]
+      requestBody:
+        description: User's login credentials
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestLogin"
+      responses:
+        "200":
+          description: OTP generated and sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OTPResponseData"
+        "400":
+          description: "Bad request: eg invalid phone number"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseBadRequest"
+        "500":
+          description: Internal server errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseServerError"
+
+  /auth/login/otp/{tracking-uuid}/verify:
+    post:
+      operationId: "VerifyLoginOTP"
+      summary: Verify the OTP
+      description: Send the OTP to the server for verification.
+      tags: [Login]
+      parameters:
+        - name: tracking-uuid
+          description: "Login request UUID"
+          required: true
+          in: path
+          schema:
+            type: string
+            example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+
+      requestBody:
+        description: OTP received via SMS
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OTPVerificationReq"
+      responses:
+        "200":
+          description: OTP generated and sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhoneVerificationResponse"
+        "400":
+          description: "Bad request: missing email or  phone number"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+        "500":
+          description: Internal server errors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseServerError"
+
+  /auth/login/otp/{tracking-uuid}/resend:
+    get:
+      operationId: "ResendLoginOTP"
+      summary: Resend login OTP
+      description: resend the OTP to the server for verification.
+      tags: [Login]
+      parameters:
+        - name: tracking-uuid
+          description: "Login request UUID"
+          required: true
+          in: path
+          schema:
+            type: string
+            example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+      responses:
+        '200':
+          description: OTP generated and sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResendNewOTPResponse"
+        '400':
+          description: "Bad request: invalid uuid"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseBadOTPRequest"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+  /auth/register:
+    summary: Register new users to the system
+    description: User account registration
+    post:
+      summary: A POST request to registering new users
+      operationId: register
+      tags:
+        - Register
+      description: register post
+      requestBody:
+        description: registration request object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+
+      responses:
+        "200":
+          description: successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterResponseData"
+        "400":
+          description: Default error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+  /auth/reset:
+    summary: Allow users to send forget password requests
+    post:
+      operationId: "Reset"
+      tags: [Password Reset]
+      summary: "Send password reset OTP"
+      description: Collect user phone an send reset OTP
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Phone"
+
+      responses:
+        "200":
+          description: A tokenized password reset login to be send to the phone
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OTPResponseData"
+
+        "404":
+          description: "Phone not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+                # 3.reset the otp
+  /auth/reset/otp/{tracking-uuid}/verify:
+    post:
+      operationId: "VerifyResetOTP"
+      tags: [Password Reset]
+      summary: "Verify OTP"
+      description: "Once a user has sent their phone, they receive an OTP code for verifying if indeed they are the owners of the account"
+      parameters:
+        - name: tracking-uuid
+          description: "Password reset request UUID"
+          required: true
+          in: path
+          schema:
+            type: string
+            example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+
+      requestBody:
+        description: "The 6 Digit OTP code sent to the user's email"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OTPVerificationReq"
+
+      responses:
+        "200":
+          description: "Verification successful"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+        "401":
+          description: "Verification failed"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+        "404":
+          description: "Request ID not found/valid"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+  /auth/reset/{tracking-uuid}/change:
+    post:
+      operationId: "ChangePassword"
+      tags: [Password Reset]
+      summary: "Change Password"
+      description: "On successful OTP verification, user sends a new password"
+      parameters:
+        - name: tracking-uuid
+          description: "Password reset request UUID"
+          required: true
+          in: path
+          schema:
+            type: string
+            example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+
+      requestBody:
+        description: "The user's new passwords"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestResetCredentials"
+      responses:
+        "200":
+          description: "Reset successful"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+        "400":
+          description: "Password mismatch"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+        "401":
+          description: "Verification failed"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+
+        "404":
+          description: "Request ID not found/valid"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+  /auth/reset/otp/{tracking-uuid}/resend:
+    get:
+      operationId: "ResendResetOTP"
+      summary: Resend reset OTP
+      description: resend the OTP to the server for verification.
+      tags: [Password Reset]
+      parameters:
+        - name: tracking-uuid
+          description: "Password reset request UUID"
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OTP generated and sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResendNewOTPResponse"
+        "400":
+          description: "Bad request: invalid uuid"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+  /auth/verify:
+    post:
+      operationId: "VerifyPhone"
+      summary: Verify phone number
+      description: resend the OTP to the server for verification.
+      tags: [Phone Verification]
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Phone"
+      responses:
+        "200":
+          description: OTP generated and sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OTPVerifyResponseData"
+        "400":
+          description: "Bad request: invalid uuid"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+  /auth/verify/otp/{tracking-uuid}/verify:
+    post:
+      operationId: "VerifyVerificationOTP"
+      tags: [Phone Verification]
+      summary: "Verify OTP"
+      description: "Once a user has sent their email, they receive an OTP code for verifying if indeed they are the owners of the account"
+      security:
+        - Bearer: []
+      parameters:
+        - name: tracking-uuid
+          description: "Verificatiion request UUID"
+          required: true
+          in: path
+          schema:
+            type: string
+            example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+
+      requestBody:
+        description: "The 6 Digit OTP code sent to the user's phone"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OTPVerificationReq"
+
+      responses:
+        "200":
+          description: "Verification successful"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhoneVerificationResponse"
+
+        "401":
+          description: "Verification failed"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+        "404":
+          description: "Request ID not found/valid"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+  /auth/verify/otp/{tracking-uuid}/resend:
+    get:
+      operationId: "ResendVerificationOTP"
+      summary: Resend verification OTP
+      description: resend the OTP to the user's phone
+      tags: [Phone Verification]
+      security:
+        - Bearer: []
+      parameters:
+        - name: tracking-uuid
+          description: " request UUID"
+          required: true
+          in: path
+          schema:
+            type: string
+            example: "f8e33eb4-d6da-4c2e-9857-8294b178e361"
+
+      responses:
+        "200":
+          description: OTP generated and sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResendNewOTPResponse"
+        "400":
+          description: "Bad request: invalid uuid"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+  /auth/logout:
+    get:
+      summary: Invalidation to access token and logout user
+      description: Endpoint to invalidate access token and log out the user.
+      tags: [Login]
+      operationId: "Logout"
+      security:
+        - Bearer: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LogoutRequest"
+      responses:
+        "200":
+          description: OTP generated and sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhoneVerificationResponse"
+        "401":
+          description: "Unauthorized: Invalid or expired token"
+        "500":
+          description: Internal server error
+  /auth/refresh-token:
+    post:
+      summary: Refresh access token using refresh token
+      description: Endpoint to refresh access token using refresh token.
+      tags: [Login]
+      operationId: "RefreshToken"
+      requestBody:
+        description: User's refresh token
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenReq"
+      responses:
+        "200":
+          description: Access token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefreshTokenRes"
+        "400":
+          description: "Bad request: missing or invalid refresh token"
+        "500":
+          description: Internal server error
+
+  /buy-currency :
+    post:
+      summary: Buy Currencies
+      description: Endpoint to buy currency
+      operationId : buycurrency
+      tags: [BuyCurrency]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BuyRequest"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BuyRequestData"
+        '400':
+          description: Invalid request payload
+
+
+
+  /top-up-account:
+    post:
+      summary: Top up Account
+      description: Endpoint to top up the account
+      operationId: TopUp
+      tags : [TopUP]
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TopUpRequest"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopUpRequestData"
+
+        '400':
+          description: Invalid request payload
+
+
+  /marketplace-offers:
+    get:
+      summary: Marketplace Offers
+      operationId: Offers
+      description: Endpoint to get marketplace offers
+      tags: [Offers]
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarketplaceOffersResponse"
+        '400':
+          description: Invalid request payload
+
+  /account-overview:
+    get:
+      summary: Account Overview
+      description: Endpoint to get account overview
+      operationId : Accountoverview
+      tags : [AccountOverview]
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountOverviewResponse"
+        '400':
+          description: Invalid request payload
+tags:
+  - name: Register
+    description: Registration description
+  - name: Users
+    description: Users path
+
+
+  - name: Login
+    description: Login description
+
+  - name: Password Reset
+    description: Help the user gain access and reset password
+  - name: Phone Verification
+    description: Make sure the user's phone is valid inorder to activate the account
+  - name: Offers
+    description: Show the available offers
+
+  - name: BuyCurrency
+    description: Buy currency description
+
+  - name: TopUp
+    description: Top up Account
+  - name : AccountOverview
+    description: The account overview
+
+components:
+  securitySchemes:
+    BearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    OTPVerificationReq:
+      type: object
+      properties:
+        otp_code:
+          type: string
+          description: Generated OTP
+      required:
+        - otp_code
+
+    RequestUser:
+      type: object
+      description: user object
+      properties:
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          example: john.doe@example.com
+    UserResponseData :
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+        code:
+          type: number
+        data:
+          $ref: "#/components/schemas/UserResponseObj"
+
+    UserResponseObj :
+      type: object
+      properties:
+        name:
+          type: string
+          example: john doe
+        email:
+          type: string
+          example: john@doe.com
+    RegisterRequest:
+      type: object
+      properties:
+        name:
+          description: name
+          type: string
+          example: john doe
+        email:
+          type: string
+          description: valid email
+          example: john.doe@example.com
+        phone_number:
+          type: string
+          description: valid phone number
+          example: "+2541234567"
+        password:
+          type: string
+          description: strong password
+          example: secureP@ssword
+          minLength: 8
+          maxLength: 16
+      required:
+        - name
+        - email
+        - phone_number
+        - password
+
+    RegisterResponseData:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+        code:
+          type: number
+          example: 200
+        data:
+          type: object
+          properties:
+            name:
+              description: name
+              type: string
+              example: john doe
+            email:
+              type: string
+              description: valid email
+              example: john.doe@example.com
+            phone_number:
+              type: string
+              description: valid phone number
+              example: "+2541234567"
+          required:
+            - name
+            - email
+            - phone_number
+
+    ResendNewOTP :
+      type: object
+      properties:
+        phone:
+          description: New OTP
+          type: string
+          example: "1234"
+
+    RequestResetCredentials:
+      type: object
+      properties:
+        password:
+          type: string
+          example: "BlackApple78"
+        confirm_password:
+          type: string
+          example: "BlackApple78"
+      required:
+        - password
+        - confirm_password
+
+    RequestLogin:
+      type: object
+      properties:
+        phone:
+          type: string
+          description: User's phone number
+          example: "+2541234567"
+        password:
+          type: string
+          description: User's password
+          example: "mike1234"
+
+      required:
+        - phone
+        - password
+
+    LoginResponseData:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+        code:
+          type: number
+        data:
+          $ref: "#/components/schemas/LoginResponseObj"
+    LoginResponseObj :
+      type: object
+      properties:
+        phone:
+          type: string
+          example: "+254704407117"
+        password:
+          type: string
+          example: "mike1234"
+
+    ResponseBadRequest :
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Invalid phone number"
+        error:
+          type: string
+        code:
+          type: number
+          example: 400
+        data:
+          type: object
+    ResponseServerError :
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Internal server Error"
+        error:
+          type: string
+        code:
+          type: number
+          example: 500
+        data:
+          type: object
+
+    OTPResponseData :
+      type: object
+      properties:
+        message:
+          type: string
+          example: "OTP sent succesfully"
+        error:
+          type: string
+        code:
+          type: number
+          example: 200
+        data:
+          $ref: "#/components/schemas/OTPResponseObj"
+    OTPResponseObj:
+      type: object
+      properties:
+        tracking_uuid:
+          type: string
+          example: "effaf-efaeaa-efaeaf"
+    ResponseBadOTPRequest:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+        code:
+          type: number
+        data:
+          $ref: "#/components/schemas/BadOTPResponseObj"
+    BadOTPResponseObj:
+      type: object
+      properties:
+        phone:
+          type: string
+          example: "1234444asd"
+    ResendOTP:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "OTP Resent succesfully"
+        error:
+          type: string
+        code:
+          type: number
+          example: 200
+        data:
+          type: object
+
+    LogoutRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+          description: name
+          example: "mike"
+
+    LogoutResponseData :
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+        code:
+          type: number
+          example: 200
+        data:
+          type: null
+
+    Response:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+        code:
+          type: number
+        data:
+          type: object
+
+    Email:
+      type: object
+      properties:
+        email:
+          type: string
+          description: valid email
+          example: john.doe@example.com
+    Phone:
+      type: object
+      properties:
+        phone:
+          type: string
+          description: valid phone
+          example: "+254702998282"
+
+    OTPVerifyResponseData:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+        code:
+          type: number
+        data:
+          type: object
+          properties:
+            tracking_uuid:
+              type: string
+
+    RefreshTokenReq:
+      type: object
+      properties:
+        refresh_token:
+          type: string
+          description: User's refresh token
+      required:
+        - refresh_token
+
+    RefreshTokenRes:
+      type: object
+      properties:
+        message:
+          type: string
+          description: "Message"
+        error:
+          type: string
+          description: "Error"
+        status_code:
+          type: number
+          description: "Status code"
+
+        data:
+          type: object
+          properties:
+            refresh_token:
+              type: string
+              description: New Refresh token
+            bearer_token:
+              type: string
+              description: New Bearer token
+          required:
+            - refresh_token
+            - bearer_token
+    ResendNewOTPResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: "Message"
+        error:
+          type: string
+          description: "Error"
+        status_code:
+          type: number
+          description: "Status code"
+        data:
+          $ref: "#/components/schemas/OTPResponseObj"
+
+    PhoneVerificationResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: "Message"
+        error:
+          type: string
+          description: "Error"
+        status_code:
+          type: number
+          description: "Status code"
+        data:
+          type: object
+          properties:
+            bearer_token:
+              type: string
+            refresh_token:
+              type: string
+          required:
+            - bearer_token
+            - refresh_token
+
+    BuyRequest:
+      type: object
+      properties:
+        youBuy:
+          type: string
+          description: "the currrency you want to buy in"
+          enum: [ KSH, Dollar ]
+        amount:
+          type: number
+          example: 45
+        payIn:
+          type: string
+          enum: [ Dollar, KSH ]
+        delivery:
+          type: string
+          enum: [ KSH, Dollar ]
+    BuyRequestData:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Your Buy has been initialized"
+        error:
+          type: string
+        code:
+          type: number
+          example: 200
+        data:
+          $ref: "#/components/schemas/BuyRequestObj"
+    BuyRequestObj:
+      type: object
+      properties:
+        buyId:
+          type: integer
+          description: "The unique identifier of the buy request"
+          example: 1234
+    TopUpRequest:
+      type: object
+      properties:
+        paymentMethod:
+          type: string
+          enum: [ Dollar, KSH ]
+        amount:
+          type: number
+
+    TopUpRequestData:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Your account has been topped up"
+        error:
+          type: string
+        code:
+          type: number
+          example: 200
+        data:
+          $ref: "#/components/schemas/TopUpResponseObj"
+    TopUpResponseObj:
+      type: object
+      properties:
+        topUpId:
+          type: integer
+          description: "The unique identifier of the top-up request"
+          example: 1234
+
+    MarketplaceOffersResponse:
+      type: object
+      properties:
+        currencies:
+          type: object
+          properties:
+            USD:
+              type: number
+              description: Conversion rate from Kenyan Shilling to US Dollar
+            KSH:
+              type: number
+              description: Conversion rate from US Dollar to Kenyan Shilling
+        data:
+          $ref: "#/components/schemas/MarketplaceOffersResponseObj"
+    MarketplaceOffersResponseObj:
+      type: array
+      items:
+        type: object
+        properties:
+          currency:
+            type: string
+            description: Currency code
+            example: "USD"
+          rate:
+            type: number
+            description: Exchange rate for the currency
+            example: 110.0
+
+    AccountOverviewResponse:
+      type: object
+      properties:
+        balance:
+          type: number
+          description: Current account balance
+        paymentDetails:
+          type: object
+          properties:
+            amountPaid:
+              type: number
+              description: Amount paid in the transaction
+            remainingBalance:
+              type: number
+              description: Remaining balance after the transaction
+        transactionSummary:
+          type: object
+          description: Summary or details of the payment made
+        data:
+          $ref: "#/components/schemas/AccountOverviewResponseObj"
+    AccountOverviewResponseObj:
+      type: object
+      properties:
+        balance:
+          type: number
+          description: Current account balance
+          example: 100000
+        paymentDetails:
+          type: object
+          properties:
+            amountPaid:
+              type: number
+              description: Amount paid in the transaction
+              example: 50000
+            remainingBalance:
+              type: number
+              description: Remaining balance after the transaction
+              example: 40000
+        transactionSummary:
+          type: object
+          description: Summary or details of the payment made
+          properties:
+            description:
+              type: string
+              description: Description of the transaction
+              example: "Buy transaction of 400 dollars"
+            date:
+              type: string
+              format: date
+              description: Date of the transaction
+              example: "2023-05-19"

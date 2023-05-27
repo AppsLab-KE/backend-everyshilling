@@ -1,0 +1,37 @@
+syntax = "proto3";
+import "rate.proto";
+import "account.proto";
+import "trade.proto";
+import "transactions.proto";
+
+import "google/protobuf/empty.proto";
+package db;
+option go_package = "github.com/AppsLab-KE/backend-everyshillings/exchange";
+
+service ExchangeService {
+  // RATES
+  rpc CreateConversionRate(CreateConversionRateRequest) returns (CreateConversionRateResponse) {}
+  rpc ReadConversionRate(ReadConversionRateRequest) returns (ReadConversionRateResponse) {}
+  rpc UpdateConversionRate(UpdateConversionRateRequest) returns (UpdateConversionRateResponse) {}
+  rpc DeleteConversionRate(DeleteConversionRateRequest) returns (DeleteConversionRateResponse) {}
+
+  // ACCOUNT
+  rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse);
+  rpc DeleteAccount(DeleteAccountRequest) returns (DeleteAccountResponse);
+  rpc UpdateAccount(UpdateAccountRequest) returns (UpdateAccountResponse);
+  rpc SearchAccount(SearchAccountRequest) returns (SearchAccountResponse);
+
+  // TRANSACTION
+  rpc CreateTransaction(CreateTransactionRequest) returns (CreateTransactionResponse);
+  rpc DeleteTransaction(DeleteTransactionRequest) returns (google.protobuf.Empty);
+  rpc UpdateTransaction(UpdateTransactionRequest) returns (google.protobuf.Empty);
+  rpc GetTransaction(GetTransactionRequest) returns (Transaction);
+  rpc GetTransactionByAccount(GetTransactionByAccountRequest) returns (GetTransactionByAccountResponse);
+
+  // TRADING
+  rpc CreateTrade(CreateTradeRequest) returns (CreateTradeResponse);
+  rpc DeleteTrade(DeleteTradeRequest) returns (google.protobuf.Empty);
+  rpc UpdateTrade(UpdateTradeRequest) returns (google.protobuf.Empty);
+  rpc GetTrade(GetTradeRequest) returns (Trade);
+  rpc GetTradeByAccount(GetTradeByAccountRequest) returns (GetTradeByAccountResponse);
+}

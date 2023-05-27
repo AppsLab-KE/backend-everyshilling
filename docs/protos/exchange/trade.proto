@@ -1,0 +1,45 @@
+syntax="proto3";
+package db;
+option go_package = "github.com/AppsLab-KE/backend-everyshillings/exchange";
+
+
+message Trade {
+  string trade_id = 1;
+  string account_id = 2;
+  string trade_type = 3;
+  string trade_status = 4;
+  string from_currency = 5;
+  string to_currency = 6;
+  int64 from_amount = 7;
+  int64 final_amount = 8;
+}
+
+message CreateTradeRequest {
+  Trade trade = 1;
+}
+
+message CreateTradeResponse {
+  string trade_id = 1;
+}
+
+message DeleteTradeRequest {
+  string trade_id = 1;
+}
+
+message UpdateTradeRequest {
+  Trade trade = 1;
+}
+
+message GetTradeRequest {
+  string trade_id = 1;
+}
+
+message GetTradeByAccountRequest {
+  string account_id = 1;
+}
+
+message GetTradeByAccountResponse {
+  repeated Trade trades = 1;
+}
+
+

@@ -1,0 +1,19 @@
+name: Docker CI & Repo Security Scanner
+on:
+  push:
+      branches:
+        - staging
+        - prod
+        - marvin-dev
+  pull_request:
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Build an image from Dockerfile
+        run: |
+          docker build -t docs -f docs/Dockerfile docs/
+
