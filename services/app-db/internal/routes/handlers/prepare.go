@@ -13,7 +13,8 @@ var (
 
 type Handler struct {
 	db.UnimplementedDbServiceServer
-	userRepo ports.UserRepo
+	userRepo  ports.UserRepo
+	ratesRepo ports.RatesRepo
 }
 
 func (s *Handler) HealthCheck(context.Context, *db.DefaultRequest) (*db.HealthResponse, error) {
@@ -22,8 +23,9 @@ func (s *Handler) HealthCheck(context.Context, *db.DefaultRequest) (*db.HealthRe
 	}, nil
 }
 
-func NewHandler(userRepo ports.UserRepo) *Handler {
+func NewHandler(userRepo ports.UserRepo, ratesRepo ports.RatesRepo) *Handler {
 	return &Handler{
-		userRepo: userRepo,
+		userRepo:  userRepo,
+		ratesRepo: ratesRepo,
 	}
 }

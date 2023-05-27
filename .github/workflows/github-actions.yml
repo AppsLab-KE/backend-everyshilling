@@ -40,7 +40,7 @@ jobs:
     #- name: install dependencies
      # run: go mod download
 
-      #setting up python application
+      #setting up python core
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
