@@ -133,7 +133,7 @@ services:
       context: services/app-ratescron
       dockerfile: Dockerfile
     env_file:
-      - services/app-db/.env.example
+      - services/app-ratescron/.env.example
     networks:
       - internal_network
     depends_on:

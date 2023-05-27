@@ -15,7 +15,8 @@ type Server struct {
 	Port string
 }
 type Config struct {
-	DB DB
+	DB     DB
+	Server Server
 }
 
 func LoadFromEnv() (*Config, error) {
@@ -35,6 +36,12 @@ func LoadFromEnv() (*Config, error) {
 		config.DB.Port = dbPort
 	} else {
 		return nil, fmt.Errorf("missing DB_PORT environment variable")
+	}
+
+	if serverPort, ok := os.LookupEnv("PORT"); ok {
+		config.Server.Port = serverPort
+	} else {
+		return nil, fmt.Errorf("missing PORT environmental variable")
 	}
 
 	return &config, nil

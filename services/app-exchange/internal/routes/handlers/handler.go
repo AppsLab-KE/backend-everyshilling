@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-exchange/internal/core/ports"
 	"github.com/AppsLab-KE/be-go-gen-grpc/exchange"
 	log "github.com/sirupsen/logrus"
@@ -13,6 +14,10 @@ type Handler struct {
 	tradeService       ports.TradeService
 	transactionService ports.TransactionService
 }
+
+var (
+	ErrEmptyRequest = errors.New("empty request")
+)
 
 func (h Handler) mustEmbedUnimplementedExchangeServiceServer() {
 	//TODO implement me

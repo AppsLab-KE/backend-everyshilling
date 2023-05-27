@@ -193,8 +193,11 @@ func (t tradeService) GetTradeByAccount(ctx context.Context, in *db.GetTradeByAc
 	return trade, nil
 }
 
-func NewTradeService(tradeRepository ports.TradeRepository) ports.TradeService {
+func NewTradeService(tradeRepository ports.TradeRepository, accountRepo ports.AccountRepository, rateRepo ports.ExchangeRepository, transactionRepo ports.TransactionRepository) ports.TradeService {
 	return &tradeService{
-		tradeRepository: tradeRepository,
+		tradeRepository:       tradeRepository,
+		accountRepository:     accountRepo,
+		rateRepository:        rateRepo,
+		transactionRepository: transactionRepo,
 	}
 }

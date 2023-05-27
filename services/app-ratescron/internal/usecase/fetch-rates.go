@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"github.com/AppsLab-KE/backend-everyshilling/services/app-ratescron/internal/core/ports"
 	"github.com/AppsLab-KE/be-go-gen-grpc/db"
 )
@@ -35,7 +36,7 @@ func (u usecase) FetchAndStoreRates() error {
 		}
 	}
 
-	_, err = u.dbRepo.CreateConversionRate(nil, &ratesRequest)
+	_, err = u.dbRepo.CreateConversionRate(context.Background(), &ratesRequest)
 	if err != nil {
 		return err
 	}

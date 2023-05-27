@@ -24,6 +24,7 @@ func (s *Server) Run() {
 
 	// create database client
 	postgresClient, err := postgres.NewClient(s.cfg.Postgres)
+
 	if err != nil {
 		log.Panic("error:", err)
 	}

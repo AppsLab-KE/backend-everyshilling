@@ -52,10 +52,51 @@ func (h Handler) DeleteAccount(ctx context.Context, request *exchange.DeleteAcco
 }
 
 func (h Handler) UpdateAccount(ctx context.Context, request *exchange.UpdateAccountRequest) (*exchange.UpdateAccountResponse, error) {
-	panic("implement me")
+	updateRequest := &db.UpdateAccountRequest{
+		Account: &db.Account{
+			AccountId:       request.Account.AccountId,
+			UserId:          request.Account.UserId,
+			Balance:         request.Account.Balance,
+			BaseCurrency:    request.Account.BaseCurrency,
+			CreatedAt:       request.Account.CreatedAt,
+			ParentAccountId: request.Account.ParentAccountId,
+		},
+	}
+
+	_, err := h.accountsService.UpdateAccount(ctx, updateRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	updateResult := &exchange.UpdateAccountResponse{}
+
+	return updateResult, nil
 }
 
 func (h Handler) SearchAccount(ctx context.Context, request *exchange.SearchAccountRequest) (*exchange.SearchAccountResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	searchRequest := &db.SearchAccountRequest{
+		AccountId: request.AccountId,
+	}
+
+	res, err := h.accountsService.SearchAccount(ctx, searchRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	searchResult := &exchange.SearchAccountResponse{
+		Accounts: []*exchange.Account{},
+	}
+
+	for _, account := range res.Accounts {
+		searchResult.Accounts = append(searchResult.Accounts, &exchange.Account{
+			AccountId:       account.AccountId,
+			UserId:          account.UserId,
+			Balance:         account.Balance,
+			BaseCurrency:    account.BaseCurrency,
+			CreatedAt:       account.CreatedAt,
+			ParentAccountId: account.ParentAccountId,
+		})
+	}
+
+	return searchResult, nil
 }

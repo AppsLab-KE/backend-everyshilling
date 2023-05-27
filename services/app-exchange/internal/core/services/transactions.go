@@ -122,8 +122,9 @@ func (t transactionService) GetTransactionByAccount(ctx context.Context, in *db.
 	return transactions, nil
 }
 
-func NewTransactionService(repository ports.TransactionRepository) ports.TransactionService {
+func NewTransactionService(repository ports.TransactionRepository, accountsRepo ports.AccountRepository) ports.TransactionService {
 	return &transactionService{
 		transactionRepo: repository,
+		accountsRepo:    accountsRepo,
 	}
 }

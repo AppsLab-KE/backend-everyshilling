@@ -26,7 +26,7 @@ COPY --from=app-builder /tmp/app-ratescron /usr/bin/ratescron-service
 
 RUN ls /etc/cron.d/
 # Create a cron job file
-RUN echo "*/1 * * * * /usr/bin/ratescron-service >> /var/log/cron.log 2>&1" > /etc/cron.d/rates-cron-job
+RUN echo "0 0 * * * /usr/bin/ratescron-service >> /var/log/cron.log 2>&1" > /etc/cron.d/rates-cron-job
 
 # Give execution rights to the cron job
 RUN chmod 0644 /etc/cron.d/rates-cron-job
