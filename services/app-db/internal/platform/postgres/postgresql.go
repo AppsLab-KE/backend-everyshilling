@@ -30,7 +30,7 @@ func NewClient(postgresConfig config.Postgres) (*gorm.DB, error) {
 
 	log.Info("database setup: migrations")
 	// automigrate
-	err = db.AutoMigrate(&models.User{})
+	err = db.AutoMigrate(&models.User{}, &models.ConversionRate{})
 
 	if err != nil {
 		return nil, err

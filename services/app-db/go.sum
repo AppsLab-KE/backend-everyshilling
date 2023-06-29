@@ -1,5 +1,5 @@
-github.com/AppsLab-KE/be-go-gen-grpc v0.0.10 h1:l2uOLKXOmGxvGiYHAJ3BggiE08eZwJtJUU7nFOwINrU=
-github.com/AppsLab-KE/be-go-gen-grpc v0.0.10/go.mod h1:F0zAKKv7O9FfplN/28CsWBRJu2ZArWNgIZbix6isDKY=
+github.com/AppsLab-KE/be-go-gen-grpc v0.0.13 h1:x3nsaE7AAiLI1xSKBtHkgzpjWY9sxSeVCD+0Vk9jW9g=
+github.com/AppsLab-KE/be-go-gen-grpc v0.0.13/go.mod h1:F0zAKKv7O9FfplN/28CsWBRJu2ZArWNgIZbix6isDKY=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
