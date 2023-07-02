@@ -1,5 +1,5 @@
-github.com/AppsLab-KE/be-go-gen-grpc v0.0.10 h1:l2uOLKXOmGxvGiYHAJ3BggiE08eZwJtJUU7nFOwINrU=
-github.com/AppsLab-KE/be-go-gen-grpc v0.0.10/go.mod h1:F0zAKKv7O9FfplN/28CsWBRJu2ZArWNgIZbix6isDKY=
+github.com/AppsLab-KE/be-go-gen-grpc v0.0.16 h1:qu0xjUhyBurj1uQvrGJxrPUEZy4XgMm878wh44rKre8=
+github.com/AppsLab-KE/be-go-gen-grpc v0.0.16/go.mod h1:F0zAKKv7O9FfplN/28CsWBRJu2ZArWNgIZbix6isDKY=
 github.com/RaveNoX/go-jsoncommentstrip v1.0.0/go.mod h1:78ihd09MekBnJnxpICcwzCMzGrKSKYe4AqU6PDYYpjk=
 github.com/apapsch/go-jsonmerge/v2 v2.0.0 h1:axGnT1gRIfimI7gJifB699GoE/oq+F2MU7Dml6nw9rQ=
 github.com/apapsch/go-jsonmerge/v2 v2.0.0/go.mod h1:lvDnEdqiQrp0O42VQGgmlKpxL1AP2+08jFMw88y4klk=
@@ -89,8 +89,6 @@ github.com/hashicorp/memberlist v0.5.0 h1:EtYPN8DpAURiapus508I4n9CzHs2W+8NZGbmmR
 github.com/hashicorp/memberlist v0.5.0/go.mod h1:yvyXLpo0QaGE59Y7hDTsTzDD25JYBZ4mHgHUZ8lrOI0=
 github.com/hashicorp/serf v0.10.1 h1:Z1H2J60yRKvfDYAOZLd2MU0ND4AH/WDz7xYHDWQsIPY=
 github.com/hashicorp/serf v0.10.1/go.mod h1:yL2t6BqATOLGc5HF7qbFkTfXoPIY0WZdWHfEvMqbG+4=
-github.com/inconshreveable/ngrok v0.0.0-20160531001041-a8e7fa486348 h1:DfYCTz4I7AIqh9Oxv/iN6d1nRkhQsK0S+jX2yC2culc=
-github.com/inconshreveable/ngrok v0.0.0-20160531001041-a8e7fa486348/go.mod h1:zBiwBxTW9puHCrrzHZTjSGKLnVhGEYGflc82Oy09kOQ=
 github.com/json-iterator/go v1.1.12 h1:PV8peI4a0ysnczrg+LtxykD8LfKY9ML6u2jnxaEnrnM=
 github.com/json-iterator/go v1.1.12/go.mod h1:e30LSqwooZae/UwlEbR2852Gd8hjQvJoHmT4TnhNGBo=
 github.com/juju/gnuflag v0.0.0-20171113085948-2ce1bb71843d/go.mod h1:2PavIy+JPciBPrBUjwbNvtwB6RQlve+hkpll6QSNmOE=

@@ -1,0 +1,44 @@
+syntax="proto3";
+package db;
+option go_package = "github.com/AppsLab-KE/backend-everyshillings/db";
+
+
+message Transaction {
+  string transaction_id = 1;
+  string account_id = 2;
+  int64 amount = 3;
+  string transaction_type = 4;
+  string transaction_status = 5;
+  string transaction_code = 6;
+  string transaction_description = 7;
+  int64 created_at = 8;
+}
+
+
+message CreateTransactionRequest {
+  Transaction transaction = 1;
+}
+
+message CreateTransactionResponse {
+  string transaction_id = 1;
+}
+
+message DeleteTransactionRequest {
+  string transaction_id = 1;
+}
+
+message UpdateTransactionRequest {
+  Transaction transaction = 1;
+}
+
+message GetTransactionRequest {
+  string transaction_id = 1;
+}
+
+message GetTransactionByAccountRequest {
+  string account_id = 1;
+}
+
+message GetTransactionByAccountResponse {
+  repeated Transaction transactions = 1;
+}

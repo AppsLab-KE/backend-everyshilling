@@ -3,10 +3,11 @@ module github.com/AppsLab-KE/backend-everyshilling/services/app-authentication
 go 1.19
 
 require (
-	github.com/AppsLab-KE/be-go-gen-grpc v0.0.10
+	github.com/AppsLab-KE/be-go-gen-grpc v0.0.16
 	github.com/deepmap/oapi-codegen v1.12.4
 	github.com/gin-gonic/gin v1.9.0
 	github.com/golang-jwt/jwt/v5 v5.0.0-rc.2
+	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.3.0
 	github.com/hashicorp/consul/api v1.20.0
 	github.com/redis/go-redis/v9 v9.0.3
@@ -29,14 +30,12 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.11.2 // indirect
 	github.com/goccy/go-json v0.10.0 // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.1 // indirect
 	github.com/hashicorp/go-hclog v0.12.0 // indirect
 	github.com/hashicorp/go-immutable-radix v1.0.0 // indirect
 	github.com/hashicorp/go-rootcerts v1.0.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/serf v0.10.1 // indirect
-	github.com/inconshreveable/ngrok v0.0.0-20160531001041-a8e7fa486348 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
