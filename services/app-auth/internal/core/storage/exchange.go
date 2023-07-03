@@ -8,11 +8,11 @@ import (
 	"google.golang.org/grpc"
 )
 
-type ExchangeStorageImpl struct {
+type exchangeStorageImpl struct {
 	exchangeClient exchange.ExchangeServiceClient
 }
 
-func (e ExchangeStorageImpl) CreateConversionRate(ctx context.Context, in *exchange.CreateConversionRateRequest, opts ...grpc.CallOption) (*exchange.CreateConversionRateResponse, error) {
+func (e exchangeStorageImpl) CreateConversionRate(ctx context.Context, in *exchange.CreateConversionRateRequest, opts ...grpc.CallOption) (*exchange.CreateConversionRateResponse, error) {
 	response, err := e.exchangeClient.CreateConversionRate(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -20,7 +20,7 @@ func (e ExchangeStorageImpl) CreateConversionRate(ctx context.Context, in *excha
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) ReadConversionRate(ctx context.Context, in *exchange.ReadConversionRateRequest, opts ...grpc.CallOption) (*exchange.ReadConversionRateResponse, error) {
+func (e exchangeStorageImpl) ReadConversionRate(ctx context.Context, in *exchange.ReadConversionRateRequest, opts ...grpc.CallOption) (*exchange.ReadConversionRateResponse, error) {
 	response, err := e.exchangeClient.ReadConversionRate(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -28,7 +28,7 @@ func (e ExchangeStorageImpl) ReadConversionRate(ctx context.Context, in *exchang
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) UpdateConversionRate(ctx context.Context, in *exchange.UpdateConversionRateRequest, opts ...grpc.CallOption) (*exchange.UpdateConversionRateResponse, error) {
+func (e exchangeStorageImpl) UpdateConversionRate(ctx context.Context, in *exchange.UpdateConversionRateRequest, opts ...grpc.CallOption) (*exchange.UpdateConversionRateResponse, error) {
 	response, err := e.exchangeClient.UpdateConversionRate(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (e ExchangeStorageImpl) UpdateConversionRate(ctx context.Context, in *excha
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) DeleteConversionRate(ctx context.Context, in *exchange.DeleteConversionRateRequest, opts ...grpc.CallOption) (*exchange.DeleteConversionRateResponse, error) {
+func (e exchangeStorageImpl) DeleteConversionRate(ctx context.Context, in *exchange.DeleteConversionRateRequest, opts ...grpc.CallOption) (*exchange.DeleteConversionRateResponse, error) {
 	response, err := e.exchangeClient.DeleteConversionRate(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (e ExchangeStorageImpl) DeleteConversionRate(ctx context.Context, in *excha
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) CreateAccount(ctx context.Context, in *exchange.CreateAccountRequest, opts ...grpc.CallOption) (*exchange.CreateAccountResponse, error) {
+func (e exchangeStorageImpl) CreateAccount(ctx context.Context, in *exchange.CreateAccountRequest, opts ...grpc.CallOption) (*exchange.CreateAccountResponse, error) {
 	response, err := e.exchangeClient.CreateAccount(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (e ExchangeStorageImpl) CreateAccount(ctx context.Context, in *exchange.Cre
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) DeleteAccount(ctx context.Context, in *exchange.DeleteAccountRequest, opts ...grpc.CallOption) (*exchange.DeleteAccountResponse, error) {
+func (e exchangeStorageImpl) DeleteAccount(ctx context.Context, in *exchange.DeleteAccountRequest, opts ...grpc.CallOption) (*exchange.DeleteAccountResponse, error) {
 	response, err := e.exchangeClient.DeleteAccount(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func (e ExchangeStorageImpl) DeleteAccount(ctx context.Context, in *exchange.Del
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) UpdateAccount(ctx context.Context, in *exchange.UpdateAccountRequest, opts ...grpc.CallOption) (*exchange.UpdateAccountResponse, error) {
+func (e exchangeStorageImpl) UpdateAccount(ctx context.Context, in *exchange.UpdateAccountRequest, opts ...grpc.CallOption) (*exchange.UpdateAccountResponse, error) {
 	response, err := e.exchangeClient.UpdateAccount(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (e ExchangeStorageImpl) UpdateAccount(ctx context.Context, in *exchange.Upd
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) SearchAccount(ctx context.Context, in *exchange.SearchAccountRequest, opts ...grpc.CallOption) (*exchange.SearchAccountResponse, error) {
+func (e exchangeStorageImpl) SearchAccount(ctx context.Context, in *exchange.SearchAccountRequest, opts ...grpc.CallOption) (*exchange.SearchAccountResponse, error) {
 	response, err := e.exchangeClient.SearchAccount(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -76,7 +76,7 @@ func (e ExchangeStorageImpl) SearchAccount(ctx context.Context, in *exchange.Sea
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) CreateTransaction(ctx context.Context, in *exchange.CreateTransactionRequest, opts ...grpc.CallOption) (*exchange.CreateTransactionResponse, error) {
+func (e exchangeStorageImpl) CreateTransaction(ctx context.Context, in *exchange.CreateTransactionRequest, opts ...grpc.CallOption) (*exchange.CreateTransactionResponse, error) {
 	response, err := e.exchangeClient.CreateTransaction(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func (e ExchangeStorageImpl) CreateTransaction(ctx context.Context, in *exchange
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) DeleteTransaction(ctx context.Context, in *exchange.DeleteTransactionRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (e exchangeStorageImpl) DeleteTransaction(ctx context.Context, in *exchange.DeleteTransactionRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	response, err := e.exchangeClient.DeleteTransaction(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func (e ExchangeStorageImpl) DeleteTransaction(ctx context.Context, in *exchange
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) UpdateTransaction(ctx context.Context, in *exchange.UpdateTransactionRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (e exchangeStorageImpl) UpdateTransaction(ctx context.Context, in *exchange.UpdateTransactionRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	response, err := e.exchangeClient.UpdateTransaction(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ func (e ExchangeStorageImpl) UpdateTransaction(ctx context.Context, in *exchange
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) GetTransaction(ctx context.Context, in *exchange.GetTransactionRequest, opts ...grpc.CallOption) (*exchange.Transaction, error) {
+func (e exchangeStorageImpl) GetTransaction(ctx context.Context, in *exchange.GetTransactionRequest, opts ...grpc.CallOption) (*exchange.Transaction, error) {
 	response, err := e.exchangeClient.GetTransaction(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -108,7 +108,7 @@ func (e ExchangeStorageImpl) GetTransaction(ctx context.Context, in *exchange.Ge
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) GetTransactionByAccount(ctx context.Context, in *exchange.GetTransactionByAccountRequest, opts ...grpc.CallOption) (*exchange.GetTransactionByAccountResponse, error) {
+func (e exchangeStorageImpl) GetTransactionByAccount(ctx context.Context, in *exchange.GetTransactionByAccountRequest, opts ...grpc.CallOption) (*exchange.GetTransactionByAccountResponse, error) {
 	response, err := e.exchangeClient.GetTransactionByAccount(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -116,7 +116,7 @@ func (e ExchangeStorageImpl) GetTransactionByAccount(ctx context.Context, in *ex
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) CreateTrade(ctx context.Context, in *exchange.CreateTradeRequest, opts ...grpc.CallOption) (*exchange.CreateTradeResponse, error) {
+func (e exchangeStorageImpl) CreateTrade(ctx context.Context, in *exchange.CreateTradeRequest, opts ...grpc.CallOption) (*exchange.CreateTradeResponse, error) {
 	response, err := e.exchangeClient.CreateTrade(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -124,7 +124,7 @@ func (e ExchangeStorageImpl) CreateTrade(ctx context.Context, in *exchange.Creat
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) DeleteTrade(ctx context.Context, in *exchange.DeleteTradeRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (e exchangeStorageImpl) DeleteTrade(ctx context.Context, in *exchange.DeleteTradeRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	response, err := e.exchangeClient.DeleteTrade(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -132,7 +132,7 @@ func (e ExchangeStorageImpl) DeleteTrade(ctx context.Context, in *exchange.Delet
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) UpdateTrade(ctx context.Context, in *exchange.UpdateTradeRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (e exchangeStorageImpl) UpdateTrade(ctx context.Context, in *exchange.UpdateTradeRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	response, err := e.exchangeClient.UpdateTrade(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -140,7 +140,7 @@ func (e ExchangeStorageImpl) UpdateTrade(ctx context.Context, in *exchange.Updat
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) GetTrade(ctx context.Context, in *exchange.GetTradeRequest, opts ...grpc.CallOption) (*exchange.Trade, error) {
+func (e exchangeStorageImpl) GetTrade(ctx context.Context, in *exchange.GetTradeRequest, opts ...grpc.CallOption) (*exchange.Trade, error) {
 	response, err := e.exchangeClient.GetTrade(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -148,7 +148,7 @@ func (e ExchangeStorageImpl) GetTrade(ctx context.Context, in *exchange.GetTrade
 	return response, nil
 }
 
-func (e ExchangeStorageImpl) GetTradeByAccount(ctx context.Context, in *exchange.GetTradeByAccountRequest, opts ...grpc.CallOption) (*exchange.GetTradeByAccountResponse, error) {
+func (e exchangeStorageImpl) GetTradeByAccount(ctx context.Context, in *exchange.GetTradeByAccountRequest, opts ...grpc.CallOption) (*exchange.GetTradeByAccountResponse, error) {
 	response, err := e.exchangeClient.GetTradeByAccount(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -157,7 +157,7 @@ func (e ExchangeStorageImpl) GetTradeByAccount(ctx context.Context, in *exchange
 }
 
 func NewExchangeStorageImpl(exchangeClient exchange.ExchangeServiceClient) adapters.ExchangeStorage {
-	return ExchangeStorageImpl{
+	return &exchangeStorageImpl{
 		exchangeClient: exchangeClient,
 	}
 }

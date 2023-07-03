@@ -8,11 +8,11 @@ import (
 	"google.golang.org/grpc"
 )
 
-type ExchangeUseCase struct {
+type exchangeUseCaseImpl struct {
 	exchangeService adapters.ExchangeService
 }
 
-func (e ExchangeUseCase) CreateConversionRate(ctx context.Context, in *exchange.CreateConversionRateRequest, opts ...grpc.CallOption) (*exchange.CreateConversionRateResponse, error) {
+func (e exchangeUseCaseImpl) CreateConversionRate(ctx context.Context, in *exchange.CreateConversionRateRequest, opts ...grpc.CallOption) (*exchange.CreateConversionRateResponse, error) {
 	// Call the exchange service method to create the conversion rate
 	response, err := e.exchangeService.CreateConversionRate(ctx, in, opts...)
 	if err != nil {
@@ -21,7 +21,7 @@ func (e ExchangeUseCase) CreateConversionRate(ctx context.Context, in *exchange.
 	return response, nil
 }
 
-func (e ExchangeUseCase) ReadConversionRate(ctx context.Context, in *exchange.ReadConversionRateRequest, opts ...grpc.CallOption) (*exchange.ReadConversionRateResponse, error) {
+func (e exchangeUseCaseImpl) ReadConversionRate(ctx context.Context, in *exchange.ReadConversionRateRequest, opts ...grpc.CallOption) (*exchange.ReadConversionRateResponse, error) {
 	// Call the exchange service method to read the conversion rate
 	response, err := e.exchangeService.ReadConversionRate(ctx, in, opts...)
 	if err != nil {
@@ -31,7 +31,7 @@ func (e ExchangeUseCase) ReadConversionRate(ctx context.Context, in *exchange.Re
 
 }
 
-func (e ExchangeUseCase) UpdateConversionRate(ctx context.Context, in *exchange.UpdateConversionRateRequest, opts ...grpc.CallOption) (*exchange.UpdateConversionRateResponse, error) {
+func (e exchangeUseCaseImpl) UpdateConversionRate(ctx context.Context, in *exchange.UpdateConversionRateRequest, opts ...grpc.CallOption) (*exchange.UpdateConversionRateResponse, error) {
 	response, err := e.exchangeService.UpdateConversionRate(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (e ExchangeUseCase) UpdateConversionRate(ctx context.Context, in *exchange.
 	return response, nil
 }
 
-func (e ExchangeUseCase) DeleteConversionRate(ctx context.Context, in *exchange.DeleteConversionRateRequest, opts ...grpc.CallOption) (*exchange.DeleteConversionRateResponse, error) {
+func (e exchangeUseCaseImpl) DeleteConversionRate(ctx context.Context, in *exchange.DeleteConversionRateRequest, opts ...grpc.CallOption) (*exchange.DeleteConversionRateResponse, error) {
 	response, err := e.exchangeService.DeleteConversionRate(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (e ExchangeUseCase) DeleteConversionRate(ctx context.Context, in *exchange.
 
 }
 
-func (e ExchangeUseCase) CreateAccount(ctx context.Context, in *exchange.CreateAccountRequest, opts ...grpc.CallOption) (*exchange.CreateAccountResponse, error) {
+func (e exchangeUseCaseImpl) CreateAccount(ctx context.Context, in *exchange.CreateAccountRequest, opts ...grpc.CallOption) (*exchange.CreateAccountResponse, error) {
 	response, err := e.exchangeService.CreateAccount(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ func (e ExchangeUseCase) CreateAccount(ctx context.Context, in *exchange.CreateA
 	return response, nil
 }
 
-func (e ExchangeUseCase) DeleteAccount(ctx context.Context, in *exchange.DeleteAccountRequest, opts ...grpc.CallOption) (*exchange.DeleteAccountResponse, error) {
+func (e exchangeUseCaseImpl) DeleteAccount(ctx context.Context, in *exchange.DeleteAccountRequest, opts ...grpc.CallOption) (*exchange.DeleteAccountResponse, error) {
 	response, err := e.exchangeService.DeleteAccount(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -64,7 +64,7 @@ func (e ExchangeUseCase) DeleteAccount(ctx context.Context, in *exchange.DeleteA
 	return response, nil
 }
 
-func (e ExchangeUseCase) UpdateAccount(ctx context.Context, in *exchange.UpdateAccountRequest, opts ...grpc.CallOption) (*exchange.UpdateAccountResponse, error) {
+func (e exchangeUseCaseImpl) UpdateAccount(ctx context.Context, in *exchange.UpdateAccountRequest, opts ...grpc.CallOption) (*exchange.UpdateAccountResponse, error) {
 	response, err := e.exchangeService.UpdateAccount(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ func (e ExchangeUseCase) UpdateAccount(ctx context.Context, in *exchange.UpdateA
 	return response, nil
 }
 
-func (e ExchangeUseCase) SearchAccount(ctx context.Context, in *exchange.SearchAccountRequest, opts ...grpc.CallOption) (*exchange.SearchAccountResponse, error) {
+func (e exchangeUseCaseImpl) SearchAccount(ctx context.Context, in *exchange.SearchAccountRequest, opts ...grpc.CallOption) (*exchange.SearchAccountResponse, error) {
 	response, err := e.exchangeService.SearchAccount(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -80,7 +80,7 @@ func (e ExchangeUseCase) SearchAccount(ctx context.Context, in *exchange.SearchA
 	return response, nil
 }
 
-func (e ExchangeUseCase) CreateTransaction(ctx context.Context, in *exchange.CreateTransactionRequest, opts ...grpc.CallOption) (*exchange.CreateTransactionResponse, error) {
+func (e exchangeUseCaseImpl) CreateTransaction(ctx context.Context, in *exchange.CreateTransactionRequest, opts ...grpc.CallOption) (*exchange.CreateTransactionResponse, error) {
 	response, err := e.exchangeService.CreateTransaction(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (e ExchangeUseCase) CreateTransaction(ctx context.Context, in *exchange.Cre
 	return response, nil
 }
 
-func (e ExchangeUseCase) DeleteTransaction(ctx context.Context, in *exchange.DeleteTransactionRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (e exchangeUseCaseImpl) DeleteTransaction(ctx context.Context, in *exchange.DeleteTransactionRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	response, err := e.exchangeService.DeleteTransaction(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func (e ExchangeUseCase) DeleteTransaction(ctx context.Context, in *exchange.Del
 	return response, nil
 }
 
-func (e ExchangeUseCase) UpdateTransaction(ctx context.Context, in *exchange.UpdateTransactionRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (e exchangeUseCaseImpl) UpdateTransaction(ctx context.Context, in *exchange.UpdateTransactionRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	response, err := e.exchangeService.UpdateTransaction(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -104,7 +104,7 @@ func (e ExchangeUseCase) UpdateTransaction(ctx context.Context, in *exchange.Upd
 	return response, nil
 }
 
-func (e ExchangeUseCase) GetTransaction(ctx context.Context, in *exchange.GetTransactionRequest, opts ...grpc.CallOption) (*exchange.Transaction, error) {
+func (e exchangeUseCaseImpl) GetTransaction(ctx context.Context, in *exchange.GetTransactionRequest, opts ...grpc.CallOption) (*exchange.Transaction, error) {
 	response, err := e.exchangeService.GetTransaction(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func (e ExchangeUseCase) GetTransaction(ctx context.Context, in *exchange.GetTra
 	return response, nil
 }
 
-func (e ExchangeUseCase) GetTransactionByAccount(ctx context.Context, in *exchange.GetTransactionByAccountRequest, opts ...grpc.CallOption) (*exchange.GetTransactionByAccountResponse, error) {
+func (e exchangeUseCaseImpl) GetTransactionByAccount(ctx context.Context, in *exchange.GetTransactionByAccountRequest, opts ...grpc.CallOption) (*exchange.GetTransactionByAccountResponse, error) {
 	response, err := e.exchangeService.GetTransactionByAccount(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -120,7 +120,7 @@ func (e ExchangeUseCase) GetTransactionByAccount(ctx context.Context, in *exchan
 	return response, nil
 }
 
-func (e ExchangeUseCase) CreateTrade(ctx context.Context, in *exchange.CreateTradeRequest, opts ...grpc.CallOption) (*exchange.CreateTradeResponse, error) {
+func (e exchangeUseCaseImpl) CreateTrade(ctx context.Context, in *exchange.CreateTradeRequest, opts ...grpc.CallOption) (*exchange.CreateTradeResponse, error) {
 	response, err := e.exchangeService.CreateTrade(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -128,7 +128,7 @@ func (e ExchangeUseCase) CreateTrade(ctx context.Context, in *exchange.CreateTra
 	return response, nil
 }
 
-func (e ExchangeUseCase) DeleteTrade(ctx context.Context, in *exchange.DeleteTradeRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (e exchangeUseCaseImpl) DeleteTrade(ctx context.Context, in *exchange.DeleteTradeRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	response, err := e.exchangeService.DeleteTrade(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -136,7 +136,7 @@ func (e ExchangeUseCase) DeleteTrade(ctx context.Context, in *exchange.DeleteTra
 	return response, nil
 }
 
-func (e ExchangeUseCase) UpdateTrade(ctx context.Context, in *exchange.UpdateTradeRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (e exchangeUseCaseImpl) UpdateTrade(ctx context.Context, in *exchange.UpdateTradeRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	response, err := e.exchangeService.UpdateTrade(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -144,7 +144,7 @@ func (e ExchangeUseCase) UpdateTrade(ctx context.Context, in *exchange.UpdateTra
 	return response, nil
 }
 
-func (e ExchangeUseCase) GetTrade(ctx context.Context, in *exchange.GetTradeRequest, opts ...grpc.CallOption) (*exchange.Trade, error) {
+func (e exchangeUseCaseImpl) GetTrade(ctx context.Context, in *exchange.GetTradeRequest, opts ...grpc.CallOption) (*exchange.Trade, error) {
 	response, err := e.exchangeService.GetTrade(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -152,7 +152,7 @@ func (e ExchangeUseCase) GetTrade(ctx context.Context, in *exchange.GetTradeRequ
 	return response, nil
 }
 
-func (e ExchangeUseCase) GetTradeByAccount(ctx context.Context, in *exchange.GetTradeByAccountRequest, opts ...grpc.CallOption) (*exchange.GetTradeByAccountResponse, error) {
+func (e exchangeUseCaseImpl) GetTradeByAccount(ctx context.Context, in *exchange.GetTradeByAccountRequest, opts ...grpc.CallOption) (*exchange.GetTradeByAccountResponse, error) {
 	response, err := e.exchangeService.GetTradeByAccount(ctx, in, opts...)
 	if err != nil {
 		return nil, err
@@ -161,7 +161,7 @@ func (e ExchangeUseCase) GetTradeByAccount(ctx context.Context, in *exchange.Get
 }
 
 func NewExchangeUseCase(exchangeService adapters.ExchangeService) adapters.ExchangeService {
-	return &ExchangeUseCase{
+	return &exchangeUseCaseImpl{
 		exchangeService: exchangeService,
 	}
 }
