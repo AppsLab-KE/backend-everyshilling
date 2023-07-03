@@ -1,6 +1,8 @@
 module github.com/AppsLab-KE/backend-everyshilling/services/app-exchange
 
-go 1.20
+
+go 1.19
+
 
 require (
 	github.com/AppsLab-KE/be-go-gen-grpc v0.0.14

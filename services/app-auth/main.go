@@ -58,6 +58,7 @@ func main() {
 
 	// Initialise usecases
 	authUC := usecase.NewAuthUsecase(authService, nil)
+	//exchangeUseCase := usecase.NewExchangeUseCase(exchangeService,nil)
 
 	// server config
 	handler := server.NewServer(authUC, *cfg)

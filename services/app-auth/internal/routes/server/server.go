@@ -11,10 +11,11 @@ import (
 const BaseUrl = "/api"
 
 type Config struct {
-	AuthUsecase adapters.AuthUseCase
+	AuthUsecase     adapters.AuthUseCase
+	ExchangeUsecase adapters.ExchangeStorageUsecase
 }
 
-func NewServer(authUseCase adapters.AuthUseCase, cfg config.Config) *gin.Engine {
+func NewServer(authUseCase adapters.AuthUseCase, exchangeUseCase adapters.ExchangeStorageUsecase, cfg config.Config) *gin.Engine {
 	r := gin.Default()
 
 	middlewareManager := middleware.NewManager(cfg, authUseCase)
@@ -33,7 +34,9 @@ func NewServer(authUseCase adapters.AuthUseCase, cfg config.Config) *gin.Engine 
 	// Serve swagger spec
 
 	// Map handlers
+	//h := handlers.NewHandler(authUseCase,exchangeUseCase)
 	h := handlers.NewHandler(authUseCase)
+
 	handlers.RegisterHandlersWithOptions(r, h, options)
 
 	return r
