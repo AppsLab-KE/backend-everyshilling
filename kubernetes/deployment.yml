@@ -1,30 +1,84 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: grpcserver
-  namespace: grpcserver
+  name: app-auth-deployment
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: grpcserver
-  replicas: 1
+      app: app-auth
   template:
     metadata:
       labels:
-        app: grpcserver
+        app: app-auth
     spec:
       containers:
-
-      - name: grpc-demo
-        image: accountid.dkr.ecr.us-east-1.amazonaws.com/app-auth:latest   #<------- Change to the URI that the Docker image is pushed to
-        imagePullPolicy: Always
-
+      - name: app-auth
+        image: app-auth:latest
         ports:
-        - name: grpc-api
-          containerPort: 9000
-        env:
-        - name: POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-      restartPolicy: Always
+        - containerPort: 3002
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-otp-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-otp
+  template:
+    metadata:
+      labels:
+        app: app-otp
+    spec:
+      containers:
+      - name: app-otp
+        image: app-otp:latest
+        ports:
+        - containerPort: 3008
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-otp-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-db
+  template:
+    metadata:
+      labels:
+        app: app-db
+    spec:
+      containers:
+      - name: app-db
+        image: app-db:latest
+        ports:
+        - containerPort: 3001
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-otp-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-db
+  template:
+    metadata:
+      labels:
+        app: postgres-db
+    spec:
+      containers:
+      - name: postgres-db
+        image: postgres:latest
+        ports:
+        - containerPort: 5432
